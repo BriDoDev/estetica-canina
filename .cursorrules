@@ -1,0 +1,49 @@
+# Paws & Glow — Cursor Rules
+
+## Tech Stack
+- Next.js 15 App Router (no `pages/` directory)
+- TypeScript strict mode
+- Tailwind CSS v4 (no `@apply` abuse — prefer utility classes)
+- shadcn/ui components from /components/ui
+- Supabase for DB, Auth, Storage
+- React Three Fiber for 3D scenes
+- GSAP for animations (use ScrollTrigger plugin)
+- Zod for ALL validation schemas
+- React Hook Form + @hookform/resolvers/zod
+
+## Project Structure Rules
+- Route groups: (public), (auth), (admin)
+- 3D components live in /components/3d — always lazy load with next/dynamic + ssr:false
+- Forms live in /components/forms
+- Server Actions in /app/actions/
+- Supabase client helpers in /lib/supabase/
+- AI logic in /lib/ai/
+- Types in /types/
+
+## Coding Standards
+- All Server Actions must be in files with "use server" at the top
+- All Client Components must have "use client" at the top
+- Always use TypeScript — no `any`, use `unknown` if uncertain
+- Zod schemas co-located with their forms or in /lib/schemas/
+- Environment variables: always use NEXT_PUBLIC_ prefix for client-side vars
+- Error handling: use try/catch in Server Actions, return typed results {data, error}
+- Use `cn()` from /lib/utils for className merging
+- Mobile-first responsive design
+- Color palette: Indigo (primary), Slate (neutral), White (background)
+
+## Database Rules
+- Always use RLS in Supabase
+- Use snake_case for SQL identifiers
+- Prefer UUID primary keys
+- All tables need created_at and updated_at timestamps
+
+## AI Integration Rules
+- GPT-4o Vision calls must be in Server Actions only (never expose API keys client-side)
+- Always validate AI responses before returning to client
+- DALL-E 3 image generation returns URLs — store in Supabase Storage, not raw OpenAI URLs
+
+## Performance Rules
+- 3D scenes must be lazy loaded (ssr:false)
+- Use Next.js Image component for all images
+- Prefetch critical routes
+- Use React Suspense boundaries around async components

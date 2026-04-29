@@ -1,0 +1,69 @@
+import OpenAI from 'openai'
+import type { PetAnalysisResult } from '@/types'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+export async function analyzePetPhoto(
+  imageBase64: string,
+  mimeType: string
+): Promise<PetAnalysisResult> {
+  const prompt = `Eres un experto groomer canino con 20 años de experiencia. Analiza esta foto de una mascota y proporciona un análisis detallado en formato JSON.
+
+Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:
+{
+  "breed": "raza detectada o 'Mestizo'",
+  "estimatedAge": "estimación de edad (ej: '2-3 años')",
+  "coatCondition": "excellent|good|needs_attention|poor",
+  "coatType": "descripción del tipo de pelo",
+  "recommendations": [
+    {
+      "service": "nombre del servicio",
+      "priority": "high|medium|low",
+      "description": "descripción breve del por qué",
+      "estimatedPrice": "rango de precio en MXN"
+    }
+  ],
+  "urgentCare": "descripción de cuidado urgente o null",
+  "estimatedGroomingTime": número en minutos
+}
+
+Proporciona exactamente 4 recomendaciones. Si no puedes ver claramente la mascota, proporciona recomendaciones generales.`
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'image_url',
+            image_url: {
+              url: `data:${mimeType};base64,${imageBase64}`,
+              detail: 'high',
+            },
+          },
+          {
+            type: 'text',
+            text: prompt,
+          },
+        ],
+      },
+    ],
+    max_tokens: 1000,
+    temperature: 0.3,
+  })
+
+  const content = response.choices[0]?.message?.content
+  if (!content) {
+    throw new Error('No se recibió respuesta del análisis de IA')
+  }
+
+  const jsonMatch = content.match(/\{[\s\S]*\}/)
+  if (!jsonMatch) {
+    throw new Error('Respuesta de IA en formato inválido')
+  }
+
+  return JSON.parse(jsonMatch[0]) as PetAnalysisResult
+}
