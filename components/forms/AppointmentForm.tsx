@@ -185,7 +185,7 @@ export function AppointmentForm() {
         }
       } catch (err) {
         console.error('[AI analysis]', err)
-        setAiError('No se pudo analizar la foto. Verifica que OPENAI_API_KEY esté configurada. Puedes continuar sin el análisis.')
+        setAiError('No pudimos analizar la foto en este momento. Puedes continuar sin el diagnóstico automático.')
       } finally {
         setIsAnalyzing(false)
       }
@@ -230,7 +230,7 @@ export function AppointmentForm() {
       }
     } catch (err) {
       console.error('[AI analysis]', err)
-      setAiError('No se pudo analizar la foto. Verifica que OPENAI_API_KEY esté configurada en .env.local. Puedes continuar sin el análisis.')
+      setAiError('No pudimos analizar la foto en este momento. Puedes continuar sin el diagnóstico automático.')
       return { compressedFile: originalFile, aiResult: null }
     } finally {
       setIsAnalyzing(false)
@@ -902,8 +902,9 @@ export function AppointmentForm() {
                           {...register('scheduledAt')}
                           min={new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16)}
                           aria-invalid={!!errors.scheduledAt}
-                          aria-describedby={errors.scheduledAt ? 'scheduledAt-error' : undefined}
+                          aria-describedby={errors.scheduledAt ? 'scheduledAt-error' : 'scheduledAt-hint'}
                           className={cn(
+                            'min-h-[44px]',
                             errors.scheduledAt
                               ? 'border-red-400 focus-visible:ring-red-300'
                               : touchedFields.scheduledAt && !errors.scheduledAt

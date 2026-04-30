@@ -1,4 +1,4 @@
-import OpenAI, { toFile } from 'openai'
+import OpenAI from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -39,30 +39,40 @@ export async function generateGroomingPreview(
   for (const style of styles) {
     try {
       if (imageBase64) {
-        const imageBuffer = Buffer.from(imageBase64, 'base64')
         const mimeType = imageMimeType ?? 'image/png'
-        const ext = mimeType.includes('jpeg') || mimeType.includes('jpg') ? 'jpg' : 'png'
 
         try {
-          const imageFile = await toFile(imageBuffer, `pet.${ext}`, { type: mimeType })
+          // Use fetch directly (bypass SDK toFile issues)
+          const formData = new FormData()
+          const ext = mimeType.includes('jpeg') || mimeType.includes('jpg') ? 'jpg' : 'png'
+          const blob = new Blob(
+            [Buffer.from(imageBase64, 'base64')],
+            { type: mimeType }
+          )
+          formData.append('image', blob, `pet.${ext}`)
+          formData.append('prompt', getEditPrompt(style.name))
+          formData.append('model', 'dall-e-2')
+          formData.append('n', '1')
+          formData.append('size', '1024x1024')
 
-          const response = await openai.images.edit({
-            model: 'dall-e-2',
-            image: imageFile,
-            prompt: getEditPrompt(style.name),
-            n: 1,
-            size: '1024x1024',
+          const response = await fetch('https://api.openai.com/v1/images/edits', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+            },
+            body: formData,
           })
 
-          const url = response.data?.[0]?.url
+          const json = await response.json()
+          const url = json?.data?.[0]?.url ?? ''
           if (!url) {
-            console.warn(`[Grooming] dall-e-2 returned no URL for style ${style.id}`)
+            console.warn(`[Grooming] No URL for style ${style.id}:`, JSON.stringify(json).slice(0, 200))
           }
           previews.push({
             styleId: style.id,
             name: style.name,
             description: style.description,
-            imageUrl: url ?? '',
+            imageUrl: url,
           })
         } catch (editErr) {
           console.error(`[Grooming] Image edit failed for ${style.id}:`, editErr)
