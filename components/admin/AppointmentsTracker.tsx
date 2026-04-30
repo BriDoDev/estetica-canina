@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { formatDate, formatCurrency } from '@/lib/utils'
 import { completeAppointmentAction, updateAppointmentStatusAction } from '@/app/actions/tracking'
-import { CheckCircle, XCircle, PlayCircle, DollarSign, Clock, FileText } from 'lucide-react'
+import { CheckCircle, XCircle, PlayCircle, DollarSign, FileText } from 'lucide-react'
 
 interface AppointmentRow {
   id: string

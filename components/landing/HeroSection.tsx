@@ -125,31 +125,15 @@ export function HeroSection({
             <div className="w-[380px] h-[380px] rounded-full bg-indigo-50/80" />
           </div>
 
-          <div className="relative w-[360px] h-[400px] rounded-3xl overflow-hidden shadow-2xl shadow-indigo-200/60 border-4 border-white">
-            {/* Try real image, fallback to gradient */}
-            <div className="w-full h-full bg-gradient-to-br from-amber-100 via-orange-50 to-indigo-100 flex items-center justify-center">
-              <Image
-                src="/images/hero-dog.png"
-                alt="Perro limpio y feliz"
-                fill
-                className="object-cover"
-                priority
-                onError={(e) => {
-                  ;(e.target as HTMLImageElement).style.display = 'none'
-                }}
-              />
-              {/* Fallback visible when image not found */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center p-8">
-                <PawPrintDecor className="w-24 h-24 text-indigo-300" />
-                <p className="text-slate-400 text-sm font-medium">
-                  Añade tu foto en
-                  <br />
-                  <code className="text-xs text-indigo-500">
-                    public/images/hero-dog.png
-                  </code>
-                </p>
-              </div>
-            </div>
+          <div className="relative w-[320px] lg:w-[360px] h-[360px] lg:h-[400px] rounded-3xl overflow-hidden shadow-2xl shadow-indigo-200/60 border-4 border-white">
+            <Image
+              src="/images/hero-dog.png"
+              alt="Perro feliz después de su sesión de grooming en Paws & Glow"
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 768px) 320px, 360px"
+            />
           </div>
 
           {/* Floating IA badge */}

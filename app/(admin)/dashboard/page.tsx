@@ -64,18 +64,20 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* MD3: headlineMedium + bodyLarge */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-500">Resumen general de Paws & Glow</p>
+        <h1 className="text-[28px] leading-9 font-normal tracking-normal text-slate-900">Dashboard</h1>
+        <p className="text-sm leading-5 text-slate-500 mt-1">Resumen general de Paws &amp; Glow</p>
       </div>
 
       {fetchError && (
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-700 text-sm flex items-center gap-2">
           <span>⚠️</span> {fetchError}
         </div>
       )}
 
+      {/* MD3: Elevated cards — elevation level 1, 16dp gap */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Citas totales', value: appointmentsCount ?? 0, icon: Calendar, color: 'text-indigo-600' },
@@ -83,39 +85,46 @@ export default async function DashboardPage() {
           { label: 'Mascotas', value: petsCount ?? 0, icon: PawPrint, color: 'text-violet-600' },
           { label: 'Ingresos est.', value: formatCurrency(0), icon: TrendingUp, color: 'text-green-600' },
         ].map((stat) => (
-          <Card key={stat.label}>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-slate-500 font-medium">{stat.label}</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-1">{stat.value}</p>
-                </div>
-                <stat.icon className={`w-8 h-8 ${stat.color} opacity-80`} />
+          <Card key={stat.label} className="rounded-2xl border-0 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <CardContent className="p-5">
+              {/* MD3: bodySmall label + headlineSmall value */}
+              <p className="text-xs leading-4 font-medium text-slate-500 tracking-wide">{stat.label}</p>
+              <p className="text-[22px] leading-7 font-normal text-slate-900 mt-1.5">{stat.value}</p>
+              <div className="mt-3">
+                <stat.icon className={`w-6 h-6 ${stat.color} opacity-80`} />
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Citas recientes</CardTitle>
+      {/* MD3: outlined card for list — 0dp elevation */}
+      <Card className="rounded-2xl border border-slate-200 shadow-none">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base leading-6 font-medium text-slate-900">Citas recientes</CardTitle>
         </CardHeader>
         <CardContent>
           {recentAppointments && recentAppointments.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-1">
               {(recentAppointments as unknown as RecentAppointment[]).map((apt) => (
                 <div
                   key={apt.id}
-                  className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
+                  className="flex items-center justify-between py-3 px-3 rounded-xl hover:bg-slate-50 transition-colors"
                 >
-                  <div>
-                    <p className="font-medium text-sm text-slate-800">
-                      {apt.customer?.full_name} — {apt.pet?.name}
-                    </p>
-                    <p className="text-xs text-slate-400">{formatDate(apt.scheduled_at)}</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-bold text-indigo-600">
+                        {apt.pet?.name?.[0]?.toUpperCase() ?? '?'}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm text-slate-800">
+                        {apt.customer?.full_name} — {apt.pet?.name}
+                      </p>
+                      <p className="text-xs text-slate-400">{formatDate(apt.scheduled_at)}</p>
+                    </div>
                   </div>
-                  <Badge className={`${statusColors[apt.status]} border-none text-xs`}>
+                  <Badge className={`${statusColors[apt.status]} border-none text-xs rounded-lg`}>
                     {statusLabels[apt.status]}
                   </Badge>
                 </div>
