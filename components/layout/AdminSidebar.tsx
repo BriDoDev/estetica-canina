@@ -35,6 +35,9 @@ export function AdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
 
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(href + '/')
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -43,43 +46,51 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="w-60 bg-slate-900 text-white flex flex-col shrink-0">
-      <div className="p-5 border-b border-slate-800">
+    <aside className="w-56 lg:w-60 bg-white border-r border-slate-100 flex flex-col shrink-0 min-h-screen">
+      {/* Brand header */}
+      <div className="p-4 lg:p-5 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <PawPrint className="w-4 h-4 text-white" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ backgroundColor: '#FF8C7A' }}>
+            <PawPrint className="w-5 h-5 text-white" />
           </div>
-          <div>
-            <p className="font-bold text-sm">Paws & Glow</p>
-            <p className="text-xs text-slate-400">Admin</p>
+          <div className="min-w-0">
+            <p className="font-semibold text-sm text-slate-800 truncate">Paws &amp; Glow</p>
+            <p className="text-xs text-slate-400">Panel Admin</p>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 p-3 space-y-1">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-              pathname === item.href || pathname.startsWith(item.href + '/')
-                ? 'bg-indigo-600 text-white'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-            )}
-          >
-            <item.icon className="w-4 h-4" />
-            {item.label}
-          </Link>
-        ))}
+      {/* Navigation */}
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+        {navItems.map((item) => {
+          const active = isActive(item.href)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
+                active
+                  ? 'text-rose-900 font-semibold'
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-[#F5EDFA]',
+              )}
+              style={active ? { backgroundColor: '#FFDAD6' } : undefined}
+            >
+              <item.icon className={cn('w-4 h-4 flex-shrink-0', active ? 'text-rose-700' : 'text-slate-400')} />
+              <span className="truncate">{item.label}</span>
+            </Link>
+          )
+        })}
       </nav>
 
-      <div className="p-3 border-t border-slate-800">
+      {/* Logout */}
+      <div className="p-3 border-t border-slate-100">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors w-full"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-600 hover:bg-[#F5EDFA] transition-colors w-full"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4 flex-shrink-0" />
           Cerrar sesión
         </button>
       </div>

@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Pastel Cartoon Palette ── */
+  /* ── DESIGN.md v1: Warm Pastel Canine ── */
+  --color-primary: #FF8C7A;
+  --color-on-primary: #4A1E1E;
+  --color-primary-container: #FFDAD6;
+  --color-primary-foreground: #4A1E1E;
   --color-background: #FFF8F0;
   --color-foreground: #4A3F6B;
   --color-card: #FFFFFF;
   --color-card-foreground: #4A3F6B;
   --color-popover: #FFFFFF;
   --color-popover-foreground: #4A3F6B;
-  --color-primary: #FF8C7A;
-  --color-primary-foreground: #FFFFFF;
   --color-secondary: #B5EAD7;
   --color-secondary-foreground: #3A6B5C;
   --color-muted: #F5EDFA;
@@ -22,27 +24,25 @@
   --color-input: #F0E4D4;
   --color-ring: #FF8C7A;
 
-  /* ── Success / Warning (extra tokens) ── */
+  /* ── Success / Warning ── */
   --color-success: #A8E6CF;
   --color-success-foreground: #3A6B5C;
   --color-warning: #FFE5B4;
   --color-warning-foreground: #7A5C3B;
 
-  /* ── Cartoon Radius ── */
-  --radius: 1rem;
-  --radius-lg: 1.25rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
+  /* ── DESIGN.md Shapes: generous rounding ── */
+  --radius: 12px;
+  --radius-card: 16px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
   --radius-full: 9999px;
 
-  /* ── Soft Drop Shadows ── */
-  --shadow-soft: 0 4px 14px -2px rgba(255, 140, 122, 0.15), 0 2px 6px -1px rgba(74, 63, 107, 0.08);
-  --shadow-card: 0 8px 24px -4px rgba(195, 177, 225, 0.2), 0 4px 12px -2px rgba(181, 234, 215, 0.15);
-  --shadow-glow: 0 0 20px -4px rgba(255, 140, 122, 0.3);
-  --shadow-bounce: 0 2px 0 0 rgba(74, 63, 107, 0.1);
+  /* ── DESIGN.md Elevation: tonal layers ── */
+  --shadow-card: 0 4px 14px -2px rgba(255, 140, 122, 0.12), 0 2px 6px -1px rgba(74, 63, 107, 0.06);
+  --shadow-elevated: 0 8px 24px -4px rgba(195, 177, 225, 0.15), 0 4px 12px -2px rgba(181, 234, 215, 0.1);
 
-  /* ── Font stack ── */
-  --font-sans: 'Quicksand', 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  /* ── Font ── */
+  --font-sans: 'Quicksand', 'Nunito', system-ui, sans-serif;
 }
 
 /* ── Base ── */
