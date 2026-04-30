@@ -1,28 +1,51 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
-  --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #0f172a;
-  --color-primary: #1e293b;
-  --color-primary-foreground: #f8fafc;
-  --color-secondary: #f1f5f9;
-  --color-secondary-foreground: #1e293b;
-  --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
-  --color-accent: #f1f5f9;
-  --color-accent-foreground: #1e293b;
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #f8fafc;
-  --color-border: #e2e8f0;
-  --color-input: #e2e8f0;
-  --color-ring: #0f172a;
-  --radius: 0.5rem;
+  /* ── Pastel Cartoon Palette ── */
+  --color-background: #FFF8F0;
+  --color-foreground: #4A3F6B;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #4A3F6B;
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #4A3F6B;
+  --color-primary: #FF8C7A;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #B5EAD7;
+  --color-secondary-foreground: #3A6B5C;
+  --color-muted: #F5EDFA;
+  --color-muted-foreground: #8B7FA8;
+  --color-accent: #C3B1E1;
+  --color-accent-foreground: #4A3F6B;
+  --color-destructive: #FFB3B3;
+  --color-destructive-foreground: #7A3B3B;
+  --color-border: #F0E4D4;
+  --color-input: #F0E4D4;
+  --color-ring: #FF8C7A;
+
+  /* ── Success / Warning (extra tokens) ── */
+  --color-success: #A8E6CF;
+  --color-success-foreground: #3A6B5C;
+  --color-warning: #FFE5B4;
+  --color-warning-foreground: #7A5C3B;
+
+  /* ── Cartoon Radius ── */
+  --radius: 1rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-full: 9999px;
+
+  /* ── Soft Drop Shadows ── */
+  --shadow-soft: 0 4px 14px -2px rgba(255, 140, 122, 0.15), 0 2px 6px -1px rgba(74, 63, 107, 0.08);
+  --shadow-card: 0 8px 24px -4px rgba(195, 177, 225, 0.2), 0 4px 12px -2px rgba(181, 234, 215, 0.15);
+  --shadow-glow: 0 0 20px -4px rgba(255, 140, 122, 0.3);
+  --shadow-bounce: 0 2px 0 0 rgba(74, 63, 107, 0.1);
+
+  /* ── Font stack ── */
+  --font-sans: 'Quicksand', 'Nunito', 'Segoe UI', system-ui, sans-serif;
 }
 
+/* ── Base ── */
 * {
   border-color: var(--color-border);
   box-sizing: border-box;
@@ -31,4 +54,67 @@
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Cartoon Button Resets ── */
+@layer base {
+  button, a {
+    transition: all 0.2s ease;
+  }
+
+  button:active {
+    transform: scale(0.96);
+  }
+
+  /* Rounded everything */
+  input, textarea, select {
+    border-radius: var(--radius) !important;
+  }
+}
+
+/* ── Cartoon Animations ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  70% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-3px); }
+}
+
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-wiggle { animation: wiggle 0.5s ease-in-out; }
+.animate-pop-in { animation: pop-in 0.4s ease-out forwards; }
+.animate-bounce-soft { animation: bounce-soft 2s ease-in-out infinite; }
+
+/* ── Scrollbar Cartoon ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-muted);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
 }

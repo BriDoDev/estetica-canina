@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface PawLoaderProps {
   isLoading: boolean
@@ -9,13 +9,20 @@ interface PawLoaderProps {
 
 export function PawLoader({ isLoading, message = 'Cargando...' }: PawLoaderProps) {
   const [visible, setVisible] = useState(isLoading)
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>(null)
 
   useEffect(() => {
     if (isLoading) {
-      setVisible(true)
+      if (hideTimer.current) {
+        clearTimeout(hideTimer.current)
+        hideTimer.current = null
+      }
+      queueMicrotask(() => setVisible(true))
     } else {
-      const t = setTimeout(() => setVisible(false), 400)
-      return () => clearTimeout(t)
+      hideTimer.current = setTimeout(() => setVisible(false), 400)
+    }
+    return () => {
+      if (hideTimer.current) clearTimeout(hideTimer.current)
     }
   }, [isLoading])
 

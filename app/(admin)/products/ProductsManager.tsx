@@ -218,7 +218,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
                 <div className="flex items-center gap-1.5">
                   <Switch
                     checked={product.is_active}
-                    onCheckedChange={(_: boolean) =>
+                    onCheckedChange={() =>
                       handleToggleActive(product.id, product.is_active)
                     }
                     aria-label="Activo"

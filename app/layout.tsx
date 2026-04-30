@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Quicksand } from 'next/font/google'
 import './globals.css'
 import { ServiceWorkerRegistration } from '@/components/ui/ServiceWorkerRegistration'
 
-const inter = Inter({ subsets: ['latin'] })
+const quicksand = Quicksand({ subsets: ['latin'], weight: ['400', '500', '600', '700'] })
 
 export const metadata: Metadata = {
   title: 'Paws & Glow — Estética Canina',
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     'Estética canina premium con diagnóstico por inteligencia artificial. Agenda tu cita hoy.',
   keywords: 'estética canina, grooming, perros, peluquería canina, citas',
   manifest: '/manifest.json',
-  themeColor: '#6366f1',
+  themeColor: '#FF8C7A',
 }
 
 export default function RootLayout({
@@ -23,10 +23,10 @@ export default function RootLayout({
     <html lang="es">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#6366f1" />
+        <meta name="theme-color" content="#FF8C7A" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
-      <body className={inter.className}>
+      <body className={quicksand.className}>
         {children}
         <ServiceWorkerRegistration />
       </body>

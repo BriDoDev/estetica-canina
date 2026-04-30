@@ -756,6 +756,7 @@ export function AppointmentForm() {
                         <div className="grid grid-cols-2 gap-3">
                           {enabledServices.map((svc) => {
                             const svcType = LANDING_TO_SERVICE_TYPE[svc.id]
+                            // eslint-disable-next-line react-hooks/incompatible-library -- React Hook Form watch() useForm API
                             const isSelected = svcType && watch('serviceType') === svcType
                             return (
                               <button
