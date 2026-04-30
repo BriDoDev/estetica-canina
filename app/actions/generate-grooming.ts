@@ -24,7 +24,7 @@ export async function generateGroomingPreviewAction(
       ? Math.min(parseInt(String(configData.value), 10) || 1, 4)
       : 1
 
-    const previews = await generateGroomingPreview(breed, count, imageBase64, imageMimeType)
+    const previews = await generateGroomingPreview(breed, count)
     return { data: previews, error: null }
   } catch (err) {
     return {

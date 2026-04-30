@@ -1,9 +1,15 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Quicksand } from 'next/font/google'
 import './globals.css'
 import { ServiceWorkerRegistration } from '@/components/ui/ServiceWorkerRegistration'
 
 const quicksand = Quicksand({ subsets: ['latin'], weight: ['400', '500', '600', '700'] })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
 
 export const metadata: Metadata = {
   title: 'Paws & Glow — Estética Canina',
@@ -12,7 +18,6 @@ export const metadata: Metadata = {
   keywords: 'estética canina, grooming, perros, peluquería canina, citas',
   manifest: '/manifest.json',
   themeColor: '#FF8C7A',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
 }
 
 export default function RootLayout({
@@ -23,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#FF8C7A" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />

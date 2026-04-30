@@ -166,17 +166,8 @@ export function AppointmentForm() {
             if (detectedCoat) setValue('coatType', detectedCoat[1])
           }
 
-          // Auto-generate grooming previews after AI analysis (use compressed image)
-          const groomingFd = new FormData()
-          groomingFd.append('petPhoto', compressed.file)
-          const bytes = new Uint8Array(await compressed.file.arrayBuffer())
-          const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('')
-          const imageBase64 = btoa(binary)
-          const previewResult = await generateGroomingPreviewAction(
-            result.data.breed,
-            imageBase64,
-            compressed.file.type
-          )
+          // Auto-generate grooming previews after AI analysis
+          const previewResult = await generateGroomingPreviewAction(result.data.breed)
           if (previewResult.data && previewResult.data.length > 0) {
             setGroomingPreviews(previewResult.data)
           }
@@ -912,6 +903,9 @@ export function AppointmentForm() {
                               : ''
                           )}
                         />
+                        <p id="scheduledAt-hint" className="text-xs text-slate-400">
+                          Selecciona un día y hora. Las citas deben agendarse con al menos 1 hora de anticipación.
+                        </p>
                         {errors.scheduledAt && (
                           <p id="scheduledAt-error" role="alert" className="flex items-center gap-1 text-red-600 text-xs">
                             <AlertTriangle className="w-3 h-3 flex-shrink-0" />
