@@ -25,16 +25,22 @@ interface LandingConfig {
 }
 
 export default async function CmsPage() {
-  const supabase = await createClient()
-
-  const { data: configs } = await supabase
-    .from('landing_config')
-    .select('*')
-    .in('key', ['hero', 'contact', 'hours'])
-
   const configMap: Record<string, unknown> = {}
-  for (const c of configs ?? []) {
-    configMap[c.key] = c.value
+  let fetchError: string | null = null
+
+  try {
+    const supabase = await createClient()
+    const { data: configs } = await supabase
+      .from('landing_config')
+      .select('*')
+      .in('key', ['hero', 'contact', 'hours'])
+
+    for (const c of configs ?? []) {
+      configMap[c.key] = c.value
+    }
+  } catch (err) {
+    console.error('[CMS]', err)
+    fetchError = 'Error al cargar configuración. Mostrando defaults.'
   }
 
   const hero = (configMap['hero'] as LandingConfig['hero']) ?? {
@@ -65,6 +71,12 @@ export default async function CmsPage() {
           Edita el contenido de la página principal directamente desde aquí
         </p>
       </div>
+
+      {fetchError && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+          <span>⚠️</span> {fetchError}
+        </div>
+      )}
 
       <CmsEditor hero={hero} contact={contact} hours={hours} />
 

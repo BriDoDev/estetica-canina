@@ -15,12 +15,20 @@ export interface ProductRow {
 }
 
 export default async function ProductsPage() {
-  const supabase = await createClient()
+  let products: ProductRow[] = []
+  let fetchError: string | null = null
 
-  const { data: products } = await supabase
-    .from('products')
-    .select('*')
-    .order('name', { ascending: true })
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('products')
+      .select('*')
+      .order('name', { ascending: true })
+    products = (data ?? []) as ProductRow[]
+  } catch (err) {
+    console.error('[Products]', err)
+    fetchError = 'Error de conexión al cargar productos.'
+  }
 
   return (
     <div className="space-y-6">
@@ -28,7 +36,12 @@ export default async function ProductsPage() {
         <h1 className="text-2xl font-bold text-slate-900">Productos</h1>
         <p className="text-slate-500">Inventario de productos de Paws &amp; Glow</p>
       </div>
-      <ProductsManager initialProducts={(products ?? []) as ProductRow[]} />
+      {fetchError && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+          <span>⚠️</span> {fetchError}
+        </div>
+      )}
+      <ProductsManager initialProducts={products} />
     </div>
   )
 }

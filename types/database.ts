@@ -122,7 +122,7 @@ export interface Database {
           id: string
           pet_id: string
           customer_id: string
-          service_type: 'bath' | 'haircut' | 'bath_haircut' | 'nail_trim' | 'ear_cleaning' | 'full_grooming'
+          service_type: 'bath' | 'haircut' | 'bath_haircut' | 'nail_trim' | 'ear_cleaning' | 'full_grooming' | 'special_care' | 'deshedding' | 'spa_canine'
           status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled'
           scheduled_at: string
           duration_minutes: number
@@ -130,6 +130,9 @@ export interface Database {
           notes: string | null
           pet_photo_url: string | null
           ai_analysis: Json | null
+          actual_price: number | null
+          completed_at: string | null
+          tracking_notes: string | null
           created_at: string
           updated_at: string
         }
@@ -137,7 +140,7 @@ export interface Database {
           id?: string
           pet_id: string
           customer_id: string
-          service_type: 'bath' | 'haircut' | 'bath_haircut' | 'nail_trim' | 'ear_cleaning' | 'full_grooming'
+          service_type: 'bath' | 'haircut' | 'bath_haircut' | 'nail_trim' | 'ear_cleaning' | 'full_grooming' | 'special_care' | 'deshedding' | 'spa_canine'
           status?: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled'
           scheduled_at: string
           duration_minutes?: number
@@ -145,13 +148,16 @@ export interface Database {
           notes?: string | null
           pet_photo_url?: string | null
           ai_analysis?: Json | null
+          actual_price?: number | null
+          completed_at?: string | null
+          tracking_notes?: string | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           pet_id?: string
           customer_id?: string
-          service_type?: 'bath' | 'haircut' | 'bath_haircut' | 'nail_trim' | 'ear_cleaning' | 'full_grooming'
+          service_type?: 'bath' | 'haircut' | 'bath_haircut' | 'nail_trim' | 'ear_cleaning' | 'full_grooming' | 'special_care' | 'deshedding' | 'spa_canine'
           status?: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled'
           scheduled_at?: string
           duration_minutes?: number
@@ -159,6 +165,9 @@ export interface Database {
           notes?: string | null
           pet_photo_url?: string | null
           ai_analysis?: Json | null
+          actual_price?: number | null
+          completed_at?: string | null
+          tracking_notes?: string | null
           updated_at?: string
         }
         Relationships: [

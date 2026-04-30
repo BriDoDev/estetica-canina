@@ -43,18 +43,24 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
 ]
 
 export default async function ReviewsPage() {
-  const supabase = await createClient()
+  let reviews: ReviewItem[] = DEFAULT_REVIEWS
+  let fetchError: string | null = null
 
-  const { data } = await supabase
-    .from('landing_config')
-    .select('value')
-    .eq('key', 'reviews')
-    .single()
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('landing_config')
+      .select('value')
+      .eq('key', 'reviews')
+      .single()
 
-  const reviews: ReviewItem[] =
-    data?.value && Array.isArray(data.value)
-      ? (data.value as unknown as ReviewItem[])
-      : DEFAULT_REVIEWS
+    if (data?.value && Array.isArray(data.value)) {
+      reviews = data.value as unknown as ReviewItem[]
+    }
+  } catch (err) {
+    console.error('[Reviews]', err)
+    fetchError = 'Error al cargar reseñas. Mostrando defaults.'
+  }
 
   return (
     <div className="space-y-6">
@@ -64,6 +70,11 @@ export default async function ReviewsPage() {
           Gestiona las reseñas mostradas en la página principal
         </p>
       </div>
+      {fetchError && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+          <span>⚠️</span> {fetchError}
+        </div>
+      )}
       <ReviewsManager initialReviews={reviews} />
     </div>
   )

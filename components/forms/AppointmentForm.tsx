@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useTransition } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -40,6 +40,7 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import { PawLoader } from '@/components/ui/PawLoader'
+import { compressImageForAPI } from '@/lib/image-compression'
 import type { LandingService } from '@/app/api/form-config/route'
 
 type Step = 'customer' | 'pet' | 'service' | 'confirm'
@@ -58,9 +59,9 @@ const LANDING_TO_SERVICE_TYPE: Record<string, AppointmentFormData['serviceType']
   '1': 'bath',
   '2': 'haircut',
   '3': 'full_grooming',
-  '4': 'nail_trim',
-  '5': 'nail_trim',
-  '6': 'full_grooming',
+  '4': 'special_care',
+  '5': 'deshedding',
+  '6': 'spa_canine',
 }
 
 function getServiceLabel(serviceType: AppointmentFormData['serviceType'] | undefined, services: LandingService[], enabledIds: string[]): string {
@@ -84,13 +85,13 @@ export function AppointmentForm() {
   const [aiError, setAiError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [groomingPreviews, setGroomingPreviews] = useState<
     { styleId: string; name: string; description: string; imageUrl: string }[] | null
   >(null)
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false)
   const [groomingError, setGroomingError] = useState<string | null>(null)
-  const [, startTransition] = useTransition()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const formTopRef = useRef<HTMLDivElement>(null)
 
@@ -136,49 +137,105 @@ export function AppointmentForm() {
       }
 
       setPetPhotoFile(file)
+      setAiError(null)
+      setAiAnalysis(null)
+      setGroomingPreviews(null)
       const reader = new FileReader()
       reader.onload = (ev) => setPetPhotoPreview(ev.target?.result as string)
       reader.readAsDataURL(file)
 
-      startTransition(async () => {
-        setIsAnalyzing(true)
-        setAiAnalysis(null)
-        setAiError(null)
-        try {
-          const fd = new FormData()
-          fd.append('petPhoto', file)
-          const result = await analyzePetAction(fd)
-          if (result.data) {
-            setAiAnalysis(result.data)
-            if (result.data.breed && result.data.breed !== 'Mestizo') {
-              setValue('petBreed', result.data.breed)
-            }
-            if (result.data.coatType) {
-              const coatMap: Record<string, AppointmentFormData['coatType']> = {
-                corto: 'short',
-                mediano: 'medium',
-                largo: 'long',
-                rizado: 'curly',
-                doble: 'double',
-              }
-              const detectedCoat = Object.entries(coatMap).find(([key]) =>
-                result.data!.coatType.toLowerCase().includes(key)
-              )
-              if (detectedCoat) setValue('coatType', detectedCoat[1])
-            }
-          } else if (result.error) {
-            setAiError(result.error)
+      // Compress image before sending to server action (avoid 1MB limit)
+      setIsAnalyzing(true)
+      try {
+        const compressed = await compressImageForAPI(file)
+        const fd = new FormData()
+        fd.append('petPhoto', compressed.file)
+        const result = await analyzePetAction(fd)
+        if (result.data) {
+          setAiAnalysis(result.data)
+          if (result.data.breed && result.data.breed !== 'Mestizo') {
+            setValue('petBreed', result.data.breed)
           }
-        } catch (err) {
-          console.error('[AI analysis]', err)
-          setAiError('No se pudo analizar la foto. Verifica que OPENAI_API_KEY esté configurada en .env.local. Puedes continuar sin el análisis.')
-        } finally {
-          setIsAnalyzing(false)
+          if (result.data.coatType) {
+            const coatMap: Record<string, AppointmentFormData['coatType']> = {
+              corto: 'short', mediano: 'medium', largo: 'long', rizado: 'curly', doble: 'double',
+            }
+            const detectedCoat = Object.entries(coatMap).find(([key]) =>
+              result.data!.coatType.toLowerCase().includes(key)
+            )
+            if (detectedCoat) setValue('coatType', detectedCoat[1])
+          }
+
+          // Auto-generate grooming previews after AI analysis (use compressed image)
+          const groomingFd = new FormData()
+          groomingFd.append('petPhoto', compressed.file)
+          const bytes = new Uint8Array(await compressed.file.arrayBuffer())
+          const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('')
+          const imageBase64 = btoa(binary)
+          const previewResult = await generateGroomingPreviewAction(
+            result.data.breed,
+            imageBase64,
+            compressed.file.type
+          )
+          if (previewResult.data && previewResult.data.length > 0) {
+            setGroomingPreviews(previewResult.data)
+          }
+        } else if (result.error) {
+          setAiError(result.error)
         }
-      })
+      } catch (err) {
+        console.error('[AI analysis]', err)
+        setAiError('No se pudo analizar la foto. Verifica que OPENAI_API_KEY esté configurada. Puedes continuar sin el análisis.')
+      } finally {
+        setIsAnalyzing(false)
+      }
     },
-    [setValue, geo.status]
+    [geo.status, setValue]
   )
+
+  const runAIAnalysis = useCallback(async (originalFile: File): Promise<{ compressedFile: File; aiResult: PetAnalysisResult | null }> => {
+    setIsAnalyzing(true)
+    setAiError(null)
+    try {
+      // 1. Compress image for OpenAI API
+      const compressed = await compressImageForAPI(originalFile)
+
+      // 2. Send compressed image to AI
+      const fd = new FormData()
+      fd.append('petPhoto', compressed.file)
+      const result = await analyzePetAction(fd)
+
+      if (result.data) {
+        setAiAnalysis(result.data)
+        if (result.data.breed && result.data.breed !== 'Mestizo') {
+          setValue('petBreed', result.data.breed)
+        }
+        if (result.data.coatType) {
+          const coatMap: Record<string, AppointmentFormData['coatType']> = {
+            corto: 'short',
+            mediano: 'medium',
+            largo: 'long',
+            rizado: 'curly',
+            doble: 'double',
+          }
+          const detectedCoat = Object.entries(coatMap).find(([key]) =>
+            result.data!.coatType.toLowerCase().includes(key)
+          )
+          if (detectedCoat) setValue('coatType', detectedCoat[1])
+        }
+        return { compressedFile: compressed.file, aiResult: result.data }
+      } else {
+        setAiError(result.error)
+        return { compressedFile: compressed.file, aiResult: null }
+      }
+    } catch (err) {
+      console.error('[AI analysis]', err)
+      setAiError('No se pudo analizar la foto. Verifica que OPENAI_API_KEY esté configurada en .env.local. Puedes continuar sin el análisis.')
+      return { compressedFile: originalFile, aiResult: null }
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }, [setValue])
 
   const removePhoto = useCallback(() => {
     setPetPhotoFile(null)
@@ -189,7 +246,8 @@ export function AppointmentForm() {
     if (fileInputRef.current) fileInputRef.current.value = ''
   }, [])
 
-  const nextStep = async () => {
+  const nextStep = async (e?: React.MouseEvent) => {
+    e?.preventDefault() // Prevent accidental form submission via Enter key
     let fieldsToValidate: (keyof AppointmentFormData)[] = []
     if (currentStep === 'customer')
       fieldsToValidate = ['customerName', 'customerEmail', 'customerPhone']
@@ -216,16 +274,27 @@ export function AppointmentForm() {
   }
 
   const onSubmit = async (data: AppointmentFormData) => {
+    // Guard: only allow submission from confirm step
+    if (currentStep !== 'confirm') return
     setIsSubmitting(true)
     setSubmitError(null)
     try {
+      let compressedFile: File | undefined
+
+      // Run AI analysis on confirm if we have a photo
+      if (petPhotoFile) {
+        const analysis = await runAIAnalysis(petPhotoFile)
+        compressedFile = analysis.compressedFile
+      }
+
       const formData = new FormData()
       Object.entries(data).forEach(([key, value]) => {
         if (value !== undefined && value !== null && key !== 'petPhotoFile') {
           formData.append(key, String(value))
         }
       })
-      if (petPhotoFile) formData.append('petPhotoFile', petPhotoFile)
+      // Send compressed image (not original)
+      if (compressedFile) formData.append('petPhotoFile', compressedFile)
 
       const result = await createAppointmentAction(formData)
       if (result.error) setSubmitError(result.error)
@@ -588,8 +657,9 @@ export function AppointmentForm() {
                                     let imageBase64: string | undefined
                                     let imageMimeType: string | undefined
                                     if (petPhotoFile) {
-                                      const arrayBuffer = await petPhotoFile.arrayBuffer()
-                                      imageBase64 = Buffer.from(arrayBuffer).toString('base64')
+                                      const bytes = new Uint8Array(await petPhotoFile.arrayBuffer())
+                                      const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('')
+                                      imageBase64 = btoa(binary)
                                       imageMimeType = petPhotoFile.type
                                     }
 
@@ -756,13 +826,13 @@ export function AppointmentForm() {
                         <div className="grid grid-cols-2 gap-3">
                           {enabledServices.map((svc) => {
                             const svcType = LANDING_TO_SERVICE_TYPE[svc.id]
-                            // eslint-disable-next-line react-hooks/incompatible-library -- React Hook Form watch() useForm API
-                            const isSelected = svcType && watch('serviceType') === svcType
+                            const isSelected = selectedServiceId === svc.id
                             return (
                               <button
                                 key={svc.id}
                                 type="button"
                                 onClick={() => {
+                                  setSelectedServiceId(svc.id)
                                   if (svcType) setValue('serviceType', svcType)
                                 }}
                                 className={cn(

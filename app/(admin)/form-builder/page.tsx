@@ -17,30 +17,35 @@ interface LandingService {
 }
 
 export default async function FormBuilderPage() {
-  const supabase = await createClient()
+  let config: FormConfig = DEFAULT_FORM_CONFIG
+  let services: LandingService[] = []
+  let fetchError: string | null = null
 
-  const [configResult, servicesResult] = await Promise.all([
-    supabase
-      .from('landing_config')
-      .select('value')
-      .eq('key', 'appointment_form_config')
-      .single(),
-    supabase
-      .from('landing_config')
-      .select('value')
-      .eq('key', 'services')
-      .single(),
-  ])
+  try {
+    const supabase = await createClient()
+    const [configResult, servicesResult] = await Promise.all([
+      supabase
+        .from('landing_config')
+        .select('value')
+        .eq('key', 'appointment_form_config')
+        .single(),
+      supabase
+        .from('landing_config')
+        .select('value')
+        .eq('key', 'services')
+        .single(),
+    ])
 
-  const config: FormConfig =
-    configResult.data?.value
-      ? (configResult.data.value as unknown as FormConfig)
-      : DEFAULT_FORM_CONFIG
-
-  const services: LandingService[] =
-    servicesResult.data?.value && Array.isArray(servicesResult.data.value)
-      ? (servicesResult.data.value as unknown as LandingService[])
-      : []
+    if (configResult.data?.value) {
+      config = configResult.data.value as unknown as FormConfig
+    }
+    if (servicesResult.data?.value && Array.isArray(servicesResult.data.value)) {
+      services = servicesResult.data.value as unknown as LandingService[]
+    }
+  } catch (err) {
+    console.error('[FormBuilder]', err)
+    fetchError = 'Error al cargar configuración del formulario. Mostrando defaults.'
+  }
 
   return (
     <div className="space-y-6">
@@ -50,6 +55,11 @@ export default async function FormBuilderPage() {
           Configura el formulario de citas: campos, secciones y servicios disponibles
         </p>
       </div>
+      {fetchError && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+          <span>⚠️</span> {fetchError}
+        </div>
+      )}
       <FormBuilderEditor initialConfig={config} initialServices={services} />
     </div>
   )

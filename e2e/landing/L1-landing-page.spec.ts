@@ -26,10 +26,6 @@ test.describe('FLOW-L1: Landing Page', () => {
   test('renders booking section', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('text=Agenda tu cita').first()).toBeVisible()
-    // Form may be conditionally rendered (geo-location gate)
-    const form = page.locator('form')
-    const visible = await form.isVisible().catch(() => false)
-    expect(true).toBe(true)
   })
 
   test('renders footer', async ({ page }) => {

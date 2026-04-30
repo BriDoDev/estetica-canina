@@ -28,6 +28,9 @@ export const appointmentSchema = z.object({
     'nail_trim',
     'ear_cleaning',
     'full_grooming',
+    'special_care',
+    'deshedding',
+    'spa_canine',
   ]),
   scheduledAt: z.string().min(1, 'La fecha y hora son requeridas'),
   notes: z.string().max(500).optional(),
@@ -54,6 +57,9 @@ export const serviceLabels: Record<AppointmentFormData['serviceType'], string> =
   nail_trim: 'Corte de uñas',
   ear_cleaning: 'Limpieza de oídos',
   full_grooming: 'Grooming Completo',
+  special_care: 'Cuidado Especial',
+  deshedding: 'Deslanado',
+  spa_canine: 'Spa Canino',
 }
 
 export const coatTypeLabels: Record<NonNullable<AppointmentFormData['coatType']>, string> = {

@@ -37,16 +37,23 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
 }
 
 export function useGeolocation() {
-  const geoUnavailable = typeof navigator === 'undefined' || !('geolocation' in navigator)
+  // Always start idle on SSR — real check happens in effect (client-only)
   const [state, setState] = useState<GeolocationState>({
-    status: geoUnavailable ? 'unavailable' : 'idle',
+    status: 'idle',
     distanceKm: null,
     salonName: 'el local',
-    errorMsg: geoUnavailable ? 'Tu navegador no soporta geolocalización.' : null,
+    errorMsg: null,
   })
 
   useEffect(() => {
-    if (geoUnavailable) return
+    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
+      queueMicrotask(() => setState((s) => ({
+        ...s,
+        status: 'unavailable',
+        errorMsg: 'Tu navegador no soporta geolocalización.',
+      })))
+      return
+    }
 
     queueMicrotask(() => setState((s) => ({ ...s, status: 'requesting' })))
 
@@ -92,7 +99,7 @@ export function useGeolocation() {
           errorMsg: 'No se pudo verificar la ubicación del local.',
         }))
       })
-  }, [geoUnavailable])
+  }, [])
 
   return state
 }

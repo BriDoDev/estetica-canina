@@ -72,18 +72,24 @@ const DEFAULT_SERVICES: ServiceItem[] = [
 ]
 
 export default async function ServicesPage() {
-  const supabase = await createClient()
+  let services: ServiceItem[] = DEFAULT_SERVICES
+  let fetchError: string | null = null
 
-  const { data } = await supabase
-    .from('landing_config')
-    .select('value')
-    .eq('key', 'services')
-    .single()
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('landing_config')
+      .select('value')
+      .eq('key', 'services')
+      .single()
 
-  const services: ServiceItem[] =
-    data?.value && Array.isArray(data.value)
-      ? (data.value as unknown as ServiceItem[])
-      : DEFAULT_SERVICES
+    if (data?.value && Array.isArray(data.value)) {
+      services = data.value as unknown as ServiceItem[]
+    }
+  } catch (err) {
+    console.error('[Services]', err)
+    fetchError = 'Error al cargar servicios. Mostrando defaults.'
+  }
 
   return (
     <div className="space-y-6">
@@ -93,6 +99,11 @@ export default async function ServicesPage() {
           Gestiona los servicios mostrados en la página principal
         </p>
       </div>
+      {fetchError && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+          <span>⚠️</span> {fetchError}
+        </div>
+      )}
       <ServicesManager initialServices={services} />
     </div>
   )

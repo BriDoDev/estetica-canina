@@ -83,7 +83,8 @@ CREATE TABLE public.appointments (
   customer_id       UUID NOT NULL REFERENCES public.customers(id) ON DELETE CASCADE,
   service_type      TEXT NOT NULL CHECK (service_type IN (
                       'bath', 'haircut', 'bath_haircut',
-                      'nail_trim', 'ear_cleaning', 'full_grooming'
+                      'nail_trim', 'ear_cleaning', 'full_grooming',
+                      'special_care', 'deshedding', 'spa_canine'
                     )),
   status            TEXT NOT NULL DEFAULT 'pending' CHECK (status IN (
                       'pending', 'confirmed', 'in_progress', 'completed', 'cancelled'
@@ -94,6 +95,9 @@ CREATE TABLE public.appointments (
   notes             TEXT,
   pet_photo_url     TEXT,
   ai_analysis       JSONB,
+  actual_price      DECIMAL(10, 2),
+  completed_at      TIMESTAMPTZ,
+  tracking_notes    TEXT,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

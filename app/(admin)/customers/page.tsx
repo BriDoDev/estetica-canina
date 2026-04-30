@@ -17,12 +17,20 @@ interface CustomerRow {
 }
 
 export default async function CustomersPage() {
-  const supabase = await createClient()
+  let customers: CustomerRow[] | null = null
+  let fetchError: string | null = null
 
-  const { data: customers } = await supabase
-    .from('customers')
-    .select('*, pets(count)')
-    .order('created_at', { ascending: false })
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('customers')
+      .select('*, pets(count)')
+      .order('created_at', { ascending: false })
+    customers = data as unknown as CustomerRow[] | null
+  } catch (err) {
+    console.error('[Customers]', err)
+    fetchError = 'Error de conexión al cargar clientes.'
+  }
 
   return (
     <div className="space-y-6">
@@ -30,6 +38,12 @@ export default async function CustomersPage() {
         <h1 className="text-2xl font-bold text-slate-900">Clientes</h1>
         <p className="text-slate-500">Base de clientes de Paws &amp; Glow</p>
       </div>
+
+      {fetchError && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+          <span>⚠️</span> {fetchError}
+        </div>
+      )}
 
       <Card>
         <CardHeader>

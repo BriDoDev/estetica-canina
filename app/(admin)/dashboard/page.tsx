@@ -31,23 +31,37 @@ const statusLabels: Record<string, string> = {
 }
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
+  let appointmentsCount: number | null = 0
+  let customersCount: number | null = 0
+  let petsCount: number | null = 0
+  let recentAppointments: RecentAppointment[] | null = null
+  let fetchError: string | null = null
 
-  const [
-    { count: appointmentsCount },
-    { count: customersCount },
-    { count: petsCount },
-    { data: recentAppointments },
-  ] = await Promise.all([
-    supabase.from('appointments').select('*', { count: 'exact', head: true }),
-    supabase.from('customers').select('*', { count: 'exact', head: true }),
-    supabase.from('pets').select('*', { count: 'exact', head: true }),
-    supabase
-      .from('appointments')
-      .select('*, pet:pets(name, breed), customer:customers(full_name)')
-      .order('scheduled_at', { ascending: false })
-      .limit(5),
-  ])
+  try {
+    const supabase = await createClient()
+    const results = await Promise.allSettled([
+      supabase.from('appointments').select('*', { count: 'exact', head: true }),
+      supabase.from('customers').select('*', { count: 'exact', head: true }),
+      supabase.from('pets').select('*', { count: 'exact', head: true }),
+      supabase
+        .from('appointments')
+        .select('*, pet:pets(name, breed), customer:customers(full_name)')
+        .order('scheduled_at', { ascending: false })
+        .limit(5),
+    ])
+
+    const [aptRes, custRes, petRes, recentRes] = results
+    appointmentsCount = aptRes.status === 'fulfilled' ? aptRes.value.count : 0
+    customersCount = custRes.status === 'fulfilled' ? custRes.value.count : 0
+    petsCount = petRes.status === 'fulfilled' ? petRes.value.count : 0
+    recentAppointments = recentRes.status === 'fulfilled' ? recentRes.value.data as unknown as RecentAppointment[] : null
+
+    const hasErrors = results.some(r => r.status === 'rejected')
+    if (hasErrors) fetchError = 'Algunos datos no pudieron cargarse. Verifica la conexión a Supabase.'
+  } catch (err) {
+    console.error('[Dashboard]', err)
+    fetchError = 'Error de conexión al cargar el dashboard. Verifica que Supabase esté accesible.'
+  }
 
   return (
     <div className="space-y-6">
@@ -55,6 +69,12 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
         <p className="text-slate-500">Resumen general de Paws & Glow</p>
       </div>
+
+      {fetchError && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+          <span>⚠️</span> {fetchError}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[

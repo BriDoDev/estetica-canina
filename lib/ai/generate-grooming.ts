@@ -42,22 +42,37 @@ export async function generateGroomingPreview(
         const imageBuffer = Buffer.from(imageBase64, 'base64')
         const mimeType = imageMimeType ?? 'image/png'
         const ext = mimeType.includes('jpeg') || mimeType.includes('jpg') ? 'jpg' : 'png'
-        const imageFile = await toFile(imageBuffer, `pet.${ext}`, { type: mimeType })
 
-        const response = await openai.images.edit({
-          model: 'dall-e-2',
-          image: imageFile,
-          prompt: getEditPrompt(style.name),
-          n: 1,
-          size: '1024x1024',
-        })
+        try {
+          const imageFile = await toFile(imageBuffer, `pet.${ext}`, { type: mimeType })
 
-        previews.push({
-          styleId: style.id,
-          name: style.name,
-          description: style.description,
-          imageUrl: response.data?.[0]?.url ?? '',
-        })
+          const response = await openai.images.edit({
+            model: 'dall-e-2',
+            image: imageFile,
+            prompt: getEditPrompt(style.name),
+            n: 1,
+            size: '1024x1024',
+          })
+
+          const url = response.data?.[0]?.url
+          if (!url) {
+            console.warn(`[Grooming] dall-e-2 returned no URL for style ${style.id}`)
+          }
+          previews.push({
+            styleId: style.id,
+            name: style.name,
+            description: style.description,
+            imageUrl: url ?? '',
+          })
+        } catch (editErr) {
+          console.error(`[Grooming] Image edit failed for ${style.id}:`, editErr)
+          previews.push({
+            styleId: style.id,
+            name: style.name,
+            description: style.description,
+            imageUrl: '',
+          })
+        }
       } else {
         // Fallback: text-to-image with DALL-E 3
         const prompt = `Highly realistic professional studio photograph of a ${breed} dog with a ${style.name} grooming style. The dog is freshly groomed, clean, fluffy. White or soft neutral background, professional studio lighting, high-quality pet photography. Photorealistic, no cartoon, no illustration. 4K quality.`
