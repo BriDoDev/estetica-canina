@@ -325,17 +325,19 @@ export function AppointmentForm() {
     )
   }
 
-  const hasSidePanel = !!(petPhotoPreview || aiAnalysis || isGeneratingPreview || (groomingPreviews && groomingPreviews.length > 0))
+  const showSidePanel = !!(petPhotoPreview || aiAnalysis || isGeneratingPreview || (groomingPreviews && groomingPreviews.length > 0))
+  // Hide side panel in service step — show only services
+  const hasSidePanel = showSidePanel && currentStep !== 'service'
 
   const GeoStatusBanner = () => {
     if (geo.status === 'idle' || geo.status === 'requesting') {
       return (
-        <div className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl mb-6 text-blue-800 text-sm">
+        <div className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl mb-6">
           <Loader2 className="w-5 h-5 animate-spin flex-shrink-0 text-blue-500" />
           <div>
-            <p className="font-semibold">Verificando tu ubicación...</p>
+            <p className="font-semibold text-sm text-blue-800">Verificando disponibilidad en tu zona...</p>
             <p className="text-xs text-blue-600 mt-0.5">
-              Necesitamos confirmar que estás cerca del local para continuar.
+              Estamos confirmando que podemos atenderte en tu ubicación.
             </p>
           </div>
         </div>
@@ -347,34 +349,35 @@ export function AppointmentForm() {
       geo.status === 'unavailable'
     ) {
       return (
-        <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-6 text-red-800 text-sm">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500" />
+        <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl mb-6">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-amber-500" />
           <div>
-            <p className="font-semibold">
+            <p className="font-semibold text-sm text-amber-800">
               {geo.status === 'denied'
-                ? 'Ubicación no permitida'
+                ? 'Por ahora no podemos verificar tu ubicación'
                 : geo.status === 'out_of_range'
-                ? 'Fuera del área de servicio'
-                : 'No se pudo verificar ubicación'}
+                ? 'Estás un poco lejos de nuestra zona de servicio'
+                : 'No estamos disponibles en tu zona en este momento'}
             </p>
-            <p className="text-xs text-red-600 mt-0.5">{geo.errorMsg}</p>
-            {geo.status === 'denied' && (
-              <p className="text-xs text-red-500 mt-1">
-                Activa los permisos de ubicación en tu navegador y recarga la página.
-              </p>
-            )}
+            <p className="text-xs text-amber-600 mt-0.5">
+              {geo.status === 'denied'
+                ? 'No te preocupes, puedes llamarnos directamente para agendar tu cita.'
+                : geo.errorMsg}
+            </p>
           </div>
         </div>
       )
     }
     if (geo.status === 'in_range') {
       return (
-        <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl mb-6 text-green-800 text-sm">
+        <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl mb-6">
           <CheckCircle className="w-4 h-4 flex-shrink-0 text-green-500" />
-          <p className="text-xs">
-            <span className="font-semibold">Ubicación verificada</span>
-            {geo.distanceKm !== null && ` · A ${geo.distanceKm} km de ${geo.salonName}`}
-          </p>
+          <div>
+            <p className="font-semibold text-sm text-green-800">¡Estamos cerca de ti!</p>
+            {geo.distanceKm !== null && (
+              <p className="text-xs text-green-600">A {geo.distanceKm} km de {geo.salonName}</p>
+            )}
+          </div>
         </div>
       )
     }
@@ -390,7 +393,7 @@ export function AppointmentForm() {
     <>
       <PawLoader isLoading={isSubmitting} message="Agendando tu cita..." />
 
-      <div ref={formTopRef} className="max-w-5xl mx-auto scroll-mt-8">
+      <div ref={formTopRef} className="max-w-5xl mx-auto scroll-mt-8 overflow-x-hidden">
         {geo.status !== 'in_range' ? (
           <div className="max-w-lg mx-auto py-8">
             <GeoStatusBanner />
@@ -1058,13 +1061,13 @@ export function AppointmentForm() {
                 </Card>
               )}
 
-              {/* Navigation */}
-              <div className="flex justify-between mt-6">
-                <Button type="button" variant="outline" onClick={prevStep} disabled={currentStepIndex === 0}>
+              {/* Navigation: mobile: stacked full-width (primary top, secondary bottom) */}
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 mt-6">
+                <Button type="button" variant="outline" onClick={prevStep} disabled={currentStepIndex === 0} className="sm:w-auto w-full">
                   Anterior
                 </Button>
                 {currentStep !== 'confirm' ? (
-                  <Button type="button" onClick={nextStep} className="bg-indigo-600 hover:bg-indigo-700">
+                  <Button type="button" onClick={nextStep} className="w-full sm:w-auto order-first sm:order-none" style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}>
                     Siguiente
                   </Button>
                 ) : (
@@ -1072,7 +1075,8 @@ export function AppointmentForm() {
                     type="submit"
                     tabIndex={-1}
                     disabled={isSubmitting}
-                    className="bg-indigo-600 hover:bg-indigo-700 min-w-[160px]"
+                    className="w-full sm:w-auto sm:min-w-[160px] order-first sm:order-none"
+                    style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
                     ✅ Confirmar y Agendar

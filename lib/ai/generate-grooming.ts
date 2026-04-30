@@ -9,16 +9,6 @@ export interface GroomingStylePreview {
   imageUrl: string
 }
 
-export interface PetVisualFeatures {
-  furColor: string
-  furPattern: string
-  faceDescription: string
-  earType: string
-  size: string
-  distinctiveFeatures: string
-  fullDescription: string
-}
-
 const GROOMING_STYLES = [
   { id: 'teddy_bear', name: 'Teddy Bear', description: 'Corte redondeado y esponjoso' },
   { id: 'puppy_cut', name: 'Puppy Cut', description: 'Corte uniforme corto en todo el cuerpo' },
@@ -26,187 +16,108 @@ const GROOMING_STYLES = [
   { id: 'breed_standard', name: 'Estándar de Raza', description: 'Corte según el estándar de la raza' },
 ]
 
-/**
- * Extract detailed visual features from a pet photo using GPT-4o-mini (vision).
- * These features drive the image-to-image pipeline: DALL-E 3 uses them to
- * generate grooming previews that resemble the specific dog in the photo.
- */
-export async function extractPetVisualFeatures(
-  imageBase64: string,
-  imageMimeType: string
-): Promise<PetVisualFeatures | null> {
-  const prompt = `Analyze this dog photo and describe its exact visual appearance for AI image generation purposes.
-Focus on objective, reproducible visual details. Do NOT guess the breed — just describe what you see.
-
-Return ONLY a valid JSON object (no markdown fences, no extra text) with these exact keys:
-{
-  "furColor": "detailed fur colors including any gradients, patches, or multi-color patterns",
-  "furPattern": "fur pattern (solid, brindle, merle, spotted, patched, sable, etc.)",
-  "faceDescription": "detailed face — snout length/shape, eye color, expression, head shape, nose color",
-  "earType": "ear type (floppy/drop, pointed/pricked, folded, rose, button) and position",
-  "size": "estimated size category: toy, small, medium, large",
-  "distinctiveFeatures": "any unique markings, white patches, eye patches, collar, or notable traits",
-  "fullDescription": "ONE paragraph: a highly detailed, photorealistic description of this EXACT dog suitable for an AI image generator. Include ALL visual details — fur colors, pattern, markings, face shape, ear type, body proportions, expression. Write it so another AI could recreate this specific dog."
-}`
-
-  try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'image_url',
-              image_url: {
-                url: `data:${imageMimeType};base64,${imageBase64}`,
-                detail: 'high',
-              },
-            },
-            { type: 'text', text: prompt },
-          ],
-        },
-      ],
-      max_tokens: 800,
-      temperature: 0.3,
-    })
-
-    const content = response.choices[0]?.message?.content
-    if (!content) {
-      console.warn('[Img2Img] GPT-4o-mini returned empty response')
-      return null
-    }
-
-    const jsonMatch = content.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      console.warn('[Img2Img] Could not parse JSON from GPT-4o-mini response:', content.slice(0, 200))
-      return null
-    }
-
-    return JSON.parse(jsonMatch[0]) as PetVisualFeatures
-  } catch (err) {
-    console.error('[Img2Img] Feature extraction failed:', err)
-    return null
-  }
-}
-
-/**
- * Enhance a DALL-E prompt using local Ollama (qwen2.5-coder).
- * Takes the visual features + style and produces a more creative,
- * natural-language prompt optimized for DALL-E 3.
- * Falls back to the original prompt if Ollama is unavailable.
- */
-async function enhancePromptWithOllama(
-  basePrompt: string,
-  styleName: string
-): Promise<string> {
-  const ollamaPrompt = `You are a professional AI image prompt engineer. Enhance this DALL-E 3 prompt for a dog grooming preview. Make it more vivid, descriptive, and photorealistic while keeping all factual details intact. Add professional photography terminology. Return ONLY the enhanced prompt text, nothing else.
-
-STYLE: ${styleName}
-ORIGINAL PROMPT: ${basePrompt}
-
-ENHANCED PROMPT:`
-
-  try {
-    const response = await fetch('http://localhost:11434/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'qwen2.5-coder:7b',
-        prompt: ollamaPrompt,
-        stream: false,
-        options: { temperature: 0.7, max_tokens: 300 },
-      }),
-      signal: AbortSignal.timeout(15000),
-    })
-
-    if (!response.ok) throw new Error(`Ollama status ${response.status}`)
-    const data = await response.json()
-    const enhanced = data.response?.trim()
-    if (enhanced && enhanced.length > 50) {
-      console.log('[Img2Img] Ollama prompt enhancement applied')
-      return enhanced
-    }
-    throw new Error('Ollama response too short')
-  } catch (err) {
-    console.warn('[Img2Img] Ollama enhancement skipped:', (err as Error).message)
-    return basePrompt
-  }
-}
-
-function buildPrompt(
-  breed: string,
-  styleName: string,
-  styleDesc: string,
-  features?: PetVisualFeatures | null
-): string {
-  const styleDetails: Record<string, string> = {
-    'Teddy Bear': 'round fluffy even cut all over, all fur trimmed to equal rounded length, teddy bear look',
+function buildEditPrompt(styleName: string): string {
+  const details: Record<string, string> = {
+    'Teddy Bear': 'round fluffy even cut all over, fur trimmed to equal rounded length like a teddy bear',
     'Puppy Cut': 'short uniform cut all over the body, 1-2 inches length, neat tidy puppy look',
-    'Lion Cut': 'body shaved very short, full voluminous mane around head and neck, fluffy tail pompom, dramatic lion look',
-    'Estándar de Raza': 'breed standard show cut, precise elegant professional grooming',
+    'Lion Cut': 'body shaved very short, full voluminous mane around head/neck, fluffy tail pompom',
+    'Estándar de Raza': 'breed standard professional show cut, precise elegant grooming',
   }
-  const detail = styleDetails[styleName] ?? styleDesc
+  return `Same dog, same background, same lighting, same pose. Only change: give the dog a ${styleName} haircut. ${details[styleName] ?? styleName}. Keep the dog's face, eyes, body shape, and background completely unchanged. Preserve 90% of the original image.`
+}
 
-  // Image-to-image mode: describe the specific dog
-  if (features?.fullDescription) {
-    return [
-      'Professional studio photograph of a freshly groomed dog.',
-      `GROOMING STYLE: ${detail} (${styleName}).`,
-      `THE DOG: ${features.fullDescription}`,
-      `VISUAL DETAILS — Fur: ${features.furColor} (${features.furPattern}). Face: ${features.faceDescription}. Ears: ${features.earType}. Size: ${features.size}. Distinctive: ${features.distinctiveFeatures || 'none'}.`,
-      'Clean white studio background, professional pet photography lighting, 4K, photorealistic, no illustration, no cartoon. The dog looks happy, clean, and beautiful. CRITICAL: the dog must match the description above exactly.',
-    ].join(' ')
-  }
+function createTransparentMask(width: number, height: number): Buffer {
+  // RGBA buffer: fully transparent (all zeros = alpha 0 = editable area)
+  return Buffer.alloc(width * height * 4, 0)
+}
 
-  // Fallback: generic breed-based prompt (no reference photo)
-  return `Professional studio photograph of a freshly groomed ${breed} dog with ${detail}. Clean white background, professional pet photography lighting, high quality 4K, photorealistic, no illustration no cartoon. The dog looks happy, clean, and beautiful.`
+function getImageDimensions(base64: string): { width: number; height: number } | null {
+  try {
+    const buf = Buffer.from(base64, 'base64')
+    // JPEG: starts with FF D8 FF
+    if (buf[0] === 0xFF && buf[1] === 0xD8) {
+      // Parse JPEG header for dimensions
+      let i = 2
+      while (i < buf.length - 1) {
+        if (buf[i] === 0xFF) {
+          const marker = buf[i + 1]
+          if (marker === 0xC0 || marker === 0xC2) {
+            const h = buf.readUInt16BE(i + 5)
+            const w = buf.readUInt16BE(i + 7)
+            return { width: w, height: h }
+          }
+          i += 2 + buf.readUInt16BE(i + 2)
+        } else {
+          i++
+        }
+      }
+    }
+    // PNG: check IHDR
+    if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4E && buf[3] === 0x47) {
+      const w = buf.readUInt32BE(16)
+      const h = buf.readUInt32BE(20)
+      return { width: w, height: h }
+    }
+  } catch { /* fall through */ }
+  return null
 }
 
 export async function generateGroomingPreview(
   breed: string,
   count = 1,
-  features?: PetVisualFeatures | null,
+  imageBase64?: string,
+  imageMimeType?: string
 ): Promise<GroomingStylePreview[]> {
   const styles = GROOMING_STYLES.slice(0, Math.min(count, GROOMING_STYLES.length))
   const previews: GroomingStylePreview[] = []
 
+  // If we have an image, use DALL-E 2 edit for faithful results
+  // Without image, fall back to DALL-E 3 text-to-image
+  const hasImage = !!imageBase64
+
   for (const style of styles) {
     try {
-      let prompt = buildPrompt(breed, style.name, style.description, features)
+      if (hasImage && imageBase64) {
+        const imageBuffer = Buffer.from(imageBase64, 'base64')
+        const mime = imageMimeType ?? 'image/png'
 
-      // Enhance prompt with Ollama when features are available (image-to-image mode)
-      if (features) {
-        prompt = await enhancePromptWithOllama(prompt, style.name)
+        // Get dimensions for mask
+        const dims = getImageDimensions(imageBase64) ?? { width: 1024, height: 1024 }
+        const maskBuffer = createTransparentMask(dims.width, dims.height)
+
+        const formData = new FormData()
+        const imageBlob = new Blob([new Uint8Array(imageBuffer)], { type: mime })
+        const maskBlob = new Blob([new Uint8Array(maskBuffer)], { type: 'image/png' })
+        formData.append('image', imageBlob, 'pet.png')
+        formData.append('mask', maskBlob, 'mask.png')
+        formData.append('prompt', buildEditPrompt(style.name))
+        formData.append('n', '1')
+        formData.append('size', '1024x1024')
+
+        const response = await fetch('https://api.openai.com/v1/images/edits', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+          body: formData,
+        })
+        const json = await response.json()
+        const url = json?.data?.[0]?.url ?? ''
+        if (!url) {
+          console.warn(`[Grooming] DALL-E 2 no URL for ${style.id}:`, JSON.stringify(json).slice(0, 300))
+        }
+        previews.push({ styleId: style.id, name: style.name, description: style.description, imageUrl: url })
+      } else {
+        // Fallback: DALL-E 3 text-to-image
+        const prompt = `Professional studio photograph of a freshly groomed ${breed} dog with a ${style.name} style. ${style.description}. Clean white background, professional pet photography lighting, high quality 4K, photorealistic. The dog looks happy and beautiful.`
+
+        const response = await openai.images.generate({
+          model: 'dall-e-3', prompt, n: 1, size: '1024x1024', quality: 'standard', style: 'natural',
+        })
+        const url = response.data?.[0]?.url ?? ''
+        previews.push({ styleId: style.id, name: style.name, description: style.description, imageUrl: url })
       }
-
-      const response = await openai.images.generate({
-        model: 'dall-e-3',
-        prompt,
-        n: 1,
-        size: '1024x1024',
-        quality: 'standard',
-        style: 'natural',
-      })
-
-      const url = response.data?.[0]?.url
-      if (!url) {
-        console.warn(`[Grooming] DALL-E 3 returned no URL for ${style.id}`)
-      }
-      previews.push({
-        styleId: style.id,
-        name: style.name,
-        description: style.description,
-        imageUrl: url ?? '',
-      })
     } catch (err) {
       console.error(`[Grooming] Failed for ${style.id}:`, err)
-      previews.push({
-        styleId: style.id,
-        name: style.name,
-        description: style.description,
-        imageUrl: '',
-      })
+      previews.push({ styleId: style.id, name: style.name, description: style.description, imageUrl: '' })
     }
   }
 

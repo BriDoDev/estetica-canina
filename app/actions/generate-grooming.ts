@@ -1,6 +1,6 @@
 'use server'
 
-import { generateGroomingPreview, extractPetVisualFeatures } from '@/lib/ai/generate-grooming'
+import { generateGroomingPreview } from '@/lib/ai/generate-grooming'
 import { createClient } from '@/lib/supabase/server'
 import type { GroomingStylePreview } from '@/lib/ai/generate-grooming'
 
@@ -11,7 +11,6 @@ export async function generateGroomingPreviewAction(
 ): Promise<{
   data: GroomingStylePreview[] | null
   error: string | null
-  featuresUsed: boolean
 }> {
   try {
     const supabase = await createClient()
@@ -25,23 +24,13 @@ export async function generateGroomingPreviewAction(
       ? Math.min(parseInt(String(configData.value), 10) || 1, 4)
       : 1
 
-    // ── Image-to-Image pipeline ──
-    // Extract detailed visual features from the uploaded photo
-    let features = null
-    if (imageBase64 && imageMimeType) {
-      features = await extractPetVisualFeatures(imageBase64, imageMimeType)
-      if (features) {
-        console.log('[Grooming] Image-to-image mode: visual features extracted')
-      }
-    }
-
-    const previews = await generateGroomingPreview(breed, count, features)
-    return { data: previews, error: null, featuresUsed: !!features }
+    // ── Image-to-Image pipeline for faithful grooming previews ──
+    const previews = await generateGroomingPreview(breed, count, imageBase64, imageMimeType)
+    return { data: previews, error: null }
   } catch (err) {
     return {
       data: null,
-      error: err instanceof Error ? err.message : 'Error generando la preview',
-      featuresUsed: false,
+      error: err instanceof Error ? err.message : 'Error al generar las vistas previas de cortes.',
     }
   }
 }

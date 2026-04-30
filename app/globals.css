@@ -1,17 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── DESIGN.md v1: Warm Pastel Canine ── */
   --color-primary: #FF8C7A;
-  --color-on-primary: #4A1E1E;
-  --color-primary-container: #FFDAD6;
   --color-primary-foreground: #4A1E1E;
   --color-background: #FFF8F0;
   --color-foreground: #4A3F6B;
   --color-card: #FFFFFF;
   --color-card-foreground: #4A3F6B;
-  --color-popover: #FFFFFF;
-  --color-popover-foreground: #4A3F6B;
   --color-secondary: #B5EAD7;
   --color-secondary-foreground: #3A6B5C;
   --color-muted: #F5EDFA;
@@ -28,101 +23,53 @@
   --color-warning: #FFE5B4;
   --color-warning-foreground: #7A5C3B;
   --radius: 12px;
-  --radius-card: 16px;
   --radius-sm: 8px;
   --radius-lg: 20px;
   --radius-full: 9999px;
-  --shadow-card: 0 4px 14px -2px rgba(255, 140, 122, 0.12), 0 2px 6px -1px rgba(74, 63, 107, 0.06);
-  --font-sans: 'Quicksand', 'Nunito', system-ui, sans-serif;
+  --shadow-card: 0 4px 14px -2px rgba(255,140,122,0.12),0 2px 6px -1px rgba(74,63,107,0.06);
+  --font-sans: 'Quicksand','Nunito',system-ui,sans-serif;
 }
 
-/* ── Base ── */
 * { border-color: var(--color-border); box-sizing: border-box; }
 
 body {
   margin: 0;
-  background-color: var(--color-background);
+  background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  /* Mobile safe area */
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 }
 
-/* ── Prevent iOS auto-zoom: all form inputs must be >= 16px ── */
-input, textarea, select, button {
-  font-size: 16px;
-}
-
-@media (min-width: 640px) {
-  input, textarea, select, button {
-    font-size: inherit;
-  }
-}
-
-/* ── Prevent elements from overflowing viewport ── */
-img, video, canvas, svg, table, iframe {
-  max-width: 100%;
-  height: auto;
-}
-
-/* ── Mobile containers: always have side padding ── */
+/* iOS zoom prevention */
 @media (max-width: 639px) {
-  section {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-    overflow-x: hidden;
-  }
-  main {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-    overflow-x: hidden;
-  }
-  .container {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-  }
+  input, textarea, select { font-size: 16px !important; }
 }
 
-/* ── Buttons: minimum tap target 44px for iOS ── */
-button, [role="button"], a.btn {
-  min-height: 44px;
-  min-width: 44px;
+/* Prevent overflow */
+img, video, table { max-width: 100%; height: auto; }
+
+/* A11y focus */
+:focus-visible { outline: 2px solid #FF8C7A; outline-offset: 2px; }
+
+/* Tap targets */
+@media (max-width: 639px) {
+  button, [role="button"] { min-height: 44px; }
 }
 
-@media (min-width: 640px) {
-  button, [role="button"], a.btn {
-    min-height: auto;
-    min-width: auto;
-  }
-}
+/* Smooth */
+button, a { transition: all .15s ease; }
+button:active { transform: scale(.97); }
 
-/* ── Focus: visible outline for a11y ── */
-:focus-visible {
-  outline: 2px solid #FF8C7A;
-  outline-offset: 2px;
-}
-
-/* ── Smooth transitions ── */
-@layer base {
-  button, a { transition: all 0.15s ease; }
-  button:active { transform: scale(0.97); }
-}
-
-/* ── Animations ── */
+/* Animations */
 @keyframes float { 0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)} }
-@keyframes wiggle { 0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)} }
 @keyframes pop-in { 0%{transform:scale(.8);opacity:0}70%{transform:scale(1.05)}100%{transform:scale(1);opacity:1} }
-@keyframes bounce-soft { 0%,100%{transform:translateY(0)}40%{transform:translateY(-8px)}60%{transform:translateY(-3px)} }
-
 .animate-float { animation: float 3s ease-in-out infinite; }
-.animate-wiggle { animation: wiggle 0.5s ease-in-out; }
-.animate-pop-in { animation: pop-in 0.4s ease-out forwards; }
-.animate-bounce-soft { animation: bounce-soft 2s ease-in-out infinite; }
+.animate-pop-in { animation: pop-in .4s ease-out forwards; }
 
-/* ── Scrollbar ── */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-muted); border-radius: 3px; }
 ::-webkit-scrollbar-thumb { background: var(--color-accent); border-radius: 3px; }

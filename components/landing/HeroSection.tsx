@@ -81,7 +81,8 @@ export function HeroSection({
             <Button
               size="lg"
               onClick={scrollToBooking}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 shadow-lg shadow-indigo-200"
+              className="w-full sm:w-auto gap-2 shadow-lg"
+              style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
             >
               <Calendar className="w-4 h-4" />
               {ctaPrimary}
@@ -90,7 +91,7 @@ export function HeroSection({
               size="lg"
               variant="outline"
               onClick={scrollToServices}
-              className="border-slate-300 text-slate-700 hover:bg-slate-50 gap-2"
+              className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-slate-50 gap-2"
             >
               {ctaSecondary}
             </Button>

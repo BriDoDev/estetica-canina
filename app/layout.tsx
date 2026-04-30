@@ -12,12 +12,19 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Paws & Glow — Estética Canina',
+  title: 'Paws & Glow — Estética Canina con IA',
   description:
-    'Estética canina premium con diagnóstico por inteligencia artificial. Agenda tu cita hoy.',
-  keywords: 'estética canina, grooming, perros, peluquería canina, citas',
+    'Estética canina premium con diagnóstico por inteligencia artificial. Sube una foto y recibe recomendaciones personalizadas para tu mascota.',
+  keywords: 'estética canina, grooming, perros, peluquería canina, citas, IA',
   manifest: '/manifest.json',
-  themeColor: '#FF8C7A',
+  authors: [{ name: 'Paws & Glow' }],
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Paws & Glow — Estética Canina con IA',
+    description: 'Diagnóstico por inteligencia artificial para tu mascota. Agenda tu cita hoy.',
+    type: 'website',
+    locale: 'es_MX',
+  },
 }
 
 export default function RootLayout({
