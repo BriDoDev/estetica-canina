@@ -166,8 +166,15 @@ export function AppointmentForm() {
             if (detectedCoat) setValue('coatType', detectedCoat[1])
           }
 
-          // Auto-generate grooming previews after AI analysis
-          const previewResult = await generateGroomingPreviewAction(result.data.breed)
+          // Auto-generate grooming previews with image-to-image pipeline
+          const compressedBytes = new Uint8Array(await compressed.file.arrayBuffer())
+          const compressedBinary = Array.from(compressedBytes).map(b => String.fromCharCode(b)).join('')
+          const compressedBase64 = btoa(compressedBinary)
+          const previewResult = await generateGroomingPreviewAction(
+            result.data.breed,
+            compressedBase64,
+            compressed.file.type
+          )
           if (previewResult.data && previewResult.data.length > 0) {
             setGroomingPreviews(previewResult.data)
           }
@@ -645,13 +652,13 @@ export function AppointmentForm() {
                                     setGroomingError(null)
                                     setGroomingPreviews(null)
 
+                                    // Use compressed image for faster image-to-image processing
                                     let imageBase64: string | undefined
                                     let imageMimeType: string | undefined
                                     if (petPhotoFile) {
-                                      const bytes = new Uint8Array(await petPhotoFile.arrayBuffer())
-                                      const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('')
-                                      imageBase64 = btoa(binary)
-                                      imageMimeType = petPhotoFile.type
+                                      const compressed = await compressImageForAPI(petPhotoFile)
+                                      imageBase64 = compressed.base64
+                                      imageMimeType = compressed.file.type
                                     }
 
                                     const result = await generateGroomingPreviewAction(
