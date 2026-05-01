@@ -784,7 +784,7 @@ export function AppointmentForm() {
                             )}
 
                             {/* Dog detected — full analysis + style buttons */}
-                            {aiAnalysis && !isAnalyzing && aiAnalysis.isDog !== false && (
+                            {aiAnalysis && !isAnalyzing && aiAnalysis.isDog && (
                               <div className="mt-3 rounded-xl border border-accent/30 bg-accent/20 p-3">
                                 <div className="mb-2 flex items-center gap-2">
                                   <Sparkles className="h-4 w-4 text-accent" />
@@ -862,13 +862,18 @@ export function AppointmentForm() {
                                   </div>
                                 )}
 
-                                {/* Loading skeleton while generating */}
-                                {generatingStyleId && !previewEntries.length && (
+                                {/* Loading skeleton — appears immediately after analysis, before img2img */}
+                                {aiAnalysis && aiAnalysis.isDog && !previewEntries.length && (
                                   <div className="mt-3 animate-pulse border-t border-accent/30 pt-3">
                                     <div className="space-y-2">
                                       <div className="aspect-square w-full rounded-xl bg-accent/30" />
                                       <div className="h-3 w-32 rounded bg-accent/30" />
                                     </div>
+                                    {generatingStyleId && (
+                                      <p className="mt-2 text-center text-xs text-muted-foreground">
+                                        Generando vista previa...
+                                      </p>
+                                    )}
                                   </div>
                                 )}
 
@@ -1159,36 +1164,7 @@ export function AppointmentForm() {
                         </div>
                       )}
 
-                      {/* Before/After scroller in service step */}
-                      {previewEntries.length > 0 && petPhotoPreview && (
-                        <div className="border-t border-border pt-4">
-                          <BeforeAfterScroller
-                            originalImage={petPhotoPreview}
-                            previews={previewEntries.map(([styleId, p]) => ({
-                              styleId,
-                              name: p.name,
-                              description: p.description,
-                              imageUrl: p.imageUrl,
-                            }))}
-                            selectedStyleId={selectedGroomingStyleId}
-                            onSelectStyle={setSelectedGroomingStyleId}
-                            isSelectable={previewEntries.length >= 1}
-                          />
-                          {selectedGroomingStyleId && (
-                            <p className="mt-2 text-center text-xs text-green-600">
-                              <CheckCircle className="mr-1 inline h-3 w-3" />
-                              Corte seleccionado:{' '}
-                              {groomingPreviews[selectedGroomingStyleId]?.name}
-                            </p>
-                          )}
-                          {previewEntries.length > 1 && !selectedGroomingStyleId && (
-                            <p className="mt-2 text-center text-xs text-amber-600">
-                              <AlertCircle className="mr-1 inline h-3 w-3" />
-                              Selecciona uno de los cortes para continuar
-                            </p>
-                          )}
-                        </div>
-                      )}
+
                     </CardContent>
                   </Card>
                 )}
@@ -1343,36 +1319,7 @@ export function AppointmentForm() {
                         tu cita.
                       </div>
 
-                      {/* Before/After scroller in confirm step */}
-                      {previewEntries.length > 0 && petPhotoPreview && (
-                        <div className="border-t border-border pt-4">
-                          <BeforeAfterScroller
-                            originalImage={petPhotoPreview}
-                            previews={previewEntries.map(([styleId, p]) => ({
-                              styleId,
-                              name: p.name,
-                              description: p.description,
-                              imageUrl: p.imageUrl,
-                            }))}
-                            selectedStyleId={selectedGroomingStyleId}
-                            onSelectStyle={setSelectedGroomingStyleId}
-                            isSelectable={previewEntries.length >= 1}
-                          />
-                          {selectedGroomingStyleId && (
-                            <p className="mt-2 text-center text-xs text-green-600">
-                              <CheckCircle className="mr-1 inline h-3 w-3" />
-                              Corte seleccionado:{' '}
-                              {groomingPreviews[selectedGroomingStyleId]?.name}
-                            </p>
-                          )}
-                          {previewEntries.length > 1 && !selectedGroomingStyleId && (
-                            <p className="mt-2 text-center text-xs text-amber-600">
-                              <AlertCircle className="mr-1 inline h-3 w-3" />
-                              Selecciona uno de los cortes para continuar
-                            </p>
-                          )}
-                        </div>
-                      )}
+
 
                       {submitError && (
                         <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
