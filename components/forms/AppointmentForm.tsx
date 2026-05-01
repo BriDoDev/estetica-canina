@@ -407,14 +407,6 @@ export function AppointmentForm() {
   }
 
   const previewEntries = Object.entries(groomingPreviews)
-  const showSidePanel = !!(
-    petPhotoPreview ||
-    aiAnalysis ||
-    generatingStyleId ||
-    previewEntries.length > 0
-  )
-  // Always show side panel when there's content — persists across all steps
-  const hasSidePanel = showSidePanel
 
   const GeoStatusBanner = () => {
     if (geo.status === 'idle' || geo.status === 'requesting') {
@@ -492,7 +484,7 @@ export function AppointmentForm() {
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-start gap-8 lg:flex-row">
+          <div className="flex flex-col items-start gap-8">
             {/* Left: step indicator + form */}
             <div className="min-w-0 flex-1">
               <GeoStatusBanner />
@@ -900,38 +892,7 @@ export function AppointmentForm() {
 
                                     {generatingStyleId && (
                                       <p className="mt-2 text-center text-xs text-slate-500">
-                                        La vista previa aparecerá en el panel lateral →
-                                      </p>
-                                    )}
-                                  </div>
-                                )}
-
-                                {/* Before/After scroller below analysis */}
-                                {previewEntries.length > 0 && (
-                                  <div className="mt-3 border-t border-indigo-200 pt-3">
-                                    <BeforeAfterScroller
-                                      originalImage={petPhotoPreview!}
-                                      previews={previewEntries.map(([styleId, p]) => ({
-                                        styleId,
-                                        name: p.name,
-                                        description: p.description,
-                                        imageUrl: p.imageUrl,
-                                      }))}
-                                      selectedStyleId={selectedGroomingStyleId}
-                                      onSelectStyle={setSelectedGroomingStyleId}
-                                      isSelectable={previewEntries.length >= 1}
-                                    />
-                                    {selectedGroomingStyleId && (
-                                      <p className="mt-2 text-center text-xs text-green-600">
-                                        <CheckCircle className="mr-1 inline h-3 w-3" />
-                                        Corte seleccionado:{' '}
-                                        {groomingPreviews[selectedGroomingStyleId]?.name}
-                                      </p>
-                                    )}
-                                    {previewEntries.length > 1 && !selectedGroomingStyleId && (
-                                      <p className="mt-2 text-center text-xs text-amber-600">
-                                        <AlertCircle className="mr-1 inline h-3 w-3" />
-                                        Selecciona uno de los cortes para continuar
+                                        Generando vista previa...
                                       </p>
                                     )}
                                   </div>
@@ -1402,57 +1363,42 @@ export function AppointmentForm() {
               </form>
             </div>
 
-            {/* Right / Bottom: side panel — pet photo + AI analysis info */}
-            {hasSidePanel && (
-              <div className="w-full shrink-0 space-y-4 lg:sticky lg:top-6 lg:w-72">
-                {petPhotoPreview && (
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-slate-600">Foto actual</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="relative w-full overflow-hidden rounded-xl bg-slate-100" style={{ aspectRatio: '1 / 1' }}>
-                        <Image src={petPhotoPreview} alt="Mascota" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-contain" />
-                      </div>
-                      {aiAnalysis && (
-                        <div className="mt-3 space-y-1 text-xs text-slate-600">
-                          <p>
-                            <strong>Raza detectada:</strong> {aiAnalysis.breed}
-                          </p>
-                          <p>
-                            <strong>Condición:</strong>{' '}
-                            {aiAnalysis.coatCondition === 'excellent'
-                              ? '✅ Excelente'
-                              : aiAnalysis.coatCondition === 'good'
-                                ? '👍 Buena'
-                                : aiAnalysis.coatCondition === 'needs_attention'
-                                  ? '⚠️ Necesita atención'
-                                  : '🔴 Requiere cuidado'}
-                          </p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-
-                {generatingStyleId && !previewEntries.length && (
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-slate-600">
-                        Editando foto...
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex h-44 w-full flex-col items-center justify-center gap-2 rounded-xl bg-slate-100">
-                        <Loader2 className="h-6 w-6 animate-spin text-[#FF8C7A]" />
-                        <p className="text-xs text-slate-500">Generando vista previa...</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {generatingStyleId && previewEntries.length > 0 && (
-                  <Card>
+            {/* Before/After scroller at bottom of form (steps 2-4 when previews exist) */}
+            {currentStep !== 'customer' && previewEntries.length > 0 && petPhotoPreview && (
+              <div className="w-full">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-slate-600">Antes y Después</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <BeforeAfterScroller
+                      originalImage={petPhotoPreview}
+                      previews={previewEntries.map(([styleId, p]) => ({
+                        styleId,
+                        name: p.name,
+                        description: p.description,
+                        imageUrl: p.imageUrl,
+                      }))}
+                      selectedStyleId={selectedGroomingStyleId}
+                      onSelectStyle={setSelectedGroomingStyleId}
+                      isSelectable={previewEntries.length >= 1}
+                    />
+                    {selectedGroomingStyleId && (
+                      <p className="mt-2 text-center text-xs text-green-600">
+                        <CheckCircle className="mr-1 inline h-3 w-3" />
+                        Corte seleccionado: {groomingPreviews[selectedGroomingStyleId]?.name}
+                      </p>
+                    )}
+                    {previewEntries.length > 1 && !selectedGroomingStyleId && (
+                      <p className="mt-2 text-center text-xs text-amber-600">
+                        <AlertCircle className="mr-1 inline h-3 w-3" />
+                        Selecciona uno de los cortes para continuar
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+                {generatingStyleId && (
+                  <Card className="mt-4">
                     <CardContent className="pt-4">
                       <div className="flex items-center justify-center gap-2 rounded-lg bg-indigo-50 p-3 text-xs text-indigo-700">
                         <Loader2 className="h-4 w-4 animate-spin" />

@@ -41,6 +41,7 @@ export async function editPetPhotoWithStyle(
     background: 'opaque',
     output_format: 'png',
     size: 'auto',
+    response_format: 'b64_json',
   })
 
   const base64 = response.data?.[0]?.b64_json ?? ''
