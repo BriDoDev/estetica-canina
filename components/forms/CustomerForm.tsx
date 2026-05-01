@@ -89,7 +89,7 @@ export function CustomerForm({ onSubmit, isLoading = false, defaultValues }: Cus
       <Button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-indigo-600 hover:bg-indigo-700"
+        className="w-full" style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
       >
         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Guardar cliente

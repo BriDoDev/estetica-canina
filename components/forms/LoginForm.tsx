@@ -40,11 +40,11 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader className="pb-2 text-center">
-        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600">
-          <PawPrint className="h-6 w-6 text-white" />
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary">
+          <PawPrint className="h-6 w-6 text-primary-foreground" />
         </div>
-        <CardTitle className="text-2xl text-slate-800">Paws & Glow</CardTitle>
-        <p className="text-sm text-slate-500">Acceso al panel de administración</p>
+        <CardTitle className="text-2xl text-foreground">Paws & Glow</CardTitle>
+        <p className="text-sm text-muted-foreground">Acceso al panel de administración</p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleLogin} className="space-y-4">
@@ -75,7 +75,7 @@ export function LoginForm() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700"
+            className="w-full" style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Iniciar sesión'}
           </Button>

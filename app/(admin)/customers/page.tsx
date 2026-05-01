@@ -36,7 +36,7 @@ export default async function CustomersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Clientes</h1>
-        <p className="text-slate-500">Base de clientes de Paws &amp; Glow</p>
+        <p className="text-muted-foreground">Base de clientes de Paws &amp; Glow</p>
       </div>
 
       {fetchError && (
@@ -56,10 +56,10 @@ export default async function CustomersPage() {
                 <Link
                   key={customer.id}
                   href={`/customers/${customer.id}`}
-                  className="group flex items-center justify-between rounded-lg border-b border-slate-100 px-2 py-3 transition-colors last:border-0 hover:bg-slate-50"
+                  className="group flex items-center justify-between rounded-lg border-b border-border px-2 py-3 transition-colors last:border-0 hover:bg-muted"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 text-xs font-bold text-white">
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-primary text-xs font-bold text-white">
                       {customer.full_name
                         .split(' ')
                         .slice(0, 2)
@@ -68,8 +68,8 @@ export default async function CustomersPage() {
                         .toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-medium text-slate-800">{customer.full_name}</p>
-                      <p className="text-xs text-slate-400">
+                      <p className="font-medium text-foreground">{customer.full_name}</p>
+                      <p className="text-xs text-muted-foreground">
                         {customer.email} · {customer.phone}
                       </p>
                     </div>
@@ -81,16 +81,16 @@ export default async function CustomersPage() {
                         WhatsApp
                       </Badge>
                     )}
-                    <span className="hidden text-xs text-slate-400 sm:block">
+                    <span className="hidden text-xs text-muted-foreground sm:block">
                       {formatDate(customer.created_at)}
                     </span>
-                    <ChevronRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-slate-500" />
+                    <ChevronRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-muted-foreground" />
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="py-10 text-center text-sm text-slate-400">
+            <p className="py-10 text-center text-sm text-muted-foreground">
               No hay clientes registrados aún
             </p>
           )}

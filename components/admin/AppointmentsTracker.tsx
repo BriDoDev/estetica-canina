@@ -24,8 +24,8 @@ interface AppointmentRow {
 
 const statusColors: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-700',
-  confirmed: 'bg-blue-100 text-blue-700',
-  in_progress: 'bg-violet-100 text-violet-700',
+  confirmed: 'bg-secondary/30 text-secondary-foreground',
+  in_progress: 'bg-accent/30 text-foreground',
   completed: 'bg-green-100 text-green-700',
   cancelled: 'bg-red-100 text-red-700',
 }
@@ -115,7 +115,7 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
     <button
       key={f}
       onClick={() => setFilter(f)}
-      className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${filter === f ? 'font-semibold text-rose-900' : 'text-slate-500 hover:bg-[#F5EDFA] hover:text-slate-700'}`}
+      className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${filter === f ? 'font-semibold text-[#4A1E1E]' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
       style={filter === f ? { backgroundColor: '#FFDAD6' } : {}}
     >
       {f === 'all' ? 'Todas' : (statusLabels[f] ?? f)}
@@ -127,7 +127,7 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-xl font-bold text-slate-900 sm:text-[28px]">Citas</h1>
-          <p className="text-sm text-slate-500">Gestión y seguimiento post-cita</p>
+          <p className="text-sm text-muted-foreground">Gestión y seguimiento post-cita</p>
         </div>
         <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
           {['all', 'pending', 'confirmed', 'in_progress', 'completed', 'cancelled'].map((f) => (
@@ -149,7 +149,7 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
       )}
 
       {/* Desktop table */}
-      <Card className="hidden rounded-2xl border border-slate-100 shadow-sm sm:block">
+      <Card className="hidden rounded-2xl border border-border shadow-sm sm:block">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-medium">
             {filter === 'all' ? 'Todas las citas' : statusLabels[filter]} ({filtered.length})
@@ -159,7 +159,7 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
           {filtered.length > 0 ? (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100">
+                <tr className="border-b border-border">
                   <th className="px-2 py-2 text-left text-xs font-medium text-slate-400">
                     Cliente
                   </th>
@@ -187,7 +187,7 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
                   return (
                     <tr
                       key={apt.id}
-                      className={active ? 'rounded-xl hover:bg-[#F5EDFA]' : 'opacity-60'}
+                      className={active ? 'rounded-xl hover:bg-muted' : 'opacity-60'}
                     >
                       <td className="px-2 py-3">
                         <p className="text-sm font-medium">{apt.customer?.full_name}</p>
@@ -308,7 +308,7 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
           return (
             <div
               key={apt.id}
-              className={`rounded-2xl border p-4 ${active ? 'border-slate-100 bg-white shadow-sm' : 'bg-slate-50 opacity-60'}`}
+              className={`rounded-2xl border p-4 ${active ? 'border-border bg-white shadow-sm' : 'bg-muted opacity-60'}`}
             >
               <div className="mb-2 flex items-start justify-between">
                 <div>
@@ -345,7 +345,7 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
                 </div>
               </div>
               {active && (
-                <div className="flex gap-2 border-t border-slate-100 pt-2">
+                <div className="flex gap-2 border-t border-border pt-2">
                   {apt.status === 'pending' && (
                     <Button
                       size="sm"
@@ -412,7 +412,7 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-foreground">
                 Precio cobrado (MXN) *
               </label>
               <div className="relative">
@@ -430,7 +430,7 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-foreground">
                 Notas de seguimiento
               </label>
               <Textarea

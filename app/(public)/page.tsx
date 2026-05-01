@@ -32,11 +32,11 @@ export default async function HomePage() {
       <section id="booking" className="bg-[#fafaf8] py-24">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="mb-12 text-center">
-            <p className="mb-2 text-sm font-semibold tracking-widest text-indigo-600 uppercase">
+            <p className="mb-2 text-sm font-semibold tracking-widest text-accent uppercase">
               🐾 Reserva tu turno
             </p>
-            <h2 className="mb-4 text-4xl font-extrabold text-slate-900">Agenda tu cita</h2>
-            <p className="mx-auto max-w-xl text-lg text-slate-500">
+            <h2 className="mb-4 text-4xl font-extrabold text-foreground">Agenda tu cita</h2>
+            <p className="mx-auto max-w-xl text-lg text-muted-foreground">
               Sube la foto de tu mascota y nuestra IA te recomendará el servicio ideal.
             </p>
           </div>

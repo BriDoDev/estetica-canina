@@ -443,8 +443,8 @@ export function AppointmentForm() {
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-800">¡Cita agendada!</h2>
-          <p className="text-center text-slate-600">
+          <h2 className="text-2xl font-bold text-foreground">¡Cita agendada!</h2>
+          <p className="text-center text-muted-foreground">
             Recibirás una confirmación en tu correo. Te esperamos con{' '}
             <strong>{watch('petName')}</strong> el día de tu cita.
           </p>
@@ -467,13 +467,13 @@ export function AppointmentForm() {
   const GeoStatusBanner = () => {
     if (geo.status === 'idle' || geo.status === 'requesting') {
       return (
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <Loader2 className="h-5 w-5 flex-shrink-0 animate-spin text-blue-500" />
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/20 p-4">
+          <Loader2 className="h-5 w-5 flex-shrink-0 animate-spin text-accent" />
           <div>
-            <p className="text-sm font-semibold text-blue-800">
+            <p className="text-sm font-semibold text-foreground">
               Verificando disponibilidad en tu zona...
             </p>
-            <p className="mt-0.5 text-xs text-blue-600">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Estamos confirmando que podemos atenderte en tu ubicación.
             </p>
           </div>
@@ -534,7 +534,7 @@ export function AppointmentForm() {
           <div className="mx-auto max-w-lg py-8">
             <GeoStatusBanner />
             {(geo.status === 'denied' || geo.status === 'out_of_range') && (
-              <p className="mt-2 text-center text-sm text-slate-500">
+              <p className="mt-2 text-center text-sm text-muted-foreground">
                 El formulario estará disponible cuando tu ubicación sea verificada.
               </p>
             )}
@@ -551,17 +551,17 @@ export function AppointmentForm() {
                     <div
                       className={cn(
                         'flex items-center gap-2 text-sm font-medium transition-colors',
-                        idx <= currentStepIndex ? 'text-indigo-600' : 'text-slate-400',
+                        idx <= currentStepIndex ? 'text-primary' : 'text-muted-foreground',
                       )}
                     >
                       <div
                         className={cn(
                           'flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-bold transition-colors',
                           idx < currentStepIndex
-                            ? 'border-indigo-600 bg-indigo-600 text-white'
+                            ? 'border-primary bg-primary text-primary-foreground'
                             : idx === currentStepIndex
-                              ? 'border-indigo-600 text-indigo-600'
-                              : 'border-slate-300 text-slate-400',
+                              ? 'border-primary text-primary'
+                              : 'border-border text-muted-foreground',
                         )}
                       >
                         {idx < currentStepIndex ? '✓' : idx + 1}
@@ -572,7 +572,7 @@ export function AppointmentForm() {
                       <div
                         className={cn(
                           'h-0.5 flex-1 transition-colors',
-                          idx < currentStepIndex ? 'bg-indigo-600' : 'bg-slate-200',
+                          idx < currentStepIndex ? 'bg-primary' : 'bg-muted',
                         )}
                       />
                     )}
@@ -595,7 +595,7 @@ export function AppointmentForm() {
                 {currentStep === 'customer' && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-slate-800">{customerTitle}</CardTitle>
+                      <CardTitle className="text-foreground">{customerTitle}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {isFieldVisible('customerName') && (
@@ -716,14 +716,14 @@ export function AppointmentForm() {
                 {currentStep === 'pet' && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-slate-800">{petTitle}</CardTitle>
+                      <CardTitle className="text-foreground">{petTitle}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <Label>Foto de la mascota (activa el análisis IA)</Label>
                         {petPhotoPreview ? (
                           <div>
-                            <div className="flex items-center gap-3 rounded-xl border border-indigo-200 bg-indigo-50 p-2.5">
+                            <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/20 p-2.5">
                               <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
                                 <Image
                                   src={petPhotoPreview}
@@ -733,8 +733,8 @@ export function AppointmentForm() {
                                 />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs font-medium text-indigo-800">Foto cargada</p>
-                                <p className="truncate text-xs text-slate-500">
+                                <p className="text-xs font-medium text-foreground">Foto cargada</p>
+                                <p className="truncate text-xs text-muted-foreground">
                                   {petPhotoFile?.name ?? 'imagen'}
                                 </p>
                               </div>
@@ -748,20 +748,20 @@ export function AppointmentForm() {
                             </div>
 
                             {isAnalyzing && (
-                              <div className="mt-3 animate-pulse space-y-2 rounded-xl border border-indigo-200 bg-indigo-50 p-3">
+                              <div className="mt-3 animate-pulse space-y-2 rounded-xl border border-accent/30 bg-accent/20 p-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="h-4 w-4 rounded-full bg-indigo-200" />
-                                  <div className="h-3 w-32 rounded bg-indigo-200" />
+                                  <div className="h-4 w-4 rounded-full bg-accent/50" />
+                                  <div className="h-3 w-32 rounded bg-accent/50" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
                                   {[...Array(4)].map((_, i) => (
                                     <div key={i} className="space-y-1">
-                                      <div className="h-2.5 w-16 rounded bg-indigo-200" />
-                                      <div className="h-2.5 w-24 rounded bg-indigo-100" />
+                                      <div className="h-2.5 w-16 rounded bg-accent/50" />
+                                      <div className="h-2.5 w-24 rounded bg-accent/30" />
                                     </div>
                                   ))}
                                 </div>
-                                <div className="h-2 w-40 rounded bg-indigo-200" />
+                                <div className="h-2 w-40 rounded bg-accent/50" />
                               </div>
                             )}
                             {aiError && !isAnalyzing && (
@@ -770,14 +770,14 @@ export function AppointmentForm() {
                                 {aiError}
                               </div>
                             )}
-                            {/* Not a dog — block everything */}
+                            {/* Not a pet — block everything */}
                             {aiAnalysis && !isAnalyzing && aiAnalysis.isDog === false && (
                               <div className="mt-3 flex items-start gap-2 rounded-xl border border-pink-200 bg-pink-50 p-3 text-sm text-pink-800">
                                 <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                                 <div>
-                                  <p className="font-semibold">La imagen no corresponde a un perro</p>
+                                  <p className="font-semibold">No se detecta una mascota en la imagen</p>
                                   <p className="mt-1 text-xs text-pink-600">
-                                    Solo podemos analizar y generar vistas previas de cortes para perros. Sube una foto de tu perro para continuar.
+                                    Sube una foto de tu mascota (perro, gato u otro animal) para que podamos analizarla y recomendarte el mejor servicio.
                                   </p>
                                 </div>
                               </div>
@@ -785,14 +785,14 @@ export function AppointmentForm() {
 
                             {/* Dog detected — full analysis + style buttons */}
                             {aiAnalysis && !isAnalyzing && aiAnalysis.isDog !== false && (
-                              <div className="mt-3 rounded-xl border border-indigo-200 bg-indigo-50 p-3">
+                              <div className="mt-3 rounded-xl border border-accent/30 bg-accent/20 p-3">
                                 <div className="mb-2 flex items-center gap-2">
-                                  <Sparkles className="h-4 w-4 text-indigo-600" />
-                                  <span className="text-sm font-semibold text-indigo-800">
+                                  <Sparkles className="h-4 w-4 text-accent" />
+                                  <span className="text-sm font-semibold text-foreground">
                                     Análisis IA completado
                                   </span>
                                 </div>
-                                <div className="mb-3 grid grid-cols-2 gap-2 text-xs text-slate-700">
+                                <div className="mb-3 grid grid-cols-2 gap-2 text-xs text-foreground">
                                   <div>
                                     <strong>Raza:</strong> {aiAnalysis.breed}
                                   </div>
@@ -833,7 +833,7 @@ export function AppointmentForm() {
                                   {aiAnalysis.recommendations.map((rec, i) => (
                                     <div
                                       key={i}
-                                      className="flex items-start gap-2 text-xs text-slate-700"
+                                      className="flex items-start gap-2 text-xs text-foreground"
                                     >
                                       <Badge
                                         variant={
@@ -864,17 +864,17 @@ export function AppointmentForm() {
 
                                 {/* Loading skeleton while generating */}
                                 {generatingStyleId && !previewEntries.length && (
-                                  <div className="mt-3 animate-pulse border-t border-indigo-200 pt-3">
+                                  <div className="mt-3 animate-pulse border-t border-accent/30 pt-3">
                                     <div className="space-y-2">
-                                      <div className="aspect-square w-full rounded-xl bg-indigo-100" />
-                                      <div className="h-3 w-32 rounded bg-indigo-100" />
+                                      <div className="aspect-square w-full rounded-xl bg-accent/30" />
+                                      <div className="h-3 w-32 rounded bg-accent/30" />
                                     </div>
                                   </div>
                                 )}
 
                                 {/* Before/After scroller inside analysis card */}
                                 {previewEntries.length > 0 && petPhotoPreview && (
-                                  <div className="mt-3 border-t border-indigo-200 pt-3">
+                                  <div className="mt-3 border-t border-accent/30 pt-3">
                                     <BeforeAfterScroller
                                       originalImage={petPhotoPreview}
                                       previews={previewEntries.map(([styleId, p]) => ({
@@ -908,13 +908,13 @@ export function AppointmentForm() {
                           <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
-                            className="flex h-36 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-indigo-300 transition-colors hover:border-indigo-400 hover:bg-indigo-50"
+                            className="flex h-36 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-accent/50 transition-colors hover:border-accent hover:bg-accent/20"
                           >
-                            <Camera className="h-8 w-8 text-indigo-400" />
-                            <span className="text-sm font-medium text-indigo-600">
+                            <Camera className="h-8 w-8 text-accent" />
+                            <span className="text-sm font-medium text-accent">
                               Subir foto de tu mascota
                             </span>
-                            <span className="text-xs text-slate-400">
+                            <span className="text-xs text-muted-foreground">
                               JPG, PNG o WebP · Máx 5MB
                             </span>
                           </button>
@@ -1040,13 +1040,13 @@ export function AppointmentForm() {
                 {currentStep === 'service' && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-slate-800">{serviceTitle}</CardTitle>
+                      <CardTitle className="text-foreground">{serviceTitle}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <Label>Servicio *</Label>
                         {configLoading ? (
-                          <div className="flex items-center gap-2 py-4 text-sm text-slate-500">
+                          <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
                             <Loader2 className="h-4 w-4 animate-spin" />
                             Cargando servicios...
                           </div>
@@ -1066,8 +1066,8 @@ export function AppointmentForm() {
                                   className={cn(
                                     'overflow-hidden rounded-xl border-2 text-left transition-all',
                                     isSelected
-                                      ? 'border-indigo-600 bg-indigo-50'
-                                      : 'border-slate-200 hover:border-indigo-300',
+                                      ? 'border-primary bg-primary/10'
+                                      : 'border-border hover:border-accent/50',
                                   )}
                                 >
                                   {svc.imageUrl && (
@@ -1086,13 +1086,13 @@ export function AppointmentForm() {
                                       <span
                                         className={cn(
                                           'text-sm font-medium',
-                                          isSelected ? 'text-indigo-700' : 'text-slate-700',
+                                          isSelected ? 'text-foreground' : 'text-foreground',
                                         )}
                                       >
                                         {svc.name}
                                       </span>
                                     </div>
-                                    <p className="text-xs font-bold text-indigo-600">{svc.price}</p>
+                                    <p className="text-xs font-bold text-primary">{svc.price}</p>
                                   </div>
                                 </button>
                               )
@@ -1114,8 +1114,8 @@ export function AppointmentForm() {
                                 className={cn(
                                   'rounded-xl border-2 p-3 text-left text-sm font-medium transition-all',
                                   watch('serviceType') === value
-                                    ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                                    : 'border-slate-200 text-slate-600 hover:border-indigo-300',
+                                    ? 'border-primary bg-primary/10 text-foreground'
+                                    : 'border-border text-muted-foreground hover:border-accent/50',
                                 )}
                               >
                                 {label}
@@ -1142,7 +1142,7 @@ export function AppointmentForm() {
                             error={!!errors.scheduledAt}
                             touched={!!touchedFields.scheduledAt}
                           />
-                          <p id="scheduledAt-hint" className="text-xs text-slate-400">
+                          <p id="scheduledAt-hint" className="text-xs text-muted-foreground">
                             Selecciona un día y hora. Las citas deben agendarse con al menos 1 hora
                             de anticipación.
                           </p>
@@ -1161,7 +1161,7 @@ export function AppointmentForm() {
 
                       {/* Before/After scroller in service step */}
                       {previewEntries.length > 0 && petPhotoPreview && (
-                        <div className="border-t border-slate-100 pt-4">
+                        <div className="border-t border-border pt-4">
                           <BeforeAfterScroller
                             originalImage={petPhotoPreview}
                             previews={previewEntries.map(([styleId, p]) => ({
@@ -1197,11 +1197,11 @@ export function AppointmentForm() {
                 {currentStep === 'confirm' && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-slate-800">Resumen de tu cita</CardTitle>
+                      <CardTitle className="text-foreground">Resumen de tu cita</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-5">
                       <div>
-                        <p className="mb-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">
+                        <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                           Contacto
                         </p>
                         <div className="space-y-2">
@@ -1212,10 +1212,10 @@ export function AppointmentForm() {
                           ].map(({ label, value }) => (
                             <div
                               key={label}
-                              className="flex justify-between border-b border-slate-100 py-1.5"
+                              className="flex justify-between border-b border-border py-1.5"
                             >
-                              <span className="text-sm text-slate-500">{label}</span>
-                              <span className="text-sm font-medium text-slate-800">
+                              <span className="text-sm text-muted-foreground">{label}</span>
+                              <span className="text-sm font-medium text-foreground">
                                 {value || '—'}
                               </span>
                             </div>
@@ -1224,7 +1224,7 @@ export function AppointmentForm() {
                       </div>
 
                       <div>
-                        <p className="mb-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">
+                        <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                           Mascota
                         </p>
                         <div className="space-y-2">
@@ -1253,16 +1253,16 @@ export function AppointmentForm() {
                           ].map(({ label, value }) => (
                             <div
                               key={label}
-                              className="flex justify-between border-b border-slate-100 py-1.5"
+                              className="flex justify-between border-b border-border py-1.5"
                             >
-                              <span className="text-sm text-slate-500">{label}</span>
-                              <span className="text-sm font-medium text-slate-800">{value}</span>
+                              <span className="text-sm text-muted-foreground">{label}</span>
+                              <span className="text-sm font-medium text-foreground">{value}</span>
                             </div>
                           ))}
                           {petPhotoPreview && (
-                            <div className="flex items-center justify-between border-b border-slate-100 py-1.5">
-                              <span className="text-sm text-slate-500">Foto</span>
-                              <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-slate-200">
+                            <div className="flex items-center justify-between border-b border-border py-1.5">
+                              <span className="text-sm text-muted-foreground">Foto</span>
+                              <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-border">
                                 <Image
                                   src={petPhotoPreview}
                                   alt="Mascota"
@@ -1276,7 +1276,7 @@ export function AppointmentForm() {
                       </div>
 
                       <div>
-                        <p className="mb-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">
+                        <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                           Servicio
                         </p>
                         <div className="space-y-2">
@@ -1309,22 +1309,22 @@ export function AppointmentForm() {
                           ].map(({ label, value }) => (
                             <div
                               key={label}
-                              className="flex justify-between border-b border-slate-100 py-1.5"
+                              className="flex justify-between border-b border-border py-1.5"
                             >
-                              <span className="text-sm text-slate-500">{label}</span>
-                              <span className="text-sm font-medium text-slate-800">{value}</span>
+                              <span className="text-sm text-muted-foreground">{label}</span>
+                              <span className="text-sm font-medium text-foreground">{value}</span>
                             </div>
                           ))}
                         </div>
                       </div>
 
                       {aiAnalysis && (
-                        <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-3">
+                        <div className="rounded-xl border border-accent/30 bg-accent/20 p-3">
                           <div className="mb-1 flex items-center gap-2">
-                            <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
-                            <p className="text-xs font-semibold text-indigo-700">Análisis IA</p>
+                            <Sparkles className="h-3.5 w-3.5 text-accent" />
+                            <p className="text-xs font-semibold text-foreground">Análisis IA</p>
                           </div>
-                          <p className="text-xs text-slate-600">
+                          <p className="text-xs text-muted-foreground">
                             <strong>Raza:</strong> {aiAnalysis.breed} · <strong>Condición:</strong>{' '}
                             {aiAnalysis.coatCondition === 'excellent'
                               ? '✅ Excelente'
@@ -1345,7 +1345,7 @@ export function AppointmentForm() {
 
                       {/* Before/After scroller in confirm step */}
                       {previewEntries.length > 0 && petPhotoPreview && (
-                        <div className="border-t border-slate-100 pt-4">
+                        <div className="border-t border-border pt-4">
                           <BeforeAfterScroller
                             originalImage={petPhotoPreview}
                             previews={previewEntries.map(([styleId, p]) => ({

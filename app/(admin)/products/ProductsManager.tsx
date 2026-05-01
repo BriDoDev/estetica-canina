@@ -183,11 +183,11 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <Button onClick={openCreate} className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+        <Button onClick={openCreate} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
           <Plus className="h-4 w-4" />
           Nuevo producto
         </Button>
-        <span className="text-sm text-slate-500">{products.length} productos</span>
+        <span className="text-sm text-muted-foreground">{products.length} productos</span>
       </div>
 
       {products.length > 0 ? (
@@ -196,11 +196,11 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
             <div
               key={product.id}
               className={`rounded-2xl border bg-white p-4 transition-opacity ${
-                product.is_active ? 'border-slate-200' : 'border-slate-100 opacity-60'
+                product.is_active ? 'border-border' : 'border-border opacity-60'
               }`}
             >
               <div className="mb-3 flex items-start justify-between">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-50">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-accent/20">
                   {product.image_url ? (
                     <Image
                       src={product.image_url}
@@ -210,7 +210,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <Package className="h-5 w-5 text-indigo-400" />
+                    <Package className="h-5 w-5 text-accent" />
                   )}
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -221,14 +221,14 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
                   />
                   <button
                     onClick={() => openEdit(product)}
-                    className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-indigo-600"
+                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
                     aria-label="Editar"
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => setDeleteId(product.id)}
-                    className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600"
                     aria-label="Eliminar"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -236,27 +236,27 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
                 </div>
               </div>
 
-              <h3 className="mb-1 line-clamp-1 text-sm font-semibold text-slate-800">
+              <h3 className="mb-1 line-clamp-1 text-sm font-semibold text-foreground">
                 {product.name}
               </h3>
               {product.description && (
-                <p className="mb-3 line-clamp-2 text-xs text-slate-500">{product.description}</p>
+                <p className="mb-3 line-clamp-2 text-xs text-muted-foreground">{product.description}</p>
               )}
 
               <div className="mt-3 flex items-center justify-between">
-                <span className="font-bold text-indigo-600">{formatCurrency(product.price)}</span>
+                <span className="font-bold text-primary">{formatCurrency(product.price)}</span>
                 <div className="flex items-center gap-2">
-                  <Badge className="border-none bg-slate-100 text-xs text-slate-600">
+                  <Badge className="border-none bg-muted text-xs text-muted-foreground">
                     {categoryLabels[product.category] ?? product.category}
                   </Badge>
-                  <span className="text-xs text-slate-400">Stock: {product.stock_quantity}</span>
+                  <span className="text-xs text-muted-foreground">Stock: {product.stock_quantity}</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="py-16 text-center text-sm text-slate-400">
+        <div className="py-16 text-center text-sm text-muted-foreground">
           No hay productos registrados. ¡Agrega el primero!
         </div>
       )}
@@ -352,7 +352,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
             <Button
               onClick={saveDialog}
               disabled={isPending}
-              className="gap-2 bg-indigo-600 hover:bg-indigo-700"
+              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {editingProduct ? 'Guardar cambios' : 'Crear producto'}

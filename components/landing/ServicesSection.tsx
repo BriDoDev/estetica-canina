@@ -59,10 +59,10 @@ const DEFAULT_SERVICES: ServiceItem[] = [
 ]
 
 const badgeStyles: Record<string, string> = {
-  Popular: 'bg-blue-100 text-blue-700',
-  Recomendado: 'bg-indigo-100 text-indigo-700',
-  'IA Diagnóstico': 'bg-violet-100 text-violet-700',
-  Premium: 'bg-amber-100 text-amber-700',
+  Popular: 'bg-secondary/30 text-secondary-foreground',
+  Recomendado: 'bg-[#FFDAD6] text-[#4A1E1E]',
+  'IA Diagnóstico': 'bg-accent/30 text-accent-foreground',
+  Premium: 'bg-warning text-warning-foreground',
 }
 
 async function getServices(): Promise<ServiceItem[]> {
@@ -91,11 +91,11 @@ export async function ServicesSection() {
     <section id="services" className="bg-white py-24">
       <div className="container mx-auto px-4">
         <div className="mb-14 text-center">
-          <p className="mb-2 text-sm font-semibold tracking-widest text-indigo-600 uppercase">
+          <p className="mb-2 text-sm font-semibold tracking-widest text-accent uppercase">
             🐾 Lo que ofrecemos
           </p>
-          <h2 className="mb-4 text-4xl font-extrabold text-slate-900">Nuestros Servicios</h2>
-          <p className="mx-auto max-w-xl text-lg text-slate-500">
+          <h2 className="mb-4 text-4xl font-extrabold text-foreground">Nuestros Servicios</h2>
+          <p className="mx-auto max-w-xl text-lg text-muted-foreground">
             Cada servicio está diseñado pensando en el bienestar y felicidad de tu mascota.
           </p>
         </div>
@@ -104,7 +104,7 @@ export async function ServicesSection() {
           {services.map((service) => (
             <Card
               key={service.name}
-              className="group overflow-hidden rounded-2xl border-slate-100 bg-[#fafaf8] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
+              className="group overflow-hidden rounded-2xl border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/15"
             >
               {service.imageUrl ? (
                 <div className="relative h-40 w-full overflow-hidden">
@@ -117,7 +117,7 @@ export async function ServicesSection() {
                   {service.badge && (
                     <div className="absolute top-3 right-3">
                       <Badge
-                        className={`${badgeStyles[service.badge] ?? 'bg-slate-100 text-slate-600'} border-none text-xs shadow`}
+                        className={`${badgeStyles[service.badge] ?? 'bg-muted text-muted-foreground'} border-none text-xs shadow`}
                       >
                         {service.badge}
                       </Badge>
@@ -128,23 +128,23 @@ export async function ServicesSection() {
               <CardHeader className="pb-3">
                 {!service.imageUrl && (
                   <div className="flex items-start justify-between">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-2xl transition-transform group-hover:scale-110">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/20 text-2xl transition-transform group-hover:scale-110">
                       {service.icon}
                     </div>
                     {service.badge && (
                       <Badge
-                        className={`${badgeStyles[service.badge] ?? 'bg-slate-100 text-slate-600'} border-none text-xs`}
+                        className={`${badgeStyles[service.badge] ?? 'bg-muted text-muted-foreground'} border-none text-xs`}
                       >
                         {service.badge}
                       </Badge>
                     )}
                   </div>
                 )}
-                <CardTitle className="text-lg text-slate-800">{service.name}</CardTitle>
+                <CardTitle className="text-lg text-foreground">{service.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="mb-4 text-sm leading-relaxed text-slate-500">{service.description}</p>
-                <p className="text-base font-bold text-indigo-600">{service.price}</p>
+                <p className="mb-4 text-sm leading-relaxed text-muted-foreground">{service.description}</p>
+                <p className="text-base font-bold text-primary">{service.price}</p>
               </CardContent>
             </Card>
           ))}

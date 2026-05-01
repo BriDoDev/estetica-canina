@@ -71,10 +71,10 @@ export async function TestimonialsSection() {
           <p className="mb-2 text-sm font-semibold tracking-widest text-amber-600 uppercase">
             ⭐ Opiniones reales
           </p>
-          <h2 className="mb-4 text-4xl font-extrabold text-slate-900">
+          <h2 className="mb-4 text-4xl font-extrabold text-foreground">
             Lo que dicen nuestros clientes
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-slate-500">
+          <p className="mx-auto max-w-xl text-lg text-muted-foreground">
             Más de 500 mascotas felices nos respaldan.
           </p>
         </div>
@@ -84,7 +84,7 @@ export async function TestimonialsSection() {
           {reviews.map((review) => (
             <div
               key={review.name}
-              className="w-[300px] flex-shrink-0 snap-start rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md md:w-auto"
+              className="w-[300px] flex-shrink-0 snap-start rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md md:w-auto"
             >
               <div className="mb-4 flex gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -93,21 +93,21 @@ export async function TestimonialsSection() {
                     className={`h-4 w-4 ${
                       i < review.rating
                         ? 'fill-amber-400 text-amber-400'
-                        : 'fill-slate-200 text-slate-200'
+                        : 'fill-muted text-muted'
                     }`}
                   />
                 ))}
               </div>
-              <p className="mb-5 text-sm leading-relaxed text-slate-600">
+              <p className="mb-5 text-sm leading-relaxed text-muted-foreground">
                 &ldquo;{review.comment}&rdquo;
               </p>
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 text-xs font-bold text-white">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-primary text-xs font-bold text-white">
                   {getInitials(review.name)}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">{review.name}</p>
-                  {review.pet && <p className="text-xs text-slate-400">{review.pet}</p>}
+                  <p className="text-sm font-semibold text-foreground">{review.name}</p>
+                  {review.pet && <p className="text-xs text-muted-foreground">{review.pet}</p>}
                 </div>
               </div>
             </div>

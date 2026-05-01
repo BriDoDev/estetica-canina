@@ -223,8 +223,8 @@ Toda la interfaz usa **Quicksand** — una fuente geométrica y amigable con cur
 
 ### Buttons
 
-- **Primary**: Coral (#FF8C7A) fondo, texto blanco, 12px rounded, 12px padding. Hover: Lavanda (#C3B1E1).
-- **Outline**: Transparente, borde slate-200, texto oscuro.
+- **Primary**: Coral (#FF8C7A) fondo, texto marrón oscuro (#4A1E1E), 12px rounded, 12px padding. Hover: 90% opacity del primario. Una sola instancia por vista.
+- **Outline**: Transparente, borde `#F0E4D4` (warm beige), texto `#4A3F6B` (deep plum).
 - **Ghost**: Sin borde, solo texto. Para acciones destructivas (cancelar).
 
 ### Chips & Filters

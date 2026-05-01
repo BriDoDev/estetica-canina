@@ -8,8 +8,8 @@ export async function suggestStylesAction(
   count: number,
 ): Promise<{ data: GroomingStyleSuggestion[] | null; error: string | null }> {
   try {
-    if (!analysis.isDog) {
-      return { data: null, error: 'Solo se puede sugerir cortes para perros' }
+    if (analysis.isDog === false) {
+      return { data: null, error: 'No se detecta mascota para sugerir cortes' }
     }
 
     const safeCount = Math.min(4, Math.max(1, Math.round(count)))

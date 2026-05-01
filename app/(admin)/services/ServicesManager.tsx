@@ -197,12 +197,12 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <Button onClick={openCreate} className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+        <Button onClick={openCreate} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
           <Plus className="h-4 w-4" />
           Nuevo servicio
         </Button>
         <div className="flex items-center gap-3">
-          {saveMsg && <span className="text-sm text-slate-600">{saveMsg}</span>}
+          {saveMsg && <span className="text-sm text-muted-foreground">{saveMsg}</span>}
           <Button onClick={saveAll} disabled={saving} variant="outline" className="gap-2">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             Guardar cambios
@@ -214,7 +214,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
         {services.map((svc) => (
           <div
             key={svc.id}
-            className={`overflow-hidden rounded-2xl border bg-white transition-opacity ${svc.active ? 'border-slate-200' : 'border-slate-100 opacity-60'}`}
+            className={`overflow-hidden rounded-2xl border bg-white transition-opacity ${svc.active ? 'border-border' : 'border-border opacity-60'}`}
           >
             {svc.imageUrl ? (
               <div className="relative h-40 w-full">
@@ -224,7 +224,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
             <div className={`p-4 ${svc.imageUrl ? '' : ''}`}>
               <div className="mb-3 flex items-start justify-between">
                 <div className="flex items-center gap-2">
-                  <GripVertical className="h-4 w-4 cursor-grab text-slate-300" />
+                  <GripVertical className="h-4 w-4 cursor-grab text-muted-foreground" />
                   {!svc.imageUrl && <span className="text-2xl">{svc.icon}</span>}
                 </div>
                 <div className="flex items-center gap-2">
@@ -235,26 +235,26 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
                   />
                   <button
                     onClick={() => openEdit(svc)}
-                    className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-indigo-600"
+                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-slate-100 hover:text-primary"
                     aria-label="Editar"
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => setDeleteId(svc.id)}
-                    className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600"
                     aria-label="Eliminar"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
-              <h3 className="mb-1 font-semibold text-slate-800">{svc.name}</h3>
-              <p className="mb-3 line-clamp-2 text-xs text-slate-500">{svc.description}</p>
+              <h3 className="mb-1 font-semibold text-foreground">{svc.name}</h3>
+              <p className="mb-3 line-clamp-2 text-xs text-muted-foreground">{svc.description}</p>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-indigo-600">{svc.price}</span>
+                <span className="text-sm font-bold text-primary">{svc.price}</span>
                 {svc.badge && (
-                  <Badge className="border-none bg-indigo-100 text-xs text-indigo-700">
+                  <Badge className="border-none bg-accent/30 text-xs text-foreground">
                     {svc.badge}
                   </Badge>
                 )}
@@ -276,7 +276,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
               <Label>Imagen del servicio</Label>
               {imagePreview ? (
                 <div className="relative">
-                  <div className="relative h-40 w-full overflow-hidden rounded-xl border border-slate-200">
+                  <div className="relative h-40 w-full overflow-hidden rounded-xl border border-border">
                     <Image src={imagePreview} alt="Preview" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                   </div>
                   <button
@@ -291,11 +291,11 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
                 <button
                   type="button"
                   onClick={() => imageInputRef.current?.click()}
-                  className="flex h-32 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 transition-colors hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600"
+                  className="flex h-32 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-accent hover:bg-accent/10 hover:text-primary"
                 >
                   <ImagePlus className="h-6 w-6" />
                   <span className="text-sm font-medium">Subir imagen</span>
-                  <span className="text-xs text-slate-400">JPG, PNG o WebP · Máx 2MB</span>
+                  <span className="text-xs text-muted-foreground">JPG, PNG o WebP · Máx 2MB</span>
                 </button>
               )}
               <input
@@ -366,7 +366,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
             <Button
               onClick={saveDialog}
               disabled={!form.name.trim() || dialogSaving}
-              className="gap-2 bg-indigo-600 hover:bg-indigo-700"
+              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {dialogSaving && <Loader2 className="h-4 w-4 animate-spin" />}
               {editingService ? 'Guardar cambios' : 'Crear servicio'}

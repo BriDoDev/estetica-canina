@@ -48,7 +48,7 @@ export async function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
                 <PawPrint className="h-4 w-4 text-white" />
               </div>
               <div>
@@ -65,14 +65,14 @@ export async function Footer() {
               <a
                 href="#"
                 aria-label="Instagram"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-indigo-600"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-primary"
               >
                 <Share2 className="h-4 w-4" />
               </a>
               <a
                 href="#"
                 aria-label="Facebook"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-indigo-600"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-primary"
               >
                 <MessageCircle className="h-4 w-4" />
               </a>
@@ -115,13 +115,13 @@ export async function Footer() {
             <ul className="space-y-3 text-sm">
               {contact.phone && (
                 <li className="flex items-center gap-2 text-slate-400">
-                  <Phone className="h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
+                  <Phone className="h-3.5 w-3.5 flex-shrink-0 text-accent" />
                   {contact.phone}
                 </li>
               )}
               {contact.email && (
                 <li className="flex items-center gap-2 text-slate-400">
-                  <Mail className="h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
+                  <Mail className="h-3.5 w-3.5 flex-shrink-0 text-accent" />
                   {contact.email}
                 </li>
               )}
@@ -134,19 +134,19 @@ export async function Footer() {
             <ul className="space-y-2 text-sm">
               {contact.hours?.weekdays && (
                 <li className="flex items-start gap-2 text-slate-400">
-                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
+                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-accent" />
                   {contact.hours.weekdays}
                 </li>
               )}
               {contact.hours?.saturday && (
                 <li className="flex items-start gap-2 text-slate-400">
-                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
+                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-accent" />
                   {contact.hours.saturday}
                 </li>
               )}
               {contact.hours?.sunday && (
                 <li className="flex items-start gap-2 text-slate-400">
-                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
+                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-accent" />
                   {contact.hours.sunday}
                 </li>
               )}

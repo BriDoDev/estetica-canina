@@ -194,28 +194,28 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
     return sectionFields.map((field, idx) => (
       <div
         key={field.id}
-        className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 transition-colors hover:border-slate-300"
+        className="flex items-center gap-3 rounded-xl border border-border bg-white p-3 transition-colors hover:border-border"
       >
-        <GripVertical className="h-4 w-4 flex-shrink-0 cursor-grab text-slate-300" />
+        <GripVertical className="h-4 w-4 flex-shrink-0 cursor-grab text-muted-foreground" />
 
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center gap-2">
-            <span className="truncate text-sm font-medium text-slate-800">{field.label}</span>
+            <span className="truncate text-sm font-medium text-foreground">{field.label}</span>
             <Badge variant="secondary" className="flex-shrink-0 text-xs">
               {FIELD_TYPE_LABELS[field.type]}
             </Badge>
             {CORE_FIELD_IDS.includes(field.id) && (
-              <Badge className="flex-shrink-0 border-none bg-slate-100 text-xs text-slate-500">
+              <Badge className="flex-shrink-0 border-none bg-muted text-xs text-muted-foreground">
                 Esencial
               </Badge>
             )}
           </div>
-          <p className="text-xs text-slate-400">{field.name}</p>
+          <p className="text-xs text-muted-foreground">{field.name}</p>
         </div>
 
         {/* Required toggle */}
         <div className="flex flex-shrink-0 flex-col items-center gap-0.5">
-          <span className="text-[10px] text-slate-400">Req.</span>
+          <span className="text-[10px] text-muted-foreground">Req.</span>
           <Switch
             checked={field.required}
             onCheckedChange={(v) => updateField(field.id, { required: v })}
@@ -225,7 +225,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
 
         {/* Visible toggle */}
         <div className="flex flex-shrink-0 flex-col items-center gap-0.5">
-          <span className="text-[10px] text-slate-400">Visible</span>
+          <span className="text-[10px] text-muted-foreground">Visible</span>
           <Switch
             checked={field.visible}
             onCheckedChange={(v) => updateField(field.id, { visible: v })}
@@ -255,7 +255,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
           <button
             onClick={() => moveField(field.id, 'up')}
             disabled={idx === 0}
-            className="rounded p-0.5 text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+            className="rounded p-0.5 text-muted-foreground hover:bg-muted disabled:opacity-30"
             aria-label="Subir"
           >
             <ChevronUp className="h-3.5 w-3.5" />
@@ -263,7 +263,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
           <button
             onClick={() => moveField(field.id, 'down')}
             disabled={idx === sectionFields.length - 1}
-            className="rounded p-0.5 text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+            className="rounded p-0.5 text-muted-foreground hover:bg-muted disabled:opacity-30"
             aria-label="Bajar"
           >
             <ChevronDown className="h-3.5 w-3.5" />
@@ -274,7 +274,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
         <button
           onClick={() => deleteField(field.id)}
           disabled={CORE_FIELD_IDS.includes(field.id)}
-          className="flex-shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-20"
+          className="flex-shrink-0 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-20"
           aria-label="Eliminar campo"
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -298,15 +298,15 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
             <div key={s} className="flex flex-1 items-center gap-2">
               <div className="flex items-center gap-2">
                 <div
-                  className={`flex h-6 w-6 items-center justify-center rounded-full border-2 text-xs font-bold ${i === 0 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 text-slate-400'}`}
+                  className={`flex h-6 w-6 items-center justify-center rounded-full border-2 text-xs font-bold ${i === 0 ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground'}`}
                 >
                   {i + 1}
                 </div>
-                <span className="hidden text-xs text-slate-500 sm:block">
+                <span className="hidden text-xs text-muted-foreground sm:block">
                   {config.sections[s].title || SECTION_LABELS[s]}
                 </span>
               </div>
-              {i < sections.length - 1 && <div className="h-0.5 flex-1 bg-slate-200" />}
+              {i < sections.length - 1 && <div className="h-0.5 flex-1 bg-muted" />}
             </div>
           ))}
         </div>
@@ -319,9 +319,9 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
               .filter((f) => f.section === sec && f.visible)
               .sort((a, b) => a.order - b.order)
             return (
-              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="border-b border-slate-100 px-5 pt-5 pb-2">
-                  <h3 className="font-semibold text-slate-800">
+              <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+                <div className="border-b border-border px-5 pt-5 pb-2">
+                  <h3 className="font-semibold text-foreground">
                     {config.sections[sec].title || SECTION_LABELS[sec]}
                   </h3>
                 </div>
@@ -335,7 +335,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                           .map((svc) => (
                             <div
                               key={svc.id}
-                              className="overflow-hidden rounded-xl border-2 border-slate-200"
+                              className="overflow-hidden rounded-xl border-2 border-border"
                             >
                               {svc.imageUrl && (
                                 <div className="relative h-16 w-full">
@@ -350,17 +350,17 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                               <div className="p-2">
                                 <div className="mb-0.5 flex items-center gap-1">
                                   {!svc.imageUrl && <span className="text-sm">{svc.icon}</span>}
-                                  <span className="truncate text-xs font-medium text-slate-700">
+                                  <span className="truncate text-xs font-medium text-foreground">
                                     {svc.name}
                                   </span>
                                 </div>
-                                <p className="text-xs font-bold text-indigo-600">{svc.price}</p>
+                                <p className="text-xs font-bold text-primary">{svc.price}</p>
                               </div>
                             </div>
                           ))}
                       </div>
-                      <div className="flex h-8 items-center rounded-lg border border-slate-200 bg-slate-100 px-3">
-                        <span className="text-xs text-slate-400">Fecha y hora</span>
+                      <div className="flex h-8 items-center rounded-lg border border-border bg-muted px-3">
+                        <span className="text-xs text-muted-foreground">Fecha y hora</span>
                       </div>
                     </>
                   ) : (
@@ -374,7 +374,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                               : 'col-span-2'
                         return (
                           <div key={f.id} className={span}>
-                            <div className="mb-1 text-xs text-slate-500">
+                            <div className="mb-1 text-xs text-muted-foreground">
                               {f.label}
                               {f.required && <span className="ml-0.5 text-red-400">*</span>}
                             </div>
@@ -384,19 +384,19 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                                 <span className="truncate text-xs text-green-800">{f.label}</span>
                               </div>
                             ) : f.type === 'textarea' ? (
-                              <div className="h-16 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                                <span className="text-xs text-slate-300">
+                              <div className="h-16 rounded-lg border border-border bg-muted px-3 py-2">
+                                <span className="text-xs text-muted-foreground">
                                   {f.placeholder ?? '...'}
                                 </span>
                               </div>
                             ) : f.type === 'select' ? (
-                              <div className="flex h-8 items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3">
-                                <span className="text-xs text-slate-400">Seleccionar</span>
-                                <span className="text-xs text-slate-300">▾</span>
+                              <div className="flex h-8 items-center justify-between rounded-lg border border-border bg-muted px-3">
+                                <span className="text-xs text-muted-foreground">Seleccionar</span>
+                                <span className="text-xs text-muted-foreground">▾</span>
                               </div>
                             ) : (
-                              <div className="flex h-8 items-center rounded-lg border border-slate-200 bg-slate-50 px-3">
-                                <span className="text-xs text-slate-300">
+                              <div className="flex h-8 items-center rounded-lg border border-border bg-muted px-3">
+                                <span className="text-xs text-muted-foreground">
                                   {f.placeholder ?? f.label}
                                 </span>
                               </div>
@@ -413,11 +413,11 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
 
         {/* Nav buttons mockup */}
         <div className="flex justify-between pt-1">
-          <div className="h-9 w-24 rounded-lg border border-slate-300 bg-white" />
-          <div className="h-9 w-24 rounded-lg bg-indigo-600" />
+          <div className="h-9 w-24 rounded-lg border border-border bg-white" />
+          <div className="h-9 w-24 rounded-lg bg-primary" />
         </div>
 
-        <p className="text-center text-xs text-slate-400">
+        <p className="text-center text-xs text-muted-foreground">
           Vista previa del paso 1 · Los cambios se reflejan en tiempo real
         </p>
       </div>
@@ -436,7 +436,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
           </TabsList>
 
           <div className="flex items-center gap-3">
-            {saveMsg && <span className="text-sm text-slate-600">{saveMsg}</span>}
+            {saveMsg && <span className="text-sm text-muted-foreground">{saveMsg}</span>}
             <Button onClick={saveConfig} disabled={saving} variant="outline" className="gap-2">
               {saving && <Loader2 className="h-4 w-4 animate-spin" />}
               Guardar cambios
@@ -449,7 +449,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
           <div className="flex justify-end">
             <Button
               onClick={() => setAddFieldOpen(true)}
-              className="gap-2 bg-indigo-600 hover:bg-indigo-700"
+              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
               size="sm"
             >
               <Plus className="h-4 w-4" />
@@ -459,7 +459,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
 
           {(['customer', 'pet', 'service'] as const).map((section) => (
             <div key={section}>
-              <h3 className="mb-3 text-sm font-semibold tracking-wide text-slate-700 uppercase">
+              <h3 className="mb-3 text-sm font-semibold tracking-wide text-foreground uppercase">
                 {SECTION_LABELS[section]}
               </h3>
               <div className="space-y-2">{renderFieldsForSection(section)}</div>
@@ -470,11 +470,11 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
         {/* ── Tab 2: Sections ───────────────────────────────── */}
         <TabsContent value="sections" className="space-y-4">
           {(['customer', 'pet', 'service'] as const).map((key) => (
-            <div key={key} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+            <div key={key} className="space-y-3 rounded-xl border border-border bg-white p-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-slate-800">{SECTION_LABELS[key]}</h3>
+                <h3 className="font-semibold text-foreground">{SECTION_LABELS[key]}</h3>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-slate-500">Visible</span>
+                  <span className="text-sm text-muted-foreground">Visible</span>
                   <Switch
                     checked={config.sections[key].visible}
                     onCheckedChange={(v) => updateSection(key, { visible: v })}
@@ -482,7 +482,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-slate-500">Título de la sección</Label>
+                <Label className="text-xs text-muted-foreground">Título de la sección</Label>
                 <Input
                   value={config.sections[key].title}
                   onChange={(e) => updateSection(key, { title: e.target.value })}
@@ -495,11 +495,11 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
 
         {/* ── Tab 3: Services ───────────────────────────────── */}
         <TabsContent value="services" className="space-y-3">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Selecciona qué servicios aparecen como opciones en el formulario de citas.
           </p>
           {initialServices.length === 0 && (
-            <p className="text-sm text-slate-400 italic">
+            <p className="text-sm text-muted-foreground italic">
               No hay servicios configurados. Ve a la sección &quot;Servicios&quot; para añadirlos.
             </p>
           )}
@@ -509,7 +509,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
               <div
                 key={svc.id}
                 className={`flex items-center gap-4 rounded-xl border bg-white p-3 transition-colors ${
-                  isEnabled ? 'border-indigo-200 bg-indigo-50/30' : 'border-slate-200 opacity-60'
+                  isEnabled ? 'border-accent/30 bg-accent/20' : 'border-border opacity-60'
                 }`}
               >
                 <input
@@ -517,7 +517,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                   id={`svc-${svc.id}`}
                   checked={isEnabled}
                   onChange={() => toggleService(svc.id)}
-                  className="h-4 w-4 flex-shrink-0 accent-indigo-600"
+                  className="h-4 w-4 flex-shrink-0 accent-primary"
                 />
                 {svc.imageUrl ? (
                   <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
@@ -529,14 +529,14 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                 <div className="min-w-0 flex-1">
                   <label
                     htmlFor={`svc-${svc.id}`}
-                    className="cursor-pointer text-sm font-medium text-slate-800"
+                    className="cursor-pointer text-sm font-medium text-foreground"
                   >
                     {svc.name}
                   </label>
-                  <p className="truncate text-xs text-slate-500">{svc.description}</p>
+                  <p className="truncate text-xs text-muted-foreground">{svc.description}</p>
                 </div>
                 <div className="flex-shrink-0 text-right">
-                  <p className="text-sm font-bold text-indigo-600">{svc.price}</p>
+                  <p className="text-sm font-bold text-primary">{svc.price}</p>
                   {!svc.active && (
                     <Badge variant="secondary" className="text-xs">
                       Inactivo
@@ -550,8 +550,8 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
 
         {/* ── Tab 4: Preview ────────────────────────────────── */}
         <TabsContent value="preview">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-            <p className="mb-6 text-center text-xs font-semibold tracking-widest text-slate-400 uppercase">
+          <div className="rounded-2xl border border-border bg-muted p-6">
+            <p className="mb-6 text-center text-xs font-semibold tracking-widest text-muted-foreground uppercase">
               Preview en vivo — Paso 1
             </p>
             {renderPreview()}
@@ -618,7 +618,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
             </div>
             <div className="space-y-1.5">
               <Label>
-                Nombre del campo * <span className="text-xs text-slate-400">(sin espacios)</span>
+                Nombre del campo * <span className="text-xs text-muted-foreground">(sin espacios)</span>
               </Label>
               <Input
                 value={newField.name}
@@ -674,7 +674,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
             <Button
               onClick={addCustomField}
               disabled={!newField.label.trim() || !newField.name.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               Añadir campo
             </Button>

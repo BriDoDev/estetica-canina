@@ -16,8 +16,8 @@ interface RecentAppointment {
 
 const statusColors: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-700',
-  confirmed: 'bg-blue-100 text-blue-700',
-  in_progress: 'bg-violet-100 text-violet-700',
+  confirmed: 'bg-secondary/30 text-secondary-foreground',
+  in_progress: 'bg-accent/30 text-foreground',
   completed: 'bg-green-100 text-green-700',
   cancelled: 'bg-red-100 text-red-700',
 }
@@ -90,10 +90,10 @@ export default async function DashboardPage() {
             label: 'Citas totales',
             value: appointmentsCount ?? 0,
             icon: Calendar,
-            color: 'text-indigo-600',
+            color: 'text-primary',
           },
-          { label: 'Clientes', value: customersCount ?? 0, icon: Users, color: 'text-blue-600' },
-          { label: 'Mascotas', value: petsCount ?? 0, icon: PawPrint, color: 'text-violet-600' },
+          { label: 'Clientes', value: customersCount ?? 0, icon: Users, color: 'text-secondary' },
+          { label: 'Mascotas', value: petsCount ?? 0, icon: PawPrint, color: 'text-accent' },
           {
             label: 'Ingresos est.',
             value: formatCurrency(0),
@@ -137,8 +137,8 @@ export default async function DashboardPage() {
                   className="flex items-center justify-between rounded-xl px-3 py-3 transition-colors hover:bg-slate-50"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-100 to-violet-100">
-                      <span className="text-xs font-bold text-indigo-600">
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent/30 to-primary/30">
+                      <span className="text-xs font-bold text-primary">
                         {apt.pet?.name?.[0]?.toUpperCase() ?? '?'}
                       </span>
                     </div>

@@ -45,8 +45,8 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
   }
 
   const sidebarContent = (
-    <aside className="flex h-full w-56 shrink-0 flex-col border-r border-slate-100 bg-white lg:w-60">
-      <div className="flex items-center justify-between border-b border-slate-100 p-4 lg:p-5">
+    <aside className="flex h-full w-56 shrink-0 flex-col border-r border-border bg-card lg:w-60">
+      <div className="flex items-center justify-between border-b border-border p-4 lg:p-5">
         <div className="flex items-center gap-3">
           <div
             className="flex h-9 w-9 items-center justify-center rounded-xl"
@@ -55,14 +55,14 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
             <PawPrint className="h-5 w-5 text-white" />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-slate-800">Paws &amp; Glow</p>
-            <p className="text-xs text-slate-400">Panel Admin</p>
+            <p className="truncate text-sm font-semibold text-foreground">Paws &amp; Glow</p>
+            <p className="text-xs text-muted-foreground">Panel Admin</p>
           </div>
         </div>
         {/* Close button — mobile only */}
         <button
           onClick={onClose}
-          className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 lg:hidden"
+          className="rounded-lg p-1 text-muted-foreground hover:bg-muted lg:hidden"
         >
           <X className="h-5 w-5" />
         </button>
@@ -79,13 +79,13 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
               className={cn(
                 'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
                 active
-                  ? 'font-semibold text-rose-900'
-                  : 'text-slate-500 hover:bg-[#F5EDFA] hover:text-slate-700',
+                  ? 'font-semibold text-[#4A1E1E]'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
               )}
               style={active ? { backgroundColor: '#FFDAD6' } : undefined}
             >
               <item.icon
-                className={cn('h-4 w-4 flex-shrink-0', active ? 'text-rose-700' : 'text-slate-400')}
+                className={cn('h-4 w-4 flex-shrink-0', active ? 'text-[#4A1E1E]' : 'text-muted-foreground')}
               />
               <span className="truncate">{item.label}</span>
             </Link>
@@ -93,10 +93,10 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
         })}
       </nav>
 
-      <div className="border-t border-slate-100 p-3">
+      <div className="border-t border-border p-3">
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-[#F5EDFA] hover:text-slate-600"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <LogOut className="h-4 w-4 flex-shrink-0" />
           Cerrar sesión
@@ -137,16 +137,16 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
 
       <main className="min-w-0 flex-1">
         {/* Mobile header */}
-        <div className="sticky top-0 z-40 flex items-center gap-3 border-b border-slate-100 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <div className="sticky top-0 z-40 flex items-center gap-3 border-b border-border bg-card/90 px-4 py-3 backdrop-blur lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="rounded-lg p-1.5 text-slate-600 hover:bg-slate-100"
+            className="rounded-lg p-1.5 text-foreground hover:bg-muted"
           >
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-2">
             <PawPrint className="h-5 w-5" style={{ color: '#FF8C7A' }} />
-            <span className="text-sm font-semibold text-slate-800">Paws &amp; Glow</span>
+            <span className="text-sm font-semibold text-foreground">Paws &amp; Glow</span>
           </div>
         </div>
         <div className="overflow-auto p-4 lg:p-6">{children}</div>

@@ -50,7 +50,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
         <button key={n} type="button" onClick={() => onChange(n)} className="focus:outline-none">
           <Star
             className={`h-6 w-6 transition-colors ${
-              n <= value ? 'fill-amber-400 text-amber-400' : 'fill-slate-200 text-slate-200'
+              n <= value ? 'fill-amber-400 text-amber-400' : 'fill-slate-200 text-muted'
             }`}
           />
         </button>
@@ -118,12 +118,12 @@ export function ReviewsManager({ initialReviews }: ReviewsManagerProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <Button onClick={openCreate} className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+        <Button onClick={openCreate} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
           <Plus className="h-4 w-4" />
           Nueva reseña
         </Button>
         <div className="flex items-center gap-3">
-          {saveMsg && <span className="text-sm text-slate-600">{saveMsg}</span>}
+          {saveMsg && <span className="text-sm text-muted-foreground">{saveMsg}</span>}
           <Button onClick={saveAll} disabled={saving} variant="outline" className="gap-2">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             Guardar cambios
@@ -135,11 +135,11 @@ export function ReviewsManager({ initialReviews }: ReviewsManagerProps) {
         {reviews.map((review) => (
           <div
             key={review.id}
-            className={`rounded-2xl border bg-white p-4 transition-opacity ${review.active ? 'border-slate-200' : 'border-slate-100 opacity-60'}`}
+            className={`rounded-2xl border bg-white p-4 transition-opacity ${review.active ? 'border-border' : 'border-border opacity-60'}`}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-start gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 text-xs font-bold text-white">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-primary text-xs font-bold text-white">
                   {review.name
                     .split(' ')
                     .slice(0, 2)
@@ -148,8 +148,8 @@ export function ReviewsManager({ initialReviews }: ReviewsManagerProps) {
                     .toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-slate-800">{review.name}</p>
-                  {review.pet && <p className="text-xs text-slate-400">{review.pet}</p>}
+                  <p className="font-semibold text-foreground">{review.name}</p>
+                  {review.pet && <p className="text-xs text-muted-foreground">{review.pet}</p>}
                   <div className="my-1.5 flex gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
@@ -157,12 +157,12 @@ export function ReviewsManager({ initialReviews }: ReviewsManagerProps) {
                         className={`h-3.5 w-3.5 ${
                           i < review.rating
                             ? 'fill-amber-400 text-amber-400'
-                            : 'fill-slate-200 text-slate-200'
+                            : 'fill-slate-200 text-muted'
                         }`}
                       />
                     ))}
                   </div>
-                  <p className="line-clamp-2 text-sm text-slate-600">{review.comment}</p>
+                  <p className="line-clamp-2 text-sm text-muted-foreground">{review.comment}</p>
                 </div>
               </div>
               <div className="flex flex-shrink-0 items-center gap-2">
@@ -173,14 +173,14 @@ export function ReviewsManager({ initialReviews }: ReviewsManagerProps) {
                 />
                 <button
                   onClick={() => openEdit(review)}
-                  className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-indigo-600"
+                  className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
                   aria-label="Editar"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => setDeleteId(review.id)}
-                  className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                  className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600"
                   aria-label="Eliminar"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -246,7 +246,7 @@ export function ReviewsManager({ initialReviews }: ReviewsManagerProps) {
             <Button
               onClick={saveDialog}
               disabled={!form.name.trim() || !form.comment.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {editingReview ? 'Guardar cambios' : 'Crear reseña'}
             </Button>

@@ -67,7 +67,7 @@ export function BeforeAfterScroller({
       {/* Comparison scroller */}
       <div
         ref={containerRef}
-        className="relative w-full select-none overflow-hidden rounded-xl bg-slate-100"
+        className="relative w-full select-none overflow-hidden rounded-xl bg-muted"
         style={{ aspectRatio: '1 / 1' }}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
@@ -153,7 +153,7 @@ export function BeforeAfterScroller({
                   'flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all',
                   isActive
                     ? 'border-[#FF8C7A] bg-[#FF8C7A]/10 text-[#FF8C7A]'
-                    : 'border-slate-200 text-slate-600 hover:border-slate-300',
+                    : 'border-border text-muted-foreground hover:border-accent/50',
                 )}
               >
                 <Scissors className="h-3 w-3" />

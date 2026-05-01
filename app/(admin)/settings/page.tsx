@@ -16,7 +16,7 @@ function SaveButton({ state, onSave }: { state: SaveState; onSave: () => void })
       onClick={onSave}
       disabled={state === 'saving'}
       size="sm"
-      className="min-w-[120px] gap-2 bg-indigo-600 hover:bg-indigo-700"
+      className="min-w-[120px] gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
     >
       {state === 'saving' && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
       {state === 'success' && <Check className="h-3.5 w-3.5" />}
@@ -72,8 +72,8 @@ export default function SettingsPage() {
       <Card>
         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100">
-              <Sparkles className="h-4 w-4 text-indigo-600" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/30">
+              <Sparkles className="h-4 w-4 text-primary" />
             </div>
             <div>
               <CardTitle className="text-base">IA &amp; Generación</CardTitle>

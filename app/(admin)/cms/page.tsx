@@ -83,23 +83,23 @@ export default async function CmsPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           href="/services"
-          className="group flex items-center justify-between rounded-2xl border border-slate-200 p-4 transition-colors hover:border-indigo-200 hover:bg-indigo-50/40"
+          className="group flex items-center justify-between rounded-2xl border border-border p-4 transition-colors hover:border-accent/30 hover:bg-accent/20"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100">
-              <Scissors className="h-5 w-5 text-indigo-600" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/30">
+              <Scissors className="h-5 w-5 text-primary" />
             </div>
             <div>
               <p className="font-semibold text-slate-800">Servicios</p>
               <p className="text-xs text-slate-400">Gestionar servicios del landing</p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-indigo-500" />
+          <ArrowRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-accent" />
         </Link>
 
         <Link
           href="/reviews"
-          className="group flex items-center justify-between rounded-2xl border border-slate-200 p-4 transition-colors hover:border-indigo-200 hover:bg-indigo-50/40"
+          className="group flex items-center justify-between rounded-2xl border border-border p-4 transition-colors hover:border-accent/30 hover:bg-accent/20"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
@@ -110,7 +110,7 @@ export default async function CmsPage() {
               <p className="text-xs text-slate-400">Gestionar reseñas del landing</p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-indigo-500" />
+          <ArrowRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-accent" />
         </Link>
       </div>
     </div>

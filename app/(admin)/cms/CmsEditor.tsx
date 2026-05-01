@@ -41,7 +41,7 @@ function SectionSaveButton({ state, onSave }: { state: SaveState; onSave: () => 
       onClick={onSave}
       disabled={state === 'saving'}
       size="sm"
-      className="min-w-[120px] gap-2 bg-indigo-600 hover:bg-indigo-700"
+      className="min-w-[120px] gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
     >
       {state === 'saving' && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
       {state === 'success' && <Check className="h-3.5 w-3.5" />}

@@ -11,10 +11,10 @@ export async function analyzePetPhoto(
 ): Promise<PetAnalysisResult> {
   const prompt = `Eres un experto groomer canino con 20 años de experiencia. Analiza esta foto de una mascota y proporciona un análisis detallado en formato JSON.
 
-PRIMERO: Determina si la foto contiene un perro. Si NO es un perro (es un gato, persona, objeto, etc.), responde ÚNICAMENTE con:
-{ "isDog": false, "breed": "No es un perro", "estimatedAge": "", "coatCondition": "poor", "coatType": "", "recommendations": [], "urgentCare": null, "estimatedGroomingTime": 0 }
+PRIMERO: Determina si la foto contiene un animal (perro, gato, conejo, hurón, etc.) o una persona/objeto. Si claramente NO contiene ningún animal (es un paisaje, objeto, persona, texto, selfie sin mascota, etc.), responde ÚNICAMENTE con:
+{ "isDog": false, "breed": "No se detecta mascota", "estimatedAge": "", "coatCondition": "poor", "coatType": "", "recommendations": [], "urgentCare": null, "estimatedGroomingTime": 0 }
 
-Si SÍ es un perro, responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:
+Si la foto contiene un animal (sea perro, gato u otra mascota), asume que es un perro y proporciona tu mejor análisis. Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:
 {
   "isDog": true,
   "breed": "raza detectada o 'Mestizo'",
