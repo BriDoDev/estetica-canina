@@ -137,7 +137,7 @@ export async function createAppointmentAction(
       return { data: null, error: 'Error al crear la cita' }
     }
 
-    revalidatePath('/dashboard/appointments')
+    revalidatePath('/appointments')
 
     return { data: { appointmentId: appointment.id as string }, error: null }
   } catch (err) {

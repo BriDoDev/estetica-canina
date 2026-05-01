@@ -19,6 +19,7 @@ export interface PetAnalysisResult {
   recommendations: PetRecommendation[]
   urgentCare: string | null
   estimatedGroomingTime: number
+  isDog?: boolean
 }
 
 export interface PetRecommendation {

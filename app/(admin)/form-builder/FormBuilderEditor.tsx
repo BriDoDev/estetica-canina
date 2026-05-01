@@ -521,7 +521,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                 />
                 {svc.imageUrl ? (
                   <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
-                    <Image src={svc.imageUrl} alt={svc.name} fill className="object-cover" />
+                    <Image src={svc.imageUrl} alt={svc.name} fill sizes="48px" className="object-cover" />
                   </div>
                 ) : (
                   <span className="flex-shrink-0 text-2xl">{svc.icon}</span>

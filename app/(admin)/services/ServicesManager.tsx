@@ -218,7 +218,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
           >
             {svc.imageUrl ? (
               <div className="relative h-40 w-full">
-                <Image src={svc.imageUrl} alt={svc.name} fill className="object-cover" />
+                <Image src={svc.imageUrl} alt={svc.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
               </div>
             ) : null}
             <div className={`p-4 ${svc.imageUrl ? '' : ''}`}>
@@ -277,7 +277,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
               {imagePreview ? (
                 <div className="relative">
                   <div className="relative h-40 w-full overflow-hidden rounded-xl border border-slate-200">
-                    <Image src={imagePreview} alt="Preview" fill className="object-cover" />
+                    <Image src={imagePreview} alt="Preview" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                   </div>
                   <button
                     type="button"

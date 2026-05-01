@@ -144,7 +144,7 @@ export default async function CustomerDetailPage({ params }: PageProps) {
                 >
                   {pet.photo_url ? (
                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl">
-                      <Image src={pet.photo_url} alt={pet.name} fill className="object-cover" />
+                      <Image src={pet.photo_url} alt={pet.name} fill sizes="64px" className="object-cover" />
                     </div>
                   ) : (
                     <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl bg-indigo-100">

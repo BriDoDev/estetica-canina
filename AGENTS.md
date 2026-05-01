@@ -4,6 +4,12 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 
+## Known Next.js 16 breaking changes
+
+- **`middleware` → `proxy`**: Export `proxy()` instead of `middleware()`. Run `npx @next/codemod@latest middleware-to-proxy .` to migrate.
+- **`revalidatePath` / `revalidateTag` removed**: Use `refresh` from `next/cache` after mutations instead: `import { refresh } from 'next/cache'`.
+- **`cookies()` is async**: Must `await cookies()` in server components / route handlers.
+
 <!-- END:nextjs-agent-rules -->
 
 ## Commands
@@ -22,13 +28,14 @@ No typecheck script in package.json, but TypeScript strict mode is on.
 
 - Next.js **16** (App Router), React 19, TypeScript strict
 - Tailwind CSS **v4** — uses `@theme` directive in `app/globals.css`, **not** `tailwind.config.ts`
-- shadcn/ui (`components/ui/`), configured via `components.json`
-- Supabase (`@supabase/ssr`) for auth, PostgreSQL, storage
-- OpenAI GPT-4o Vision → pet photo analysis
-- React Three Fiber + Drei + GSAP for 3D / animations
-- Zod + React Hook Form (@hookform/resolvers) for forms
-- Resend (email), Twilio (WhatsApp)
+- shadcn/ui (`components/ui/`) — CLI: `npx shadcn@latest`, configured via `components.json`
+- Supabase (`@supabase/ssr`) for auth, PostgreSQL, storage — cookie API uses `getAll()` / `setAll()`
+- OpenAI GPT-4o Vision → pet photo analysis (SDK v6, `zodResponseFormat` for structured outputs)
+- React Three Fiber v9 + Drei + GSAP for 3D / animations
+- Zod **v4** + React Hook Form (@hookform/resolvers) for forms
+- Resend (email, `resend.emails.send()` with React Email), Twilio (WhatsApp via `twilio-node`)
 - Deployed on Netlify via `@netlify/plugin-nextjs`
+- Prettier
 
 ## Architecture
 

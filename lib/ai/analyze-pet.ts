@@ -11,8 +11,12 @@ export async function analyzePetPhoto(
 ): Promise<PetAnalysisResult> {
   const prompt = `Eres un experto groomer canino con 20 años de experiencia. Analiza esta foto de una mascota y proporciona un análisis detallado en formato JSON.
 
-Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:
+PRIMERO: Determina si la foto contiene un perro. Si NO es un perro (es un gato, persona, objeto, etc.), responde ÚNICAMENTE con:
+{ "isDog": false, "breed": "No es un perro", "estimatedAge": "", "coatCondition": "poor", "coatType": "", "recommendations": [], "urgentCare": null, "estimatedGroomingTime": 0 }
+
+Si SÍ es un perro, responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:
 {
+  "isDog": true,
   "breed": "raza detectada o 'Mestizo'",
   "estimatedAge": "estimación de edad (ej: '2-3 años')",
   "coatCondition": "excellent|good|needs_attention|poor",
@@ -29,7 +33,7 @@ Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:
   "estimatedGroomingTime": número en minutos
 }
 
-Proporciona exactamente 4 recomendaciones. Si no puedes ver claramente la mascota, proporciona recomendaciones generales.`
+Proporciona exactamente 4 recomendaciones.`
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o',
