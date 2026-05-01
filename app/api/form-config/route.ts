@@ -17,15 +17,17 @@ export interface LandingService {
 export interface FormConfigResponse {
   config: FormConfig
   services: LandingService[]
+  groomingImageCount: number
 }
 
 export async function GET() {
   try {
     const supabase = await createClient()
 
-    const [configResult, servicesResult] = await Promise.all([
+    const [configResult, servicesResult, groomingCountResult] = await Promise.all([
       supabase.from('landing_config').select('value').eq('key', 'appointment_form_config').single(),
       supabase.from('landing_config').select('value').eq('key', 'services').single(),
+      supabase.from('landing_config').select('value').eq('key', 'grooming_image_count').single(),
     ])
 
     const config: FormConfig = configResult.data?.value
@@ -37,12 +39,17 @@ export async function GET() {
         ? (servicesResult.data.value as unknown as LandingService[])
         : []
 
-    const response: FormConfigResponse = { config, services }
+    const groomingImageCount = parseInt(
+      (groomingCountResult.data?.value as string) || '1',
+      10,
+    )
+
+    const response: FormConfigResponse = { config, services, groomingImageCount }
     return NextResponse.json(response)
   } catch (err) {
     console.error('form-config route error:', err)
     return NextResponse.json(
-      { config: DEFAULT_FORM_CONFIG, services: [] } satisfies FormConfigResponse,
+      { config: DEFAULT_FORM_CONFIG, services: [], groomingImageCount: 1 } satisfies FormConfigResponse,
       { status: 200 },
     )
   }

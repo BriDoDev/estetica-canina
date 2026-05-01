@@ -15,7 +15,6 @@ import {
   LogOut,
   Scissors,
   Star,
-  LayoutList,
   Menu,
   X,
 } from 'lucide-react'
@@ -29,7 +28,6 @@ const navItems = [
   { href: '/services', icon: Scissors, label: 'Servicios' },
   { href: '/reviews', icon: Star, label: 'Reseñas' },
   { href: '/cms', icon: Settings, label: 'CMS' },
-  { href: '/form-builder', icon: LayoutList, label: 'Form Builder' },
   { href: '/settings', icon: Settings2, label: 'Configuración' },
 ]
 

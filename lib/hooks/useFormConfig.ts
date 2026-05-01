@@ -8,12 +8,14 @@ import type { LandingService } from '@/app/api/form-config/route'
 interface UseFormConfigResult {
   config: FormConfig
   services: LandingService[]
+  groomingImageCount: number
   isLoading: boolean
 }
 
 export function useFormConfig(): UseFormConfigResult {
   const [config, setConfig] = useState<FormConfig>(DEFAULT_FORM_CONFIG)
   const [services, setServices] = useState<LandingService[]>([])
+  const [groomingImageCount, setGroomingImageCount] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -27,6 +29,7 @@ export function useFormConfig(): UseFormConfigResult {
         if (cancelled) return
         if (data.config) setConfig(data.config)
         if (data.services) setServices(data.services)
+        if (typeof data.groomingImageCount === 'number') setGroomingImageCount(data.groomingImageCount)
       } catch {
         // fallback to defaults on error
       } finally {
@@ -40,5 +43,5 @@ export function useFormConfig(): UseFormConfigResult {
     }
   }, [])
 
-  return { config, services, isLoading }
+  return { config, services, groomingImageCount, isLoading }
 }

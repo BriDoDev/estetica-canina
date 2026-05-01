@@ -31,6 +31,9 @@ No typecheck script in package.json, but TypeScript strict mode is on.
 - shadcn/ui (`components/ui/`) — CLI: `npx shadcn@latest`, configured via `components.json`
 - Supabase (`@supabase/ssr`) for auth, PostgreSQL, storage — cookie API uses `getAll()` / `setAll()`
 - OpenAI GPT-4o Vision → pet photo analysis (SDK v6, `zodResponseFormat` for structured outputs)
+- OpenAI GPT-4o → dynamic grooming style suggestions based on breed/coat/condition
+- OpenAI DALL-E `gpt-image-1.5` → img2img grooming previews
+- `react-day-picker` v9 → date/time picker in appointment form
 - React Three Fiber v9 + Drei + GSAP for 3D / animations
 - Zod **v4** + React Hook Form (@hookform/resolvers) for forms
 - Resend (email, `resend.emails.send()` with React Email), Twilio (WhatsApp via `twilio-node`)
@@ -43,7 +46,8 @@ No typecheck script in package.json, but TypeScript strict mode is on.
 
 - `app/(public)/` → landing page at `/`
 - `app/(auth)/` → login at `/login`
-- `app/(admin)/` → dashboard, appointments, customers, products, CMS, form-builder, services, reviews, settings
+- `app/(admin)/` → dashboard, appointments, customers, products, CMS, services, reviews, settings
+- Note: `form-builder` route is protected (redirects to `/dashboard`)
 
 **Server Actions** in `app/actions/` — every file must start with `'use server'`. Used for all mutations and AI calls. Return pattern: `{data, error}` (never throw from actions).
 
@@ -68,8 +72,14 @@ No typecheck script in package.json, but TypeScript strict mode is on.
 - `lib/utils.ts` also has `formatCurrency` (MXN), `formatDate` (es-MX), `getInitials`
 - Zod schemas in `lib/schemas/`, domain types in `types/index.ts`, DB types in `types/database.ts`
 - AI logic in `lib/ai/` — called only from server actions (never directly from client components)
+- `lib/ai/analyze-pet.ts` — GPT-4o Vision analysis + special notes
+- `lib/ai/suggest-styles.ts` — GPT-4o dynamic grooming style suggestions (breed/coat/condition → 1-4 styles)
+- `lib/ai/edit-grooming.ts` — DALL-E img2img grooming previews
+- `lib/ai/generate-grooming.ts` — dog photo description for DALL-E prompts (cached)
 - 3D components in `components/3d/` — always lazy-load: `next/dynamic(() => import('...'), { ssr: false })`
 - Forms in `components/forms/`, admin layout in `components/layout/`, landing in `components/landing/`
+- `components/forms/BeforeAfterScroller.tsx` — interactive comparison (drag slider: left=after, right=before)
+- `components/forms/DateTimePicker.tsx` — calendar + time slot picker using `react-day-picker` v9
 
 ## Design system (see `DESIGN.md` for full spec)
 

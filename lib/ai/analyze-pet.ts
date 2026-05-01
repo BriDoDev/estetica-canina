@@ -30,7 +30,8 @@ Si SÍ es un perro, responde ÚNICAMENTE con un objeto JSON válido con esta est
     }
   ],
   "urgentCare": "descripción de cuidado urgente o null",
-  "estimatedGroomingTime": número en minutos
+  "estimatedGroomingTime": número en minutos,
+  "specialNotes": "notas especiales en español (2-3 frases) describiendo el estado general del pelaje, nudos visibles, suciedad, y recomendaciones clave para el groomer. NO incluyas precios ni nombres de servicios."
 }
 
 Proporciona exactamente 4 recomendaciones.`

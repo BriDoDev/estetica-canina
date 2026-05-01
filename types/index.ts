@@ -20,6 +20,7 @@ export interface PetAnalysisResult {
   urgentCare: string | null
   estimatedGroomingTime: number
   isDog?: boolean
+  specialNotes?: string
 }
 
 export interface PetRecommendation {
@@ -27,6 +28,13 @@ export interface PetRecommendation {
   priority: 'high' | 'medium' | 'low'
   description: string
   estimatedPrice: string
+}
+
+export interface GroomingStyleSuggestion {
+  id: string
+  name: string
+  description: string
+  dallePrompt: string
 }
 
 export interface AppointmentWithDetails extends Appointment {

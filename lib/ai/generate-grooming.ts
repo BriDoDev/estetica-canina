@@ -1,7 +1,3 @@
-import OpenAI from 'openai'
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
 export interface GroomingStylePreview {
   styleId: string
   name: string
@@ -9,32 +5,13 @@ export interface GroomingStylePreview {
   imageUrl: string
 }
 
-const GROOMING_STYLES = [
-  { id: 'teddy_bear', name: 'Teddy Bear', description: 'Corte redondeado y esponjoso' },
-  { id: 'puppy_cut', name: 'Puppy Cut', description: 'Corte uniforme corto en todo el cuerpo' },
-  { id: 'lion_cut', name: 'Lion Cut', description: 'Cuerpo rapado con melena y pompón en la cola' },
-  {
-    id: 'breed_standard',
-    name: 'Estándar de Raza',
-    description: 'Corte según el estándar de la raza',
-  },
-]
-
-const STYLE_DETAILS: Record<string, string> = {
-  'Teddy Bear':
-    'round fluffy even cut all over, fur trimmed to equal rounded length like a teddy bear, soft plush appearance',
-  'Puppy Cut':
-    'short uniform cut all over the body, 1-2 inches length, neat tidy clean puppy look',
-  'Lion Cut':
-    'body shaved very short and smooth, full voluminous mane around head neck and chest, fluffy tail pompom',
-  'Estándar de Raza':
-    'breed standard professional show cut, precise elegant breed-specific grooming, clean crisp lines',
-}
-
 let cachedDogDescription: string | null = null
 
 export async function describeDogPhoto(imageBase64: string, mimeType: string): Promise<string> {
   if (cachedDogDescription) return cachedDogDescription
+
+  const OpenAI = (await import('openai')).default
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o',
@@ -63,12 +40,4 @@ export async function describeDogPhoto(imageBase64: string, mimeType: string): P
 
 export function clearDogDescriptionCache() {
   cachedDogDescription = null
-}
-
-export function getGroomingStyles() {
-  return GROOMING_STYLES
-}
-
-export function getStyleDetails() {
-  return STYLE_DETAILS
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -12,7 +12,7 @@ import {
 import { createAppointmentAction } from '@/app/actions/appointments'
 import { analyzePetAction } from '@/app/actions/analyze-pet'
 import { editGroomingPhotoAction } from '@/app/actions/edit-grooming'
-import { getGroomingStyles } from '@/lib/ai/generate-grooming'
+import { suggestStylesAction } from '@/app/actions/suggest-styles'
 import { useFormConfig } from '@/lib/hooks/useFormConfig'
 import { useGeolocation } from '@/lib/hooks/useGeolocation'
 import { Button } from '@/components/ui/button'
@@ -29,8 +29,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import type { PetAnalysisResult } from '@/types'
-import { Camera, CheckCircle, AlertCircle, Loader2, Sparkles, X, AlertTriangle } from 'lucide-react'
+import type { PetAnalysisResult, GroomingStyleSuggestion } from '@/types'
+import { Camera, CheckCircle, AlertCircle, Loader2, Sparkles, X, AlertTriangle, Scissors } from 'lucide-react'
+import { DateTimePicker } from '@/components/forms/DateTimePicker'
+import { BeforeAfterScroller } from '@/components/forms/BeforeAfterScroller'
 import Image from 'next/image'
 import { PawLoader } from '@/components/ui/PawLoader'
 import { compressImageForAPI } from '@/lib/image-compression'
@@ -85,14 +87,24 @@ export function AppointmentForm() {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [groomingPreviews, setGroomingPreviews] = useState<
-    Record<string, { name: string; description: string; imageUrl: string }>
+    Record<string, { styleId: string; name: string; description: string; imageUrl: string }>
   >({})
+  const [suggestedStyles, setSuggestedStyles] = useState<GroomingStyleSuggestion[]>([])
+  const [selectedGroomingStyleId, setSelectedGroomingStyleId] = useState<string | null>(null)
   const [generatingStyleId, setGeneratingStyleId] = useState<string | null>(null)
   const [groomingError, setGroomingError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const formTopRef = useRef<HTMLDivElement>(null)
 
-  const { config, services, isLoading: configLoading } = useFormConfig()
+  // Auto-select the only grooming style if exactly 1 preview is generated
+  useEffect(() => {
+    const entries = Object.entries(groomingPreviews)
+    if (entries.length === 1 && !selectedGroomingStyleId) {
+      setSelectedGroomingStyleId(entries[0][0])
+    }
+  }, [groomingPreviews, selectedGroomingStyleId])
+
+  const { config, services, groomingImageCount, isLoading: configLoading } = useFormConfig()
 
   const {
     register,
@@ -139,6 +151,9 @@ export function AppointmentForm() {
       setAiError(null)
       setAiAnalysis(null)
       setGroomingPreviews({})
+      setSuggestedStyles([])
+      setSelectedGroomingStyleId(null)
+      setGroomingError(null)
       const reader = new FileReader()
       reader.onload = (ev) => setPetPhotoPreview(ev.target?.result as string)
       reader.readAsDataURL(file)
@@ -155,6 +170,10 @@ export function AppointmentForm() {
           if (result.data.breed && result.data.breed !== 'Mestizo') {
             setValue('petBreed', result.data.breed)
           }
+          if (result.data.estimatedAge) {
+            const ageMatch = result.data.estimatedAge.match(/(\d+)/)
+            if (ageMatch) setValue('petAgeYears', parseInt(ageMatch[1], 10))
+          }
           if (result.data.coatType) {
             const coatMap: Record<string, AppointmentFormData['coatType']> = {
               corto: 'short',
@@ -168,7 +187,18 @@ export function AppointmentForm() {
             )
             if (detectedCoat) setValue('coatType', detectedCoat[1])
           }
+          if (result.data.specialNotes) {
+            setValue('notes', result.data.specialNotes)
+          }
 
+          // Suggest grooming styles based on analysis
+          if (result.data.isDog !== false) {
+            suggestStylesAction(result.data, groomingImageCount).then((stylesRes) => {
+              if (stylesRes.data && stylesRes.data.length > 0) {
+                setSuggestedStyles(stylesRes.data)
+              }
+            }).catch(() => { /* silent fail for style suggestions */ })
+          }
         } else if (result.error) {
           setAiError(result.error)
         }
@@ -204,6 +234,10 @@ export function AppointmentForm() {
           if (result.data.breed && result.data.breed !== 'Mestizo') {
             setValue('petBreed', result.data.breed)
           }
+          if (result.data.estimatedAge) {
+            const ageMatch = result.data.estimatedAge.match(/(\d+)/)
+            if (ageMatch) setValue('petAgeYears', parseInt(ageMatch[1], 10))
+          }
           if (result.data.coatType) {
             const coatMap: Record<string, AppointmentFormData['coatType']> = {
               corto: 'short',
@@ -216,6 +250,9 @@ export function AppointmentForm() {
               result.data!.coatType.toLowerCase().includes(key),
             )
             if (detectedCoat) setValue('coatType', detectedCoat[1])
+          }
+          if (result.data.specialNotes) {
+            setValue('notes', result.data.specialNotes)
           }
           return { compressedFile: compressed.file, aiResult: result.data }
         } else {
@@ -240,6 +277,8 @@ export function AppointmentForm() {
     setPetPhotoPreview(null)
     setAiAnalysis(null)
     setGroomingPreviews({})
+    setSuggestedStyles([])
+    setSelectedGroomingStyleId(null)
     setGroomingError(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }, [])
@@ -249,7 +288,14 @@ export function AppointmentForm() {
     let fieldsToValidate: (keyof AppointmentFormData)[] = []
     if (currentStep === 'customer')
       fieldsToValidate = ['customerName', 'customerEmail', 'customerPhone']
-    else if (currentStep === 'pet') fieldsToValidate = ['petName']
+    else if (currentStep === 'pet') {
+      fieldsToValidate = ['petName']
+      // If multiple grooming previews exist, user must select one
+      if (previewEntries.length > 1 && !selectedGroomingStyleId) {
+        setGroomingError('Selecciona uno de los cortes generados para continuar.')
+        return
+      }
+    }
     else if (currentStep === 'service') fieldsToValidate = ['serviceType', 'scheduledAt']
 
     const valid = await trigger(fieldsToValidate)
@@ -274,6 +320,13 @@ export function AppointmentForm() {
   const onSubmit = async (data: AppointmentFormData) => {
     // Guard: only allow submission from confirm step
     if (currentStep !== 'confirm') return
+
+    // Guard: must select grooming style if multiple previews exist
+    if (previewEntries.length > 1 && !selectedGroomingStyleId) {
+      setGroomingError('Debes seleccionar un corte recomendado antes de confirmar.')
+      return
+    }
+
     setIsSubmitting(true)
     setSubmitError(null)
     try {
@@ -291,6 +344,10 @@ export function AppointmentForm() {
           formData.append(key, String(value))
         }
       })
+      // Append selected grooming style name
+      if (selectedGroomingStyleId && groomingPreviews[selectedGroomingStyleId]) {
+        formData.append('selectedGroomingStyle', groomingPreviews[selectedGroomingStyleId].name)
+      }
       // Send compressed image (not original)
       if (compressedFile) formData.append('petPhotoFile', compressedFile)
 
@@ -335,8 +392,8 @@ export function AppointmentForm() {
     generatingStyleId ||
     previewEntries.length > 0
   )
-  // Hide side panel in service step — show only services
-  const hasSidePanel = showSidePanel && currentStep !== 'service'
+  // Always show side panel when there's content — persists across all steps
+  const hasSidePanel = showSidePanel
 
   const GeoStatusBanner = () => {
     if (geo.status === 'idle' || geo.status === 'requesting') {
@@ -623,7 +680,7 @@ export function AppointmentForm() {
                             {isAnalyzing && (
                               <div className="mt-2 flex items-center gap-2 text-sm text-indigo-600">
                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                Analizando foto con IA... (puede tardar unos segundos)
+                                Obteniendo los datos de tu mascota y generando el mejor corte...
                               </div>
                             )}
                             {aiError && !isAnalyzing && (
@@ -716,102 +773,105 @@ export function AppointmentForm() {
                                   ))}
                                 </div>
 
-                                {/* Per-style img2img editing buttons */}
-                                <div className="mt-3 border-t border-indigo-200 pt-3">
-                                  <p className="mb-2 text-xs font-medium text-indigo-700">
-                                    Editar mi foto con un corte:
-                                  </p>
-                                  <div className="grid grid-cols-2 gap-2">
-                                    {getGroomingStyles().map((style) => {
-                                      const isThisGenerating = generatingStyleId === style.id
-                                      const isGenerated = !!groomingPreviews[style.id]
-                                      return (
-                                        <button
-                                          key={style.id}
-                                          type="button"
-                                          disabled={!!generatingStyleId}
-                                          onClick={async () => {
-                                            if (geo.status !== 'in_range') return
-                                            setGeneratingStyleId(style.id)
-                                            setGroomingError(null)
-                                            try {
-                                              const compressed = petPhotoFile
-                                                ? await compressImageForAPI(petPhotoFile)
-                                                : null
-                                              if (!compressed) {
-                                                setGroomingError('No se pudo comprimir la imagen.')
-                                                return
-                                              }
-                                              const result = await editGroomingPhotoAction(
-                                                style.id,
-                                                style.name,
-                                                style.description,
-                                                compressed.base64,
-                                                compressed.file.type,
-                                              )
-                                              if (result.data) {
-                                                setGroomingPreviews((prev) => ({
-                                                  ...prev,
-                                                  [style.id]: {
-                                                    name: result.data!.name,
-                                                    description: result.data!.description,
-                                                    imageUrl: `data:image/png;base64,${result.data!.base64}`,
-                                                  },
-                                                }))
-                                              } else {
-                                                setGroomingError(
-                                                  result.error ?? 'No se pudo editar la imagen.',
-                                                )
-                                              }
-                                            } catch (err) {
-                                              console.error('[Edit grooming]', err)
-                                              setGroomingError('Error al editar la foto.')
-                                            } finally {
-                                              setGeneratingStyleId(null)
-                                            }
-                                          }}
-                                          className={cn(
-                                            'flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-medium transition-all',
-                                            isGenerated
-                                              ? 'border-green-300 bg-green-50 text-green-700'
-                                              : 'border-indigo-300 bg-white text-indigo-600 hover:border-indigo-400 hover:bg-indigo-50',
-                                            !!generatingStyleId && 'cursor-not-allowed opacity-60',
-                                          )}
-                                        >
-                                          {isThisGenerating ? (
-                                            <>
-                                              <Loader2 className="h-3 w-3 animate-spin" />
-                                              Generando...
-                                            </>
-                                          ) : isGenerated ? (
-                                            <>
-                                              <CheckCircle className="h-3 w-3" />
-                                              {style.name}
-                                            </>
-                                          ) : (
-                                            <>
-                                              <Sparkles className="h-3 w-3" />
-                                              {style.name}
-                                            </>
-                                          )}
-                                        </button>
-                                      )
-                                    })}
-                                  </div>
-
-                                  {groomingError && (
-                                    <div className="mt-2 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-700">
-                                      <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
-                                      {groomingError}
-                                    </div>
-                                  )}
-
-                                  {generatingStyleId && (
-                                    <p className="mt-2 text-center text-xs text-slate-500">
-                                      La vista previa aparecerá en el panel lateral →
+                                {/* Dynamic AI-suggested grooming styles */}
+                                {suggestedStyles.length > 0 && (
+                                  <div className="mt-3 border-t border-indigo-200 pt-3">
+                                    <p className="mb-2 text-xs font-medium text-indigo-700">
+                                      Editar mi foto con un corte:
                                     </p>
-                                  )}
-                                </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      {suggestedStyles.map((style) => {
+                                        const isThisGenerating = generatingStyleId === style.id
+                                        const isGenerated = !!groomingPreviews[style.id]
+                                        return (
+                                          <button
+                                            key={style.id}
+                                            type="button"
+                                            disabled={!!generatingStyleId}
+                                            onClick={async () => {
+                                              if (geo.status !== 'in_range') return
+                                              setGeneratingStyleId(style.id)
+                                              setGroomingError(null)
+                                              try {
+                                                const compressed = petPhotoFile
+                                                  ? await compressImageForAPI(petPhotoFile)
+                                                  : null
+                                                if (!compressed) {
+                                                  setGroomingError('No se pudo comprimir la imagen.')
+                                                  return
+                                                }
+                                                const result = await editGroomingPhotoAction(
+                                                  style.id,
+                                                  style.name,
+                                                  style.dallePrompt,
+                                                  compressed.base64,
+                                                  compressed.file.type,
+                                                )
+                                                if (result.data) {
+                                                  setGroomingPreviews((prev) => ({
+                                                    ...prev,
+                                                    [style.id]: {
+                                                      styleId: result.data!.styleId,
+                                                      name: result.data!.name,
+                                                      description: style.description,
+                                                      imageUrl: `data:image/png;base64,${result.data!.base64}`,
+                                                    },
+                                                  }))
+                                                } else {
+                                                  setGroomingError(
+                                                    result.error ?? 'No se pudo editar la imagen.',
+                                                  )
+                                                }
+                                              } catch (err) {
+                                                console.error('[Edit grooming]', err)
+                                                setGroomingError('Error al editar la foto.')
+                                              } finally {
+                                                setGeneratingStyleId(null)
+                                              }
+                                            }}
+                                            className={cn(
+                                              'flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-medium transition-all',
+                                              isGenerated
+                                                ? 'border-green-300 bg-green-50 text-green-700'
+                                                : 'border-[#FF8C7A]/30 bg-white text-[#FF8C7A] hover:border-[#FF8C7A] hover:bg-[#FF8C7A]/5',
+                                              !!generatingStyleId && 'cursor-not-allowed opacity-60',
+                                            )}
+                                          >
+                                            {isThisGenerating ? (
+                                              <>
+                                                <Loader2 className="h-3 w-3 animate-spin" />
+                                                Generando...
+                                              </>
+                                            ) : isGenerated ? (
+                                              <>
+                                                <CheckCircle className="h-3 w-3" />
+                                                {style.name}
+                                              </>
+                                            ) : (
+                                              <>
+                                                <Sparkles className="h-3 w-3" />
+                                                {style.name}
+                                              </>
+                                            )}
+                                          </button>
+                                        )
+                                      })}
+                                    </div>
+
+                                    {groomingError && (
+                                      <div className="mt-2 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-700">
+                                        <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                                        {groomingError}
+                                      </div>
+                                    )}
+
+                                    {generatingStyleId && (
+                                      <p className="mt-2 text-center text-xs text-slate-500">
+                                        La vista previa aparecerá en el panel lateral →
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -1045,23 +1105,13 @@ export function AppointmentForm() {
                       {isFieldVisible('scheduledAt') && (
                         <div className="space-y-2">
                           <Label htmlFor="scheduledAt">Fecha y hora *</Label>
-                          <Input
-                            id="scheduledAt"
-                            type="datetime-local"
-                            {...register('scheduledAt')}
-                            min={new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16)}
-                            aria-invalid={!!errors.scheduledAt}
-                            aria-describedby={
-                              errors.scheduledAt ? 'scheduledAt-error' : 'scheduledAt-hint'
-                            }
-                            className={cn(
-                              'min-h-[44px]',
-                              errors.scheduledAt
-                                ? 'border-red-400 focus-visible:ring-red-300'
-                                : touchedFields.scheduledAt && !errors.scheduledAt
-                                  ? 'border-green-400 focus-visible:ring-green-200'
-                                  : '',
-                            )}
+                          <DateTimePicker
+                            value={watch('scheduledAt') ?? ''}
+                            onChange={(iso) => {
+                              setValue('scheduledAt', iso, { shouldValidate: true })
+                            }}
+                            error={!!errors.scheduledAt}
+                            touched={!!touchedFields.scheduledAt}
                           />
                           <p id="scheduledAt-hint" className="text-xs text-slate-400">
                             Selecciona un día y hora. Las citas deben agendarse con al menos 1 hora
@@ -1077,25 +1127,6 @@ export function AppointmentForm() {
                               {errors.scheduledAt.message}
                             </p>
                           )}
-                        </div>
-                      )}
-
-                      {aiAnalysis && (
-                        <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-3">
-                          <p className="mb-2 text-xs font-semibold text-indigo-700">
-                            Recomendaciones IA para {watch('petName')}:
-                          </p>
-                          <div className="space-y-1.5">
-                            {aiAnalysis.recommendations.map((rec, i) => (
-                              <div key={i} className="text-xs text-slate-700">
-                                <span className="font-medium">{rec.service}</span> —{' '}
-                                {rec.estimatedPrice}
-                              </div>
-                            ))}
-                          </div>
-                          <p className="mt-2 text-xs text-indigo-600">
-                            Tiempo estimado de grooming: {aiAnalysis.estimatedGroomingTime} min
-                          </p>
                         </div>
                       )}
                     </CardContent>
@@ -1207,6 +1238,14 @@ export function AppointmentForm() {
                                   }).format(new Date(watch('scheduledAt')))
                                 : '—',
                             },
+                            ...(selectedGroomingStyleId && groomingPreviews[selectedGroomingStyleId]
+                              ? [
+                                  {
+                                    label: 'Corte recomendado con IA',
+                                    value: groomingPreviews[selectedGroomingStyleId].name,
+                                  },
+                                ]
+                              : []),
                           ].map(({ label, value }) => (
                             <div
                               key={label}
@@ -1289,18 +1328,50 @@ export function AppointmentForm() {
               </form>
             </div>
 
-            {/* Right / Bottom: side panel — pet photo + grooming preview */}
+            {/* Right / Bottom: side panel — pet photo + grooming preview with scroller */}
             {hasSidePanel && (
               <div className="w-full shrink-0 space-y-4 lg:sticky lg:top-6 lg:w-72">
                 {petPhotoPreview && (
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-slate-600">Foto actual</CardTitle>
+                      <CardTitle className="text-sm text-slate-600">
+                        {previewEntries.length > 0 ? 'Antes y Después' : 'Foto actual'}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="relative w-full overflow-hidden rounded-xl bg-slate-100" style={{ aspectRatio: '1 / 1' }}>
-                        <Image src={petPhotoPreview} alt="Mascota" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-contain" />
-                      </div>
+                      {previewEntries.length > 0 ? (
+                        <>
+                          <BeforeAfterScroller
+                            originalImage={petPhotoPreview}
+                            previews={previewEntries.map(([styleId, p]) => ({
+                              styleId,
+                              name: p.name,
+                              description: p.description,
+                              imageUrl: p.imageUrl,
+                            }))}
+                            selectedStyleId={selectedGroomingStyleId}
+                            onSelectStyle={setSelectedGroomingStyleId}
+                            isSelectable={previewEntries.length >= 1}
+                          />
+                          {selectedGroomingStyleId && (
+                            <p className="mt-2 text-center text-xs text-green-600">
+                              <CheckCircle className="mr-1 inline h-3 w-3" />
+                              Corte seleccionado:{' '}
+                              {groomingPreviews[selectedGroomingStyleId]?.name}
+                            </p>
+                          )}
+                          {previewEntries.length > 1 && !selectedGroomingStyleId && (
+                            <p className="mt-2 text-center text-xs text-amber-600">
+                              <AlertCircle className="mr-1 inline h-3 w-3" />
+                              Selecciona uno de los cortes para continuar
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <div className="relative w-full overflow-hidden rounded-xl bg-slate-100" style={{ aspectRatio: '1 / 1' }}>
+                          <Image src={petPhotoPreview} alt="Mascota" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-contain" />
+                        </div>
+                      )}
                       {aiAnalysis && (
                         <div className="mt-3 space-y-1 text-xs text-slate-600">
                           <p>
@@ -1322,37 +1393,7 @@ export function AppointmentForm() {
                   </Card>
                 )}
 
-                {previewEntries.length > 0 && (
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-slate-600">
-                        Vista previa del corte
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {previewEntries.map(([styleId, preview]) => (
-                        <div key={styleId}>
-                          <div className="relative w-full overflow-hidden rounded-xl bg-slate-100" style={{ aspectRatio: '1 / 1' }}>
-                            <Image
-                              src={preview.imageUrl}
-                              alt={preview.name}
-                              fill
-                              sizes="(max-width: 640px) 100vw, 288px"
-                              className="object-contain"
-                              unoptimized
-                            />
-                          </div>
-                          <p className="mt-1 text-xs font-medium text-slate-700">
-                            {preview.name}
-                          </p>
-                          <p className="text-xs text-slate-500">{preview.description}</p>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                )}
-
-                {generatingStyleId && (
+                {generatingStyleId && !previewEntries.length && (
                   <Card>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-sm text-slate-600">
@@ -1361,8 +1402,19 @@ export function AppointmentForm() {
                     </CardHeader>
                     <CardContent>
                       <div className="flex h-44 w-full flex-col items-center justify-center gap-2 rounded-xl bg-slate-100">
-                        <Loader2 className="h-6 w-6 animate-spin text-violet-500" />
+                        <Loader2 className="h-6 w-6 animate-spin text-[#FF8C7A]" />
                         <p className="text-xs text-slate-500">Editando foto con IA...</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {generatingStyleId && previewEntries.length > 0 && (
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-center gap-2 rounded-lg bg-indigo-50 p-3 text-xs text-indigo-700">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Generando más vistas previas...
                       </div>
                     </CardContent>
                   </Card>

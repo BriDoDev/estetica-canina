@@ -1,7 +1,7 @@
 # PRD — Paws & Glow
 
 **Product Requirements Document**
-Versión 1.0 | Abril 2026
+Versión 1.3 | Mayo 2026
 
 ---
 
@@ -13,7 +13,7 @@ Paws & Glow es una plataforma SaaS para estéticas caninas que digitaliza el flu
 
 **Solución:** Una plataforma web donde los clientes agendan en 2 minutos, la IA analiza la foto de su mascota y recomienda servicios, y el negocio gestiona todo desde un dashboard unificado.
 
-**Diferenciador clave:** OpenAI Vision analiza el pelaje del perro y recomienda servicios premium basados en el estado real, no en lo que el cliente cree que necesita. DALL-E genera previews de estilos de grooming ("así se verá tu perro después del servicio").
+**Diferenciador clave:** OpenAI Vision analiza el pelaje del perro y recomienda servicios premium basados en el estado real, no en lo que el cliente cree que necesita. GPT-4o sugiere estilos de corte personalizados segun raza/tipo/condicion de pelaje (1-4 estilos configurables). DALL-E gpt-image-1.5 genera previews fotorealistas de cada estilo con scroller interactivo antes/despues.
 
 ---
 

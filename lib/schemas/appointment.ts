@@ -32,6 +32,7 @@ export const appointmentSchema = z.object({
   ]),
   scheduledAt: z.string().min(1, 'La fecha y hora son requeridas'),
   notes: z.string().max(500).optional(),
+  selectedGroomingStyle: z.string().optional(),
   petPhotoFile: z
     .instanceof(File)
     .nullish()
