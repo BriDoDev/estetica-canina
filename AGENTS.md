@@ -1,18 +1,20 @@
 <!-- BEGIN:nextjs-agent-rules -->
+
 # This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
 <!-- END:nextjs-agent-rules -->
 
 ## Commands
 
-| Command | What it does |
-|---------|-------------|
-| `npm run dev` | Dev server on :3000 |
-| `npm run build` | Production build |
-| `npm run lint` | ESLint (eslint-config-next) |
-| `npm run test:e2e` | Playwright (chromium, auto-starts dev server) |
-| `npm run test:e2e:ui` | Playwright in UI mode |
+| Command               | What it does                                  |
+| --------------------- | --------------------------------------------- |
+| `npm run dev`         | Dev server on :3000                           |
+| `npm run build`       | Production build                              |
+| `npm run lint`        | ESLint (eslint-config-next)                   |
+| `npm run test:e2e`    | Playwright (chromium, auto-starts dev server) |
+| `npm run test:e2e:ui` | Playwright in UI mode                         |
 
 No typecheck script in package.json, but TypeScript strict mode is on.
 
@@ -31,6 +33,7 @@ No typecheck script in package.json, but TypeScript strict mode is on.
 ## Architecture
 
 **Route groups** (no path prefix in URLs):
+
 - `app/(public)/` → landing page at `/`
 - `app/(auth)/` → login at `/login`
 - `app/(admin)/` → dashboard, appointments, customers, products, CMS, form-builder, services, reviews, settings
@@ -43,11 +46,11 @@ No typecheck script in package.json, but TypeScript strict mode is on.
 
 ## Supabase clients (3 files, 3 contexts)
 
-| File | Context | Client type |
-|------|---------|------------|
-| `lib/supabase/client.ts` | Browser (`'use client'`) | `createBrowserClient` |
-| `lib/supabase/server.ts` | Server Components / Actions | `createServerClient` + cookies |
-| `lib/supabase/middleware.ts` | Middleware | `createServerClient` + request cookies |
+| File                         | Context                     | Client type                            |
+| ---------------------------- | --------------------------- | -------------------------------------- |
+| `lib/supabase/client.ts`     | Browser (`'use client'`)    | `createBrowserClient`                  |
+| `lib/supabase/server.ts`     | Server Components / Actions | `createServerClient` + cookies         |
+| `lib/supabase/middleware.ts` | Middleware                  | `createServerClient` + request cookies |
 
 ## File conventions
 

@@ -22,7 +22,9 @@ export async function completeAppointmentAction(input: CompleteAppointmentInput)
 
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) return { success: false, error: 'No autorizado.' }
 
     const { error } = await supabase
@@ -55,7 +57,9 @@ export async function updateAppointmentStatusAction(input: UpdateAppointmentStat
 
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) return { success: false, error: 'No autorizado.' }
 
     let error: { message: string } | null = null

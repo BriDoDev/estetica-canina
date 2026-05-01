@@ -8,9 +8,7 @@ interface AnalyzePetResult {
   error: string | null
 }
 
-export async function analyzePetAction(
-  formData: FormData
-): Promise<AnalyzePetResult> {
+export async function analyzePetAction(formData: FormData): Promise<AnalyzePetResult> {
   try {
     const file = formData.get('petPhoto') as File | null
 

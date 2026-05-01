@@ -150,9 +150,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
       }
 
       if (editingService) {
-        setServices((prev) =>
-          prev.map((s) => (s.id === editingService.id ? updatedService : s))
-        )
+        setServices((prev) => prev.map((s) => (s.id === editingService.id ? updatedService : s)))
       } else {
         setServices((prev) => [...prev, updatedService])
       }
@@ -184,9 +182,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
   }
 
   const toggleActive = (id: string) => {
-    setServices((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, active: !s.active } : s))
-    )
+    setServices((prev) => prev.map((s) => (s.id === id ? { ...s, active: !s.active } : s)))
   }
 
   const saveAll = async () => {
@@ -201,41 +197,34 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <Button onClick={openCreate} className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-          <Plus className="w-4 h-4" />
+        <Button onClick={openCreate} className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+          <Plus className="h-4 w-4" />
           Nuevo servicio
         </Button>
         <div className="flex items-center gap-3">
-          {saveMsg && (
-            <span className="text-sm text-slate-600">{saveMsg}</span>
-          )}
+          {saveMsg && <span className="text-sm text-slate-600">{saveMsg}</span>}
           <Button onClick={saveAll} disabled={saving} variant="outline" className="gap-2">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             Guardar cambios
           </Button>
         </div>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {services.map((svc) => (
           <div
             key={svc.id}
-            className={`border rounded-2xl overflow-hidden bg-white transition-opacity ${svc.active ? 'border-slate-200' : 'border-slate-100 opacity-60'}`}
+            className={`overflow-hidden rounded-2xl border bg-white transition-opacity ${svc.active ? 'border-slate-200' : 'border-slate-100 opacity-60'}`}
           >
             {svc.imageUrl ? (
-              <div className="relative w-full h-40">
-                <Image
-                  src={svc.imageUrl}
-                  alt={svc.name}
-                  fill
-                  className="object-cover"
-                />
+              <div className="relative h-40 w-full">
+                <Image src={svc.imageUrl} alt={svc.name} fill className="object-cover" />
               </div>
             ) : null}
             <div className={`p-4 ${svc.imageUrl ? '' : ''}`}>
-              <div className="flex items-start justify-between mb-3">
+              <div className="mb-3 flex items-start justify-between">
                 <div className="flex items-center gap-2">
-                  <GripVertical className="w-4 h-4 text-slate-300 cursor-grab" />
+                  <GripVertical className="h-4 w-4 cursor-grab text-slate-300" />
                   {!svc.imageUrl && <span className="text-2xl">{svc.icon}</span>}
                 </div>
                 <div className="flex items-center gap-2">
@@ -246,26 +235,26 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
                   />
                   <button
                     onClick={() => openEdit(svc)}
-                    className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-indigo-600 transition-colors"
+                    className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-indigo-600"
                     aria-label="Editar"
                   >
-                    <Pencil className="w-3.5 h-3.5" />
+                    <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => setDeleteId(svc.id)}
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 transition-colors"
+                    className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
                     aria-label="Eliminar"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
-              <h3 className="font-semibold text-slate-800 mb-1">{svc.name}</h3>
-              <p className="text-xs text-slate-500 mb-3 line-clamp-2">{svc.description}</p>
+              <h3 className="mb-1 font-semibold text-slate-800">{svc.name}</h3>
+              <p className="mb-3 line-clamp-2 text-xs text-slate-500">{svc.description}</p>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-indigo-600">{svc.price}</span>
                 {svc.badge && (
-                  <Badge className="bg-indigo-100 text-indigo-700 border-none text-xs">
+                  <Badge className="border-none bg-indigo-100 text-xs text-indigo-700">
                     {svc.badge}
                   </Badge>
                 )}
@@ -277,11 +266,9 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>
-              {editingService ? 'Editar servicio' : 'Nuevo servicio'}
-            </DialogTitle>
+            <DialogTitle>{editingService ? 'Editar servicio' : 'Nuevo servicio'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* Image upload */}
@@ -289,24 +276,24 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
               <Label>Imagen del servicio</Label>
               {imagePreview ? (
                 <div className="relative">
-                  <div className="relative w-full h-40 rounded-xl overflow-hidden border border-slate-200">
+                  <div className="relative h-40 w-full overflow-hidden rounded-xl border border-slate-200">
                     <Image src={imagePreview} alt="Preview" fill className="object-cover" />
                   </div>
                   <button
                     type="button"
                     onClick={removeImage}
-                    className="absolute top-2 right-2 w-7 h-7 bg-red-100 text-red-500 rounded-full flex items-center justify-center hover:bg-red-200 transition-colors"
+                    className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-100 text-red-500 transition-colors hover:bg-red-200"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
               ) : (
                 <button
                   type="button"
                   onClick={() => imageInputRef.current?.click()}
-                  className="w-full h-32 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-indigo-400 hover:bg-indigo-50 transition-colors text-slate-500 hover:text-indigo-600"
+                  className="flex h-32 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 transition-colors hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600"
                 >
-                  <ImagePlus className="w-6 h-6" />
+                  <ImagePlus className="h-6 w-6" />
                   <span className="text-sm font-medium">Subir imagen</span>
                   <span className="text-xs text-slate-400">JPG, PNG o WebP · Máx 2MB</span>
                 </button>
@@ -334,9 +321,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
                 <Label>Badge (opcional)</Label>
                 <Input
                   value={form.badge ?? ''}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, badge: e.target.value || null }))
-                  }
+                  onChange={(e) => setForm((f) => ({ ...f, badge: e.target.value || null }))}
                   placeholder="Popular"
                 />
               </div>
@@ -381,9 +366,9 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
             <Button
               onClick={saveDialog}
               disabled={!form.name.trim() || dialogSaving}
-              className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+              className="gap-2 bg-indigo-600 hover:bg-indigo-700"
             >
-              {dialogSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+              {dialogSaving && <Loader2 className="h-4 w-4 animate-spin" />}
               {editingService ? 'Guardar cambios' : 'Crear servicio'}
             </Button>
           </DialogFooter>
@@ -401,10 +386,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={deleteService}
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={deleteService} className="bg-red-600 hover:bg-red-700">
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>

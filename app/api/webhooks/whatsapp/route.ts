@@ -16,10 +16,10 @@ export async function POST(request: NextRequest) {
     // 3. Update appointment status if applicable
     // 4. Send automated response via Twilio API
 
-    return new NextResponse(
-      `<?xml version="1.0" encoding="UTF-8"?><Response></Response>`,
-      { status: 200, headers: { 'Content-Type': 'text/xml' } }
-    )
+    return new NextResponse(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`, {
+      status: 200,
+      headers: { 'Content-Type': 'text/xml' },
+    })
   } catch (err) {
     console.error('[WhatsApp Webhook] Error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  return new NextResponse(
-    `<?xml version="1.0" encoding="UTF-8"?><Response></Response>`,
-    { status: 200, headers: { 'Content-Type': 'text/xml' } }
-  )
+  return new NextResponse(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`, {
+    status: 200,
+    headers: { 'Content-Type': 'text/xml' },
+  })
 }

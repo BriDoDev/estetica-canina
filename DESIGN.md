@@ -3,30 +3,30 @@ version: alpha
 name: Paws & Glow — Warm Pastel Canine
 description: Estética canina premium con diagnóstico IA. Vibrante, amigable, accesible.
 colors:
-  primary: "#FF8C7A"
-  on-primary: "#4A1E1E"
-  primary-container: "#FFDAD6"
-  on-primary-container: "#410002"
-  secondary: "#B5EAD7"
-  on-secondary: "#3A6B5C"
-  secondary-container: "#D6F7EC"
-  tertiary: "#C3B1E1"
-  on-tertiary: "#4A3F6B"
-  tertiary-container: "#E8DEF8"
-  neutral: "#FFF8F0"
-  on-neutral: "#4A3F6B"
-  surface: "#FFFFFF"
-  on-surface: "#4A3F6B"
-  surface-dim: "#F5EDFA"
-  surface-bright: "#FFF8F0"
-  outline: "#F0E4D4"
-  error: "#FFB3B3"
-  on-error: "#7A3B3B"
-  error-container: "#FFDAD6"
-  success: "#A8E6CF"
-  on-success: "#3A6B5C"
-  warning: "#FFE5B4"
-  on-warning: "#7A5C3B"
+  primary: '#FF8C7A'
+  on-primary: '#4A1E1E'
+  primary-container: '#FFDAD6'
+  on-primary-container: '#410002'
+  secondary: '#B5EAD7'
+  on-secondary: '#3A6B5C'
+  secondary-container: '#D6F7EC'
+  tertiary: '#C3B1E1'
+  on-tertiary: '#4A3F6B'
+  tertiary-container: '#E8DEF8'
+  neutral: '#FFF8F0'
+  on-neutral: '#4A3F6B'
+  surface: '#FFFFFF'
+  on-surface: '#4A3F6B'
+  surface-dim: '#F5EDFA'
+  surface-bright: '#FFF8F0'
+  outline: '#F0E4D4'
+  error: '#FFB3B3'
+  on-error: '#7A3B3B'
+  error-container: '#FFDAD6'
+  success: '#A8E6CF'
+  on-success: '#3A6B5C'
+  warning: '#FFE5B4'
+  on-warning: '#7A5C3B'
 typography:
   headline-lg:
     fontFamily: Quicksand
@@ -87,68 +87,68 @@ spacing:
   margin: 16px
 components:
   card-elevated:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface}'
+    rounded: '{rounded.lg}'
     padding: 24px
   card-outlined:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface}'
+    rounded: '{rounded.lg}'
     padding: 24px
   card-filled:
-    backgroundColor: "{colors.surface-dim}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface-dim}'
+    rounded: '{rounded.lg}'
     padding: 24px
   button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    rounded: "{rounded.sm}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    rounded: '{rounded.sm}'
     padding: 12px
   button-primary-hover:
-    backgroundColor: "{colors.tertiary}"
-    textColor: "{colors.on-tertiary}"
+    backgroundColor: '{colors.tertiary}'
+    textColor: '{colors.on-tertiary}'
   button-outline:
     backgroundColor: transparent
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.sm}"
+    textColor: '{colors.on-surface}'
+    rounded: '{rounded.sm}'
     padding: 12px
   badge:
-    backgroundColor: "{colors.primary-container}"
-    textColor: "{colors.on-primary-container}"
-    rounded: "{rounded.xs}"
+    backgroundColor: '{colors.primary-container}'
+    textColor: '{colors.on-primary-container}'
+    rounded: '{rounded.xs}'
     padding: 6px
   input-field:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.sm}"
+    backgroundColor: '{colors.surface}'
+    textColor: '{colors.on-surface}'
+    rounded: '{rounded.sm}'
     padding: 12px
   sidebar-item:
     backgroundColor: transparent
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.sm}"
+    textColor: '{colors.on-surface}'
+    rounded: '{rounded.sm}'
     padding: 10px
   sidebar-item-active:
-    backgroundColor: "{colors.primary-container}"
-    textColor: "{colors.on-primary-container}"
-    rounded: "{rounded.sm}"
+    backgroundColor: '{colors.primary-container}'
+    textColor: '{colors.on-primary-container}'
+    rounded: '{rounded.sm}'
   table-row:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.sm}"
+    backgroundColor: '{colors.surface}'
+    rounded: '{rounded.sm}'
     padding: 12px
   table-row-hover:
-    backgroundColor: "{colors.surface-dim}"
+    backgroundColor: '{colors.surface-dim}'
   stat-card:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface}'
+    rounded: '{rounded.lg}'
     padding: 20px
   chip-filter:
-    backgroundColor: "{colors.surface-dim}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.xs}"
+    backgroundColor: '{colors.surface-dim}'
+    textColor: '{colors.on-surface}'
+    rounded: '{rounded.xs}'
     padding: 8px
   chip-filter-active:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    rounded: "{rounded.xs}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    rounded: '{rounded.xs}'
     padding: 8px
 ---
 
@@ -217,23 +217,28 @@ Toda la interfaz usa **Quicksand** — una fuente geométrica y amigable con cur
 ## Components
 
 ### Dashboard Cards
+
 - **Stat cards**: Elevated, 20px rounded, 20px padding. Icono abajo, valor grande arriba.
 - **Recent items card**: Outlined, sin sombra. Items con hover background (#F5EDFA). Avatares circulares con gradiente.
 
 ### Buttons
+
 - **Primary**: Coral (#FF8C7A) fondo, texto blanco, 12px rounded, 12px padding. Hover: Lavanda (#C3B1E1).
 - **Outline**: Transparente, borde slate-200, texto oscuro.
 - **Ghost**: Sin borde, solo texto. Para acciones destructivas (cancelar).
 
 ### Chips & Filters
+
 - **Inactive**: Fondo surface-dim, texto on-surface. 8px rounded.
 - **Active**: Fondo primary, texto blanco. Sin borde.
 
 ### Table Rows
+
 - **Default**: Fondo surface, 12px rounded. Sin bordes entre filas.
 - **Hover**: Fondo surface-dim. Transición suave 200ms.
 
 ### Sidebar
+
 - **Active item**: Fondo primary-container, texto on-primary-container. 12px rounded.
 - **Inactive item**: Transparente, texto on-surface. Hover: surface-dim.
 

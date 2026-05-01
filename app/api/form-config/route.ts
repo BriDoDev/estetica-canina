@@ -24,22 +24,13 @@ export async function GET() {
     const supabase = await createClient()
 
     const [configResult, servicesResult] = await Promise.all([
-      supabase
-        .from('landing_config')
-        .select('value')
-        .eq('key', 'appointment_form_config')
-        .single(),
-      supabase
-        .from('landing_config')
-        .select('value')
-        .eq('key', 'services')
-        .single(),
+      supabase.from('landing_config').select('value').eq('key', 'appointment_form_config').single(),
+      supabase.from('landing_config').select('value').eq('key', 'services').single(),
     ])
 
-    const config: FormConfig =
-      configResult.data?.value
-        ? (configResult.data.value as unknown as FormConfig)
-        : DEFAULT_FORM_CONFIG
+    const config: FormConfig = configResult.data?.value
+      ? (configResult.data.value as unknown as FormConfig)
+      : DEFAULT_FORM_CONFIG
 
     const services: LandingService[] =
       servicesResult.data?.value && Array.isArray(servicesResult.data.value)
@@ -52,7 +43,7 @@ export async function GET() {
     console.error('form-config route error:', err)
     return NextResponse.json(
       { config: DEFAULT_FORM_CONFIG, services: [] } satisfies FormConfigResponse,
-      { status: 200 }
+      { status: 200 },
     )
   }
 }

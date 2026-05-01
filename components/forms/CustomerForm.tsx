@@ -38,9 +38,7 @@ export function CustomerForm({ onSubmit, isLoading = false, defaultValues }: Cus
           {...register('fullName')}
           className={errors.fullName ? 'border-red-500' : ''}
         />
-        {errors.fullName && (
-          <p className="text-red-500 text-xs">{errors.fullName.message}</p>
-        )}
+        {errors.fullName && <p className="text-xs text-red-500">{errors.fullName.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -52,9 +50,7 @@ export function CustomerForm({ onSubmit, isLoading = false, defaultValues }: Cus
           {...register('email')}
           className={errors.email ? 'border-red-500' : ''}
         />
-        {errors.email && (
-          <p className="text-red-500 text-xs">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -65,19 +61,17 @@ export function CustomerForm({ onSubmit, isLoading = false, defaultValues }: Cus
           {...register('phone')}
           className={errors.phone ? 'border-red-500' : ''}
         />
-        {errors.phone && (
-          <p className="text-red-500 text-xs">{errors.phone.message}</p>
-        )}
+        {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
       </div>
 
-      <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+      <div className="flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-3">
         <input
           id="whatsappOptIn"
           type="checkbox"
           {...register('whatsappOptIn')}
-          className="w-4 h-4 text-green-600 accent-green-600"
+          className="h-4 w-4 text-green-600 accent-green-600"
         />
-        <Label htmlFor="whatsappOptIn" className="text-sm text-green-800 cursor-pointer">
+        <Label htmlFor="whatsappOptIn" className="cursor-pointer text-sm text-green-800">
           Recibir notificaciones por WhatsApp
         </Label>
       </div>
@@ -97,9 +91,7 @@ export function CustomerForm({ onSubmit, isLoading = false, defaultValues }: Cus
         disabled={isLoading}
         className="w-full bg-indigo-600 hover:bg-indigo-700"
       >
-        {isLoading ? (
-          <Loader2 className="w-4 h-4 animate-spin mr-2" />
-        ) : null}
+        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Guardar cliente
       </Button>
     </form>

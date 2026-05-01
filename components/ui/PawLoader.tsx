@@ -38,11 +38,11 @@ export function PawLoader({ isLoading, message = 'Cargando...' }: PawLoaderProps
       aria-label={message}
     >
       <div className="flex flex-col items-center gap-4">
-        <div className="relative w-20 h-20 animate-bounce">
-          <div className="w-20 h-20 flex items-center justify-center">
+        <div className="relative h-20 w-20 animate-bounce">
+          <div className="flex h-20 w-20 items-center justify-center">
             <svg
               viewBox="0 0 100 100"
-              className="w-full h-full fill-indigo-500 opacity-90"
+              className="h-full w-full fill-indigo-500 opacity-90"
               aria-hidden="true"
             >
               <ellipse cx="50" cy="75" rx="22" ry="18" />
@@ -53,7 +53,7 @@ export function PawLoader({ isLoading, message = 'Cargando...' }: PawLoaderProps
             </svg>
           </div>
         </div>
-        <p className="text-slate-600 text-sm font-medium animate-pulse">{message}</p>
+        <p className="animate-pulse text-sm font-medium text-slate-600">{message}</p>
       </div>
     </div>
   )

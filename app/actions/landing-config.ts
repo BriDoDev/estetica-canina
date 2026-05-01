@@ -92,10 +92,7 @@ export async function updateConfigAction(key: string, value: unknown, label?: st
 export async function getAllConfigAction() {
   try {
     const supabase = await createClient()
-    const { data, error } = await supabase
-      .from('landing_config')
-      .select('*')
-      .order('key')
+    const { data, error } = await supabase.from('landing_config').select('*').order('key')
 
     return { data: data ?? [], error: error?.message ?? null }
   } catch (err) {

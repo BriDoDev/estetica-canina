@@ -7,7 +7,7 @@ import type { GroomingStylePreview } from '@/lib/ai/generate-grooming'
 export async function generateGroomingPreviewAction(
   breed: string,
   imageBase64?: string,
-  imageMimeType?: string
+  imageMimeType?: string,
 ): Promise<{
   data: GroomingStylePreview[] | null
   error: string | null
@@ -20,9 +20,7 @@ export async function generateGroomingPreviewAction(
       .eq('key', 'grooming_image_count')
       .single()
 
-    const count = configData?.value
-      ? Math.min(parseInt(String(configData.value), 10) || 1, 4)
-      : 1
+    const count = configData?.value ? Math.min(parseInt(String(configData.value), 10) || 1, 4) : 1
 
     // ── Image-to-Image pipeline for faithful grooming previews ──
     const previews = await generateGroomingPreview(breed, count, imageBase64, imageMimeType)

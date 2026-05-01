@@ -30,9 +30,7 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
   const dLon = ((lon2 - lon1) * Math.PI) / 180
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
@@ -47,11 +45,13 @@ export function useGeolocation() {
 
   useEffect(() => {
     if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
-      queueMicrotask(() => setState((s) => ({
-        ...s,
-        status: 'unavailable',
-        errorMsg: 'Tu navegador no soporta geolocalización.',
-      })))
+      queueMicrotask(() =>
+        setState((s) => ({
+          ...s,
+          status: 'unavailable',
+          errorMsg: 'Tu navegador no soporta geolocalización.',
+        })),
+      )
       return
     }
 
@@ -67,7 +67,7 @@ export function useGeolocation() {
               pos.coords.latitude,
               pos.coords.longitude,
               salon.lat,
-              salon.lng
+              salon.lng,
             )
             const inRange = dist <= salon.radiusKm
             setState({
@@ -89,7 +89,7 @@ export function useGeolocation() {
                   : 'No se pudo obtener tu ubicación. Intenta de nuevo.',
             }))
           },
-          { timeout: 10000, maximumAge: 60000 }
+          { timeout: 10000, maximumAge: 60000 },
         )
       })
       .catch(() => {

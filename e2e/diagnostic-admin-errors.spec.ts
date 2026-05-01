@@ -19,7 +19,17 @@ test.describe('Backoffice Navigation Diagnostic', () => {
     const firstError = errors.length
 
     // Try each admin route — they'll redirect to login but shouldn't crash
-    const routes = ['/dashboard', '/appointments', '/customers', '/products', '/services', '/reviews', '/cms', '/form-builder', '/settings']
+    const routes = [
+      '/dashboard',
+      '/appointments',
+      '/customers',
+      '/products',
+      '/services',
+      '/reviews',
+      '/cms',
+      '/form-builder',
+      '/settings',
+    ]
     for (const route of routes) {
       await page.goto(route)
       await page.waitForTimeout(500)
@@ -27,6 +37,6 @@ test.describe('Backoffice Navigation Diagnostic', () => {
     }
 
     console.log(`\nTotal errors: ${errors.length}`)
-    errors.forEach(e => console.log('  ❌', e))
+    errors.forEach((e) => console.log('  ❌', e))
   })
 })

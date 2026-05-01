@@ -7,7 +7,7 @@ const openai = new OpenAI({
 
 export async function analyzePetPhoto(
   imageBase64: string,
-  mimeType: string
+  mimeType: string,
 ): Promise<PetAnalysisResult> {
   const prompt = `Eres un experto groomer canino con 20 años de experiencia. Analiza esta foto de una mascota y proporciona un análisis detallado en formato JSON.
 

@@ -45,8 +45,7 @@ export default async function CmsPage() {
 
   const hero = (configMap['hero'] as LandingConfig['hero']) ?? {
     title: 'Tu mascota merece brillar ✨',
-    subtitle:
-      'Estética canina de alto nivel con diagnóstico por inteligencia artificial.',
+    subtitle: 'Estética canina de alto nivel con diagnóstico por inteligencia artificial.',
     ctaPrimary: 'Agendar cita',
     ctaSecondary: 'Ver servicios',
   }
@@ -64,7 +63,7 @@ export default async function CmsPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-3xl">
+    <div className="max-w-3xl space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">CMS Landing</h1>
         <p className="text-slate-500">
@@ -73,7 +72,7 @@ export default async function CmsPage() {
       </div>
 
       {fetchError && (
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
           <span>⚠️</span> {fetchError}
         </div>
       )}
@@ -81,37 +80,37 @@ export default async function CmsPage() {
       <CmsEditor hero={hero} contact={contact} hours={hours} />
 
       {/* Shortcuts to Services and Reviews */}
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Link
           href="/services"
-          className="flex items-center justify-between p-4 border border-slate-200 rounded-2xl hover:border-indigo-200 hover:bg-indigo-50/40 transition-colors group"
+          className="group flex items-center justify-between rounded-2xl border border-slate-200 p-4 transition-colors hover:border-indigo-200 hover:bg-indigo-50/40"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
-              <Scissors className="w-5 h-5 text-indigo-600" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100">
+              <Scissors className="h-5 w-5 text-indigo-600" />
             </div>
             <div>
               <p className="font-semibold text-slate-800">Servicios</p>
               <p className="text-xs text-slate-400">Gestionar servicios del landing</p>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-500 transition-colors" />
+          <ArrowRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-indigo-500" />
         </Link>
 
         <Link
           href="/reviews"
-          className="flex items-center justify-between p-4 border border-slate-200 rounded-2xl hover:border-indigo-200 hover:bg-indigo-50/40 transition-colors group"
+          className="group flex items-center justify-between rounded-2xl border border-slate-200 p-4 transition-colors hover:border-indigo-200 hover:bg-indigo-50/40"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
-              <Star className="w-5 h-5 text-amber-600" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
+              <Star className="h-5 w-5 text-amber-600" />
             </div>
             <div>
               <p className="font-semibold text-slate-800">Reseñas</p>
               <p className="text-xs text-slate-400">Gestionar reseñas del landing</p>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-500 transition-colors" />
+          <ArrowRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-indigo-500" />
         </Link>
       </div>
     </div>

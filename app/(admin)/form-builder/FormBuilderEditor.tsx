@@ -24,14 +24,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import {
-  GripVertical,
-  Loader2,
-  Plus,
-  Trash2,
-  ChevronUp,
-  ChevronDown,
-} from 'lucide-react'
+import { GripVertical, Loader2, Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 
 interface LandingService {
@@ -102,7 +95,11 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
 
   const saveConfig = async () => {
     setSaving(true)
-    const result = await updateConfigAction('appointment_form_config', config, 'Configuración del formulario de citas')
+    const result = await updateConfigAction(
+      'appointment_form_config',
+      config,
+      'Configuración del formulario de citas',
+    )
     setSaving(false)
     showMsg(result.success ? '✅ Cambios guardados' : `❌ ${result.error}`)
   }
@@ -162,7 +159,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
 
   const updateSection = (
     key: keyof FormConfig['sections'],
-    updates: Partial<FormConfig['sections']['customer']>
+    updates: Partial<FormConfig['sections']['customer']>,
   ) => {
     setConfig((c) => ({
       ...c,
@@ -197,18 +194,18 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
     return sectionFields.map((field, idx) => (
       <div
         key={field.id}
-        className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-colors"
+        className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 transition-colors hover:border-slate-300"
       >
-        <GripVertical className="w-4 h-4 text-slate-300 flex-shrink-0 cursor-grab" />
+        <GripVertical className="h-4 w-4 flex-shrink-0 cursor-grab text-slate-300" />
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium text-slate-800 text-sm truncate">{field.label}</span>
-            <Badge variant="secondary" className="text-xs flex-shrink-0">
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex items-center gap-2">
+            <span className="truncate text-sm font-medium text-slate-800">{field.label}</span>
+            <Badge variant="secondary" className="flex-shrink-0 text-xs">
               {FIELD_TYPE_LABELS[field.type]}
             </Badge>
             {CORE_FIELD_IDS.includes(field.id) && (
-              <Badge className="bg-slate-100 text-slate-500 border-none text-xs flex-shrink-0">
+              <Badge className="flex-shrink-0 border-none bg-slate-100 text-xs text-slate-500">
                 Esencial
               </Badge>
             )}
@@ -217,7 +214,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
         </div>
 
         {/* Required toggle */}
-        <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
+        <div className="flex flex-shrink-0 flex-col items-center gap-0.5">
           <span className="text-[10px] text-slate-400">Req.</span>
           <Switch
             checked={field.required}
@@ -227,7 +224,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
         </div>
 
         {/* Visible toggle */}
-        <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
+        <div className="flex flex-shrink-0 flex-col items-center gap-0.5">
           <span className="text-[10px] text-slate-400">Visible</span>
           <Switch
             checked={field.visible}
@@ -241,7 +238,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
           value={field.width}
           onValueChange={(val) => updateField(field.id, { width: val as FormFieldConfig['width'] })}
         >
-          <SelectTrigger className="w-28 h-8 text-xs">
+          <SelectTrigger className="h-8 w-28 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -254,22 +251,22 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
         </Select>
 
         {/* Order arrows */}
-        <div className="flex flex-col gap-0.5 flex-shrink-0">
+        <div className="flex flex-shrink-0 flex-col gap-0.5">
           <button
             onClick={() => moveField(field.id, 'up')}
             disabled={idx === 0}
-            className="p-0.5 rounded hover:bg-slate-100 disabled:opacity-30 text-slate-500"
+            className="rounded p-0.5 text-slate-500 hover:bg-slate-100 disabled:opacity-30"
             aria-label="Subir"
           >
-            <ChevronUp className="w-3.5 h-3.5" />
+            <ChevronUp className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => moveField(field.id, 'down')}
             disabled={idx === sectionFields.length - 1}
-            className="p-0.5 rounded hover:bg-slate-100 disabled:opacity-30 text-slate-500"
+            className="rounded p-0.5 text-slate-500 hover:bg-slate-100 disabled:opacity-30"
             aria-label="Bajar"
           >
-            <ChevronDown className="w-3.5 h-3.5" />
+            <ChevronDown className="h-3.5 w-3.5" />
           </button>
         </div>
 
@@ -277,10 +274,10 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
         <button
           onClick={() => deleteField(field.id)}
           disabled={CORE_FIELD_IDS.includes(field.id)}
-          className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+          className="flex-shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-20"
           aria-label="Eliminar campo"
         >
-          <Trash2 className="w-3.5 h-3.5" />
+          <Trash2 className="h-3.5 w-3.5" />
         </button>
       </div>
     ))
@@ -290,106 +287,129 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
 
   const renderPreview = () => {
     const sections = (['customer', 'pet', 'service'] as const).filter(
-      (s) => config.sections[s].visible
+      (s) => config.sections[s].visible,
     )
 
     return (
-      <div className="max-w-xl mx-auto space-y-4 pointer-events-none select-none">
+      <div className="pointer-events-none mx-auto max-w-xl space-y-4 select-none">
         {/* Step dots */}
-        <div className="flex items-center gap-2 mb-6">
+        <div className="mb-6 flex items-center gap-2">
           {sections.map((s, i) => (
-            <div key={s} className="flex items-center gap-2 flex-1">
+            <div key={s} className="flex flex-1 items-center gap-2">
               <div className="flex items-center gap-2">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 ${i === 0 ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 text-slate-400'}`}>
+                <div
+                  className={`flex h-6 w-6 items-center justify-center rounded-full border-2 text-xs font-bold ${i === 0 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 text-slate-400'}`}
+                >
                   {i + 1}
                 </div>
-                <span className="text-xs text-slate-500 hidden sm:block">
+                <span className="hidden text-xs text-slate-500 sm:block">
                   {config.sections[s].title || SECTION_LABELS[s]}
                 </span>
               </div>
-              {i < sections.length - 1 && <div className="flex-1 h-0.5 bg-slate-200" />}
+              {i < sections.length - 1 && <div className="h-0.5 flex-1 bg-slate-200" />}
             </div>
           ))}
         </div>
 
         {/* First visible section */}
-        {sections[0] && (() => {
-          const sec = sections[0]
-          const fields = config.fields
-            .filter((f) => f.section === sec && f.visible)
-            .sort((a, b) => a.order - b.order)
-          return (
-            <div className="border border-slate-200 rounded-2xl bg-white overflow-hidden shadow-sm">
-              <div className="px-5 pt-5 pb-2 border-b border-slate-100">
-                <h3 className="font-semibold text-slate-800">
-                  {config.sections[sec].title || SECTION_LABELS[sec]}
-                </h3>
-              </div>
-              <div className="p-5 space-y-3">
-                {sec === 'service' ? (
-                  <>
-                    <div className="grid grid-cols-2 gap-2">
-                      {initialServices
-                        .filter((s) => config.enabledServiceIds.includes(s.id) && s.active)
-                        .slice(0, 4)
-                        .map((svc) => (
-                          <div key={svc.id} className="rounded-xl border-2 border-slate-200 overflow-hidden">
-                            {svc.imageUrl && (
-                              <div className="relative w-full h-16">
-                                <Image src={svc.imageUrl} alt={svc.name} fill className="object-cover" />
+        {sections[0] &&
+          (() => {
+            const sec = sections[0]
+            const fields = config.fields
+              .filter((f) => f.section === sec && f.visible)
+              .sort((a, b) => a.order - b.order)
+            return (
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="border-b border-slate-100 px-5 pt-5 pb-2">
+                  <h3 className="font-semibold text-slate-800">
+                    {config.sections[sec].title || SECTION_LABELS[sec]}
+                  </h3>
+                </div>
+                <div className="space-y-3 p-5">
+                  {sec === 'service' ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-2">
+                        {initialServices
+                          .filter((s) => config.enabledServiceIds.includes(s.id) && s.active)
+                          .slice(0, 4)
+                          .map((svc) => (
+                            <div
+                              key={svc.id}
+                              className="overflow-hidden rounded-xl border-2 border-slate-200"
+                            >
+                              {svc.imageUrl && (
+                                <div className="relative h-16 w-full">
+                                  <Image
+                                    src={svc.imageUrl}
+                                    alt={svc.name}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              )}
+                              <div className="p-2">
+                                <div className="mb-0.5 flex items-center gap-1">
+                                  {!svc.imageUrl && <span className="text-sm">{svc.icon}</span>}
+                                  <span className="truncate text-xs font-medium text-slate-700">
+                                    {svc.name}
+                                  </span>
+                                </div>
+                                <p className="text-xs font-bold text-indigo-600">{svc.price}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                      <div className="flex h-8 items-center rounded-lg border border-slate-200 bg-slate-100 px-3">
+                        <span className="text-xs text-slate-400">Fecha y hora</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="grid grid-cols-6 gap-3">
+                      {fields.map((f) => {
+                        const span =
+                          f.width === 'full'
+                            ? 'col-span-6'
+                            : f.width === 'half'
+                              ? 'col-span-3'
+                              : 'col-span-2'
+                        return (
+                          <div key={f.id} className={span}>
+                            <div className="mb-1 text-xs text-slate-500">
+                              {f.label}
+                              {f.required && <span className="ml-0.5 text-red-400">*</span>}
+                            </div>
+                            {f.type === 'checkbox' ? (
+                              <div className="flex items-center gap-2 rounded border border-green-200 bg-green-50 p-2">
+                                <div className="h-3.5 w-3.5 rounded border border-green-400 bg-white" />
+                                <span className="truncate text-xs text-green-800">{f.label}</span>
+                              </div>
+                            ) : f.type === 'textarea' ? (
+                              <div className="h-16 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                                <span className="text-xs text-slate-300">
+                                  {f.placeholder ?? '...'}
+                                </span>
+                              </div>
+                            ) : f.type === 'select' ? (
+                              <div className="flex h-8 items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3">
+                                <span className="text-xs text-slate-400">Seleccionar</span>
+                                <span className="text-xs text-slate-300">▾</span>
+                              </div>
+                            ) : (
+                              <div className="flex h-8 items-center rounded-lg border border-slate-200 bg-slate-50 px-3">
+                                <span className="text-xs text-slate-300">
+                                  {f.placeholder ?? f.label}
+                                </span>
                               </div>
                             )}
-                            <div className="p-2">
-                              <div className="flex items-center gap-1 mb-0.5">
-                                {!svc.imageUrl && <span className="text-sm">{svc.icon}</span>}
-                                <span className="text-xs font-medium text-slate-700 truncate">{svc.name}</span>
-                              </div>
-                              <p className="text-xs font-bold text-indigo-600">{svc.price}</p>
-                            </div>
                           </div>
-                        ))}
+                        )
+                      })}
                     </div>
-                    <div className="h-8 bg-slate-100 rounded-lg border border-slate-200 flex items-center px-3">
-                      <span className="text-xs text-slate-400">Fecha y hora</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="grid grid-cols-6 gap-3">
-                    {fields.map((f) => {
-                      const span = f.width === 'full' ? 'col-span-6' : f.width === 'half' ? 'col-span-3' : 'col-span-2'
-                      return (
-                        <div key={f.id} className={span}>
-                          <div className="text-xs text-slate-500 mb-1">
-                            {f.label}{f.required && <span className="text-red-400 ml-0.5">*</span>}
-                          </div>
-                          {f.type === 'checkbox' ? (
-                            <div className="flex items-center gap-2 p-2 bg-green-50 rounded border border-green-200">
-                              <div className="w-3.5 h-3.5 rounded border border-green-400 bg-white" />
-                              <span className="text-xs text-green-800 truncate">{f.label}</span>
-                            </div>
-                          ) : f.type === 'textarea' ? (
-                            <div className="h-16 bg-slate-50 rounded-lg border border-slate-200 px-3 py-2">
-                              <span className="text-xs text-slate-300">{f.placeholder ?? '...'}</span>
-                            </div>
-                          ) : f.type === 'select' ? (
-                            <div className="h-8 bg-slate-50 rounded-lg border border-slate-200 px-3 flex items-center justify-between">
-                              <span className="text-xs text-slate-400">Seleccionar</span>
-                              <span className="text-slate-300 text-xs">▾</span>
-                            </div>
-                          ) : (
-                            <div className="h-8 bg-slate-50 rounded-lg border border-slate-200 px-3 flex items-center">
-                              <span className="text-xs text-slate-300">{f.placeholder ?? f.label}</span>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          )
-        })()}
+            )
+          })()}
 
         {/* Nav buttons mockup */}
         <div className="flex justify-between pt-1">
@@ -407,7 +427,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
   return (
     <>
       <Tabs defaultValue="fields">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <TabsList>
             <TabsTrigger value="fields">Campos</TabsTrigger>
             <TabsTrigger value="sections">Secciones</TabsTrigger>
@@ -418,7 +438,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
           <div className="flex items-center gap-3">
             {saveMsg && <span className="text-sm text-slate-600">{saveMsg}</span>}
             <Button onClick={saveConfig} disabled={saving} variant="outline" className="gap-2">
-              {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
               Guardar cambios
             </Button>
           </div>
@@ -429,22 +449,20 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
           <div className="flex justify-end">
             <Button
               onClick={() => setAddFieldOpen(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+              className="gap-2 bg-indigo-600 hover:bg-indigo-700"
               size="sm"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="h-4 w-4" />
               Añadir campo
             </Button>
           </div>
 
           {(['customer', 'pet', 'service'] as const).map((section) => (
             <div key={section}>
-              <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-3">
+              <h3 className="mb-3 text-sm font-semibold tracking-wide text-slate-700 uppercase">
                 {SECTION_LABELS[section]}
               </h3>
-              <div className="space-y-2">
-                {renderFieldsForSection(section)}
-              </div>
+              <div className="space-y-2">{renderFieldsForSection(section)}</div>
             </div>
           ))}
         </TabsContent>
@@ -452,7 +470,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
         {/* ── Tab 2: Sections ───────────────────────────────── */}
         <TabsContent value="sections" className="space-y-4">
           {(['customer', 'pet', 'service'] as const).map((key) => (
-            <div key={key} className="p-4 bg-white border border-slate-200 rounded-xl space-y-3">
+            <div key={key} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-slate-800">{SECTION_LABELS[key]}</h3>
                 <div className="flex items-center gap-2">
@@ -490,7 +508,7 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
             return (
               <div
                 key={svc.id}
-                className={`flex items-center gap-4 p-3 bg-white border rounded-xl transition-colors ${
+                className={`flex items-center gap-4 rounded-xl border bg-white p-3 transition-colors ${
                   isEnabled ? 'border-indigo-200 bg-indigo-50/30' : 'border-slate-200 opacity-60'
                 }`}
               >
@@ -499,25 +517,30 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                   id={`svc-${svc.id}`}
                   checked={isEnabled}
                   onChange={() => toggleService(svc.id)}
-                  className="w-4 h-4 accent-indigo-600 flex-shrink-0"
+                  className="h-4 w-4 flex-shrink-0 accent-indigo-600"
                 />
                 {svc.imageUrl ? (
-                  <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
                     <Image src={svc.imageUrl} alt={svc.name} fill className="object-cover" />
                   </div>
                 ) : (
-                  <span className="text-2xl flex-shrink-0">{svc.icon}</span>
+                  <span className="flex-shrink-0 text-2xl">{svc.icon}</span>
                 )}
-                <div className="flex-1 min-w-0">
-                  <label htmlFor={`svc-${svc.id}`} className="font-medium text-slate-800 text-sm cursor-pointer">
+                <div className="min-w-0 flex-1">
+                  <label
+                    htmlFor={`svc-${svc.id}`}
+                    className="cursor-pointer text-sm font-medium text-slate-800"
+                  >
                     {svc.name}
                   </label>
-                  <p className="text-xs text-slate-500 truncate">{svc.description}</p>
+                  <p className="truncate text-xs text-slate-500">{svc.description}</p>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="flex-shrink-0 text-right">
                   <p className="text-sm font-bold text-indigo-600">{svc.price}</p>
                   {!svc.active && (
-                    <Badge variant="secondary" className="text-xs">Inactivo</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Inactivo
+                    </Badge>
                   )}
                 </div>
               </div>
@@ -527,8 +550,8 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
 
         {/* ── Tab 4: Preview ────────────────────────────────── */}
         <TabsContent value="preview">
-          <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-6 text-center">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+            <p className="mb-6 text-center text-xs font-semibold tracking-widest text-slate-400 uppercase">
               Preview en vivo — Paso 1
             </p>
             {renderPreview()}
@@ -548,14 +571,18 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                 <Label>Tipo de campo</Label>
                 <Select
                   value={newField.type}
-                  onValueChange={(v) => setNewField((f) => ({ ...f, type: v as FormFieldConfig['type'] }))}
+                  onValueChange={(v) =>
+                    setNewField((f) => ({ ...f, type: v as FormFieldConfig['type'] }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(FIELD_TYPE_LABELS).map(([val, lbl]) => (
-                      <SelectItem key={val} value={val}>{lbl}</SelectItem>
+                      <SelectItem key={val} value={val}>
+                        {lbl}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -564,14 +591,18 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                 <Label>Sección</Label>
                 <Select
                   value={newField.section}
-                  onValueChange={(v) => setNewField((f) => ({ ...f, section: v as FormFieldConfig['section'] }))}
+                  onValueChange={(v) =>
+                    setNewField((f) => ({ ...f, section: v as FormFieldConfig['section'] }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(SECTION_LABELS).map(([val, lbl]) => (
-                      <SelectItem key={val} value={val}>{lbl}</SelectItem>
+                      <SelectItem key={val} value={val}>
+                        {lbl}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -586,10 +617,14 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Nombre del campo * <span className="text-slate-400 text-xs">(sin espacios)</span></Label>
+              <Label>
+                Nombre del campo * <span className="text-xs text-slate-400">(sin espacios)</span>
+              </Label>
               <Input
                 value={newField.name}
-                onChange={(e) => setNewField((f) => ({ ...f, name: e.target.value.replace(/\s/g, '_') }))}
+                onChange={(e) =>
+                  setNewField((f) => ({ ...f, name: e.target.value.replace(/\s/g, '_') }))
+                }
                 placeholder="Ej: cedula_number"
               />
             </div>
@@ -606,14 +641,18 @@ export function FormBuilderEditor({ initialConfig, initialServices }: FormBuilde
                 <Label>Ancho</Label>
                 <Select
                   value={newField.width}
-                  onValueChange={(v) => setNewField((f) => ({ ...f, width: v as FormFieldConfig['width'] }))}
+                  onValueChange={(v) =>
+                    setNewField((f) => ({ ...f, width: v as FormFieldConfig['width'] }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(WIDTH_LABELS).map(([val, lbl]) => (
-                      <SelectItem key={val} value={val}>{lbl}</SelectItem>
+                      <SelectItem key={val} value={val}>
+                        {lbl}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

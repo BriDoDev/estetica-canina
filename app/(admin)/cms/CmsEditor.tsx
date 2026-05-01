@@ -35,30 +35,24 @@ interface CmsEditorProps {
 
 type SaveState = 'idle' | 'saving' | 'success' | 'error'
 
-function SectionSaveButton({
-  state,
-  onSave,
-}: {
-  state: SaveState
-  onSave: () => void
-}) {
+function SectionSaveButton({ state, onSave }: { state: SaveState; onSave: () => void }) {
   return (
     <Button
       onClick={onSave}
       disabled={state === 'saving'}
       size="sm"
-      className="bg-indigo-600 hover:bg-indigo-700 gap-2 min-w-[120px]"
+      className="min-w-[120px] gap-2 bg-indigo-600 hover:bg-indigo-700"
     >
-      {state === 'saving' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-      {state === 'success' && <Check className="w-3.5 h-3.5" />}
-      {state === 'error' && <AlertCircle className="w-3.5 h-3.5" />}
+      {state === 'saving' && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+      {state === 'success' && <Check className="h-3.5 w-3.5" />}
+      {state === 'error' && <AlertCircle className="h-3.5 w-3.5" />}
       {state === 'saving'
         ? 'Guardando...'
         : state === 'success'
-        ? 'Guardado'
-        : state === 'error'
-        ? 'Error'
-        : 'Guardar sección'}
+          ? 'Guardado'
+          : state === 'error'
+            ? 'Error'
+            : 'Guardar sección'}
     </Button>
   )
 }
@@ -73,7 +67,7 @@ function useSectionSave(key: string, label: string) {
       setState(result.success ? 'success' : 'error')
       setTimeout(() => setState('idle'), 2500)
     },
-    [key, label]
+    [key, label],
   )
 
   return { state, save }
@@ -94,14 +88,11 @@ export function CmsEditor({ hero, contact, hours }: CmsEditorProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-base">Hero — Portada</CardTitle>
-          <SectionSaveButton
-            state={heroSave.state}
-            onSave={() => heroSave.save(heroForm)}
-          />
+          <SectionSaveButton state={heroSave.state} onSave={() => heroSave.save(heroForm)} />
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-500 uppercase tracking-wide">
+            <Label className="text-xs tracking-wide text-slate-500 uppercase">
               Título principal
             </Label>
             <Input
@@ -111,9 +102,7 @@ export function CmsEditor({ hero, contact, hours }: CmsEditorProps) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-500 uppercase tracking-wide">
-              Subtítulo
-            </Label>
+            <Label className="text-xs tracking-wide text-slate-500 uppercase">Subtítulo</Label>
             <Input
               value={heroForm.subtitle ?? ''}
               onChange={(e) => setHeroForm((f) => ({ ...f, subtitle: e.target.value }))}
@@ -122,26 +111,22 @@ export function CmsEditor({ hero, contact, hours }: CmsEditorProps) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs text-slate-500 uppercase tracking-wide">
+              <Label className="text-xs tracking-wide text-slate-500 uppercase">
                 Texto CTA primario
               </Label>
               <Input
                 value={heroForm.ctaPrimary ?? ''}
-                onChange={(e) =>
-                  setHeroForm((f) => ({ ...f, ctaPrimary: e.target.value }))
-                }
+                onChange={(e) => setHeroForm((f) => ({ ...f, ctaPrimary: e.target.value }))}
                 placeholder="Agendar cita"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-slate-500 uppercase tracking-wide">
+              <Label className="text-xs tracking-wide text-slate-500 uppercase">
                 Texto CTA secundario
               </Label>
               <Input
                 value={heroForm.ctaSecondary ?? ''}
-                onChange={(e) =>
-                  setHeroForm((f) => ({ ...f, ctaSecondary: e.target.value }))
-                }
+                onChange={(e) => setHeroForm((f) => ({ ...f, ctaSecondary: e.target.value }))}
                 placeholder="Ver servicios"
               />
             </div>
@@ -160,7 +145,7 @@ export function CmsEditor({ hero, contact, hours }: CmsEditorProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-500 uppercase tracking-wide">
+            <Label className="text-xs tracking-wide text-slate-500 uppercase">
               Teléfono / WhatsApp
             </Label>
             <Input
@@ -170,7 +155,7 @@ export function CmsEditor({ hero, contact, hours }: CmsEditorProps) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-500 uppercase tracking-wide">
+            <Label className="text-xs tracking-wide text-slate-500 uppercase">
               Correo electrónico
             </Label>
             <Input
@@ -181,14 +166,10 @@ export function CmsEditor({ hero, contact, hours }: CmsEditorProps) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-500 uppercase tracking-wide">
-              Dirección
-            </Label>
+            <Label className="text-xs tracking-wide text-slate-500 uppercase">Dirección</Label>
             <Input
               value={contactForm.address ?? ''}
-              onChange={(e) =>
-                setContactForm((f) => ({ ...f, address: e.target.value }))
-              }
+              onChange={(e) => setContactForm((f) => ({ ...f, address: e.target.value }))}
               placeholder="Calle, Ciudad, Estado"
             />
           </div>
@@ -199,40 +180,29 @@ export function CmsEditor({ hero, contact, hours }: CmsEditorProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-base">Horarios de atención</CardTitle>
-          <SectionSaveButton
-            state={hoursSave.state}
-            onSave={() => hoursSave.save(hoursForm)}
-          />
+          <SectionSaveButton state={hoursSave.state} onSave={() => hoursSave.save(hoursForm)} />
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-500 uppercase tracking-wide">
+            <Label className="text-xs tracking-wide text-slate-500 uppercase">
               Lunes – Viernes
             </Label>
             <Input
               value={hoursForm.weekdays ?? ''}
-              onChange={(e) =>
-                setHoursForm((f) => ({ ...f, weekdays: e.target.value }))
-              }
+              onChange={(e) => setHoursForm((f) => ({ ...f, weekdays: e.target.value }))}
               placeholder="Lun–Vie: 9:00–19:00"
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-500 uppercase tracking-wide">
-              Sábado
-            </Label>
+            <Label className="text-xs tracking-wide text-slate-500 uppercase">Sábado</Label>
             <Input
               value={hoursForm.saturday ?? ''}
-              onChange={(e) =>
-                setHoursForm((f) => ({ ...f, saturday: e.target.value }))
-              }
+              onChange={(e) => setHoursForm((f) => ({ ...f, saturday: e.target.value }))}
               placeholder="Sáb: 9:00–17:00"
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-500 uppercase tracking-wide">
-              Domingo
-            </Label>
+            <Label className="text-xs tracking-wide text-slate-500 uppercase">Domingo</Label>
             <Input
               value={hoursForm.sunday ?? ''}
               onChange={(e) => setHoursForm((f) => ({ ...f, sunday: e.target.value }))}

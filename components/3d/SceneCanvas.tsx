@@ -11,7 +11,7 @@ interface SceneCanvasProps {
 
 export function SceneCanvas({ scrollProgress = 0 }: SceneCanvasProps) {
   return (
-    <div className="w-full h-full">
+    <div className="h-full w-full">
       <Canvas
         camera={{ position: [0, 1.5, 4], fov: 45 }}
         shadows
@@ -29,13 +29,7 @@ export function SceneCanvas({ scrollProgress = 0 }: SceneCanvasProps) {
 
           <DogModel scrollProgress={scrollProgress} />
 
-          <ContactShadows
-            position={[0, -1.5, 0]}
-            opacity={0.4}
-            scale={4}
-            blur={2}
-            far={4}
-          />
+          <ContactShadows position={[0, -1.5, 0]} opacity={0.4} scale={4} blur={2} far={4} />
           <Environment preset="city" />
           <OrbitControls
             enablePan={false}

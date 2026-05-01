@@ -13,13 +13,17 @@ test.describe('FLOW-L1: Landing Page', () => {
 
   test('renders services section', async ({ page }) => {
     await page.goto('/')
-    const servicesSection = page.locator('#services, section').filter({ hasText: /Baño|Corte|Grooming|Spa/ })
+    const servicesSection = page
+      .locator('#services, section')
+      .filter({ hasText: /Baño|Corte|Grooming|Spa/ })
     await expect(servicesSection.first()).toBeVisible({ timeout: 15000 })
   })
 
   test('renders testimonials section', async ({ page }) => {
     await page.goto('/')
-    const testimonialsSection = page.locator('section').filter({ hasText: /reseñas|clientes|testimonio/i })
+    const testimonialsSection = page
+      .locator('section')
+      .filter({ hasText: /reseñas|clientes|testimonio/i })
     await expect(testimonialsSection.first()).toBeVisible({ timeout: 15000 })
   })
 

@@ -44,51 +44,51 @@ export async function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-300">
       <div className="container mx-auto px-4 py-14">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center">
-                <PawPrint className="w-4 h-4 text-white" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600">
+                <PawPrint className="h-4 w-4 text-white" />
               </div>
               <div>
-                <p className="font-extrabold text-white text-sm">Paws &amp; Glow</p>
+                <p className="text-sm font-extrabold text-white">Paws &amp; Glow</p>
                 <p className="text-xs text-slate-500">Estética Canina Premium</p>
               </div>
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Cuidamos a tu mejor amigo con amor, experiencia y la última tecnología
-              en diagnóstico por IA.
+            <p className="text-sm leading-relaxed text-slate-400">
+              Cuidamos a tu mejor amigo con amor, experiencia y la última tecnología en diagnóstico
+              por IA.
             </p>
             {/* Social */}
             <div className="flex gap-3">
               <a
                 href="#"
                 aria-label="Instagram"
-                className="w-9 h-9 rounded-full bg-slate-800 hover:bg-indigo-600 flex items-center justify-center transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-indigo-600"
               >
-                <Share2 className="w-4 h-4" />
+                <Share2 className="h-4 w-4" />
               </a>
               <a
                 href="#"
                 aria-label="Facebook"
-                className="w-9 h-9 rounded-full bg-slate-800 hover:bg-indigo-600 flex items-center justify-center transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-indigo-600"
               >
-                <MessageCircle className="w-4 h-4" />
+                <MessageCircle className="h-4 w-4" />
               </a>
               <a
                 href="#"
                 aria-label="WhatsApp"
-                className="w-9 h-9 rounded-full bg-slate-800 hover:bg-green-600 flex items-center justify-center transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-green-600"
               >
-                <Phone className="w-4 h-4" />
+                <Phone className="h-4 w-4" />
               </a>
             </div>
           </div>
 
           {/* Links */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-white text-sm uppercase tracking-widest">
+            <h3 className="text-sm font-semibold tracking-widest text-white uppercase">
               Navegación
             </h3>
             <ul className="space-y-2 text-sm">
@@ -100,7 +100,7 @@ export async function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-slate-400 hover:text-white transition-colors"
+                    className="text-slate-400 transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -111,19 +111,17 @@ export async function Footer() {
 
           {/* Contact */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-white text-sm uppercase tracking-widest">
-              Contacto
-            </h3>
+            <h3 className="text-sm font-semibold tracking-widest text-white uppercase">Contacto</h3>
             <ul className="space-y-3 text-sm">
               {contact.phone && (
                 <li className="flex items-center gap-2 text-slate-400">
-                  <Phone className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+                  <Phone className="h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
                   {contact.phone}
                 </li>
               )}
               {contact.email && (
                 <li className="flex items-center gap-2 text-slate-400">
-                  <Mail className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+                  <Mail className="h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
                   {contact.email}
                 </li>
               )}
@@ -132,25 +130,23 @@ export async function Footer() {
 
           {/* Hours */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-white text-sm uppercase tracking-widest">
-              Horarios
-            </h3>
+            <h3 className="text-sm font-semibold tracking-widest text-white uppercase">Horarios</h3>
             <ul className="space-y-2 text-sm">
               {contact.hours?.weekdays && (
                 <li className="flex items-start gap-2 text-slate-400">
-                  <Clock className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
                   {contact.hours.weekdays}
                 </li>
               )}
               {contact.hours?.saturday && (
                 <li className="flex items-start gap-2 text-slate-400">
-                  <Clock className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
                   {contact.hours.saturday}
                 </li>
               )}
               {contact.hours?.sunday && (
                 <li className="flex items-start gap-2 text-slate-400">
-                  <Clock className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-indigo-400" />
                   {contact.hours.sunday}
                 </li>
               )}
@@ -158,7 +154,7 @@ export async function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-slate-800 text-center text-xs text-slate-500">
+        <div className="mt-12 border-t border-slate-800 pt-6 text-center text-xs text-slate-500">
           © {new Date().getFullYear()} Paws &amp; Glow. Todos los derechos reservados.
         </div>
       </div>

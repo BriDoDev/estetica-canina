@@ -16,18 +16,18 @@ function SaveButton({ state, onSave }: { state: SaveState; onSave: () => void })
       onClick={onSave}
       disabled={state === 'saving'}
       size="sm"
-      className="bg-indigo-600 hover:bg-indigo-700 gap-2 min-w-[120px]"
+      className="min-w-[120px] gap-2 bg-indigo-600 hover:bg-indigo-700"
     >
-      {state === 'saving' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-      {state === 'success' && <Check className="w-3.5 h-3.5" />}
-      {state === 'error' && <AlertCircle className="w-3.5 h-3.5" />}
+      {state === 'saving' && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+      {state === 'success' && <Check className="h-3.5 w-3.5" />}
+      {state === 'error' && <AlertCircle className="h-3.5 w-3.5" />}
       {state === 'saving'
         ? 'Guardando...'
         : state === 'success'
-        ? 'Guardado'
-        : state === 'error'
-        ? 'Error'
-        : 'Guardar'}
+          ? 'Guardado'
+          : state === 'error'
+            ? 'Error'
+            : 'Guardar'}
     </Button>
   )
 }
@@ -42,7 +42,7 @@ function useSectionSave(key: string, label: string) {
       setState(result.success ? 'success' : 'error')
       setTimeout(() => setState('idle'), 2500)
     },
-    [key, label]
+    [key, label],
   )
 
   return { state, save }
@@ -52,7 +52,7 @@ export default function SettingsPage() {
   const [groomingCount, setGroomingCount] = useState<number>(1)
   const groomingSave = useSectionSave(
     'grooming_image_count',
-    'Número de imágenes de corte generadas por IA (1-4)'
+    'Número de imágenes de corte generadas por IA (1-4)',
   )
 
   const [salonLat, setSalonLat] = useState<number>(19.1862)
@@ -62,7 +62,7 @@ export default function SettingsPage() {
   const locationSave = useSectionSave('salon_location', 'Ubicación del local y radio de cobertura')
 
   return (
-    <div className="space-y-8 max-w-3xl">
+    <div className="max-w-3xl space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Configuración General</h1>
         <p className="text-slate-500">Ajustes globales de la plataforma</p>
@@ -72,12 +72,12 @@ export default function SettingsPage() {
       <Card>
         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-indigo-600" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100">
+              <Sparkles className="h-4 w-4 text-indigo-600" />
             </div>
             <div>
               <CardTitle className="text-base">IA &amp; Generación</CardTitle>
-              <CardDescription className="text-xs mt-0.5">
+              <CardDescription className="mt-0.5 text-xs">
                 Parámetros del motor de generación de imágenes
               </CardDescription>
             </div>
@@ -89,7 +89,7 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-500 uppercase tracking-wide">
+            <Label className="text-xs tracking-wide text-slate-500 uppercase">
               Imágenes de corte por análisis
             </Label>
             <Input
@@ -114,12 +114,12 @@ export default function SettingsPage() {
       <Card>
         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-              <MapPin className="w-4 h-4 text-emerald-600" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100">
+              <MapPin className="h-4 w-4 text-emerald-600" />
             </div>
             <div>
               <CardTitle className="text-base">Ubicación del local</CardTitle>
-              <CardDescription className="text-xs mt-0.5">
+              <CardDescription className="mt-0.5 text-xs">
                 Coordenadas y radio de cobertura para la verificación de ubicación
               </CardDescription>
             </div>
@@ -139,7 +139,7 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs text-slate-500 uppercase tracking-wide">Latitud</Label>
+              <Label className="text-xs tracking-wide text-slate-500 uppercase">Latitud</Label>
               <Input
                 type="number"
                 step="any"
@@ -148,7 +148,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-slate-500 uppercase tracking-wide">Longitud</Label>
+              <Label className="text-xs tracking-wide text-slate-500 uppercase">Longitud</Label>
               <Input
                 type="number"
                 step="any"
@@ -159,7 +159,7 @@ export default function SettingsPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs text-slate-500 uppercase tracking-wide">
+              <Label className="text-xs tracking-wide text-slate-500 uppercase">
                 Radio máximo (km)
               </Label>
               <Input
@@ -178,7 +178,7 @@ export default function SettingsPage() {
               </p>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-slate-500 uppercase tracking-wide">
+              <Label className="text-xs tracking-wide text-slate-500 uppercase">
                 Nombre del local
               </Label>
               <Input
@@ -195,40 +195,40 @@ export default function SettingsPage() {
       {/* Notificaciones */}
       <Card className="opacity-60">
         <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-4">
-          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-            <Bell className="w-4 h-4 text-slate-400" />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+            <Bell className="h-4 w-4 text-slate-400" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <CardTitle className="text-base text-slate-500">Notificaciones</CardTitle>
-              <span className="text-[10px] font-semibold bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full uppercase tracking-wide">
+              <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
                 Próximamente
               </span>
             </div>
-            <CardDescription className="text-xs mt-0.5">
+            <CardDescription className="mt-0.5 text-xs">
               Configuración de canales de notificación
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-400 uppercase tracking-wide">
+            <Label className="text-xs tracking-wide text-slate-400 uppercase">
               Correo remitente (Resend)
             </Label>
             <Input
               disabled
               placeholder="noreply@tudominio.com"
-              className="max-w-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+              className="max-w-sm cursor-not-allowed bg-slate-50 text-slate-400"
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-slate-400 uppercase tracking-wide">
+            <Label className="text-xs tracking-wide text-slate-400 uppercase">
               Twilio WhatsApp
             </Label>
             <Input
               disabled
               placeholder="+1 415 523 8886"
-              className="max-w-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+              className="max-w-sm cursor-not-allowed bg-slate-50 text-slate-400"
             />
           </div>
         </CardContent>

@@ -6,9 +6,7 @@ export const petSchema = z.object({
   breed: z.string().optional(),
   ageYears: z.coerce.number().min(0).max(30).optional(),
   weightKg: z.coerce.number().min(0.1).max(150).optional(),
-  coatType: z
-    .enum(['short', 'medium', 'long', 'curly', 'double'])
-    .optional(),
+  coatType: z.enum(['short', 'medium', 'long', 'curly', 'double']).optional(),
   specialNotes: z.string().max(500).optional(),
 })
 

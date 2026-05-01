@@ -33,18 +33,30 @@ test.describe('API Endpoints', () => {
   test('FLOW-A3: POST /api/webhooks/whatsapp returns without crashing', async ({ request }) => {
     const payload = {
       object: 'whatsapp_business_account',
-      entry: [{
-        id: '123',
-        changes: [{
-          value: {
-            messaging_product: 'whatsapp',
-            metadata: { display_phone_number: '+521234567890', phone_number_id: '123' },
-            contacts: [{ profile: { name: 'Test User' }, wa_id: '521234567890' }],
-            messages: [{ from: '521234567890', id: 'wamid.test', timestamp: '123', text: { body: 'Hola' }, type: 'text' }],
-          },
-          field: 'messages',
-        }],
-      }],
+      entry: [
+        {
+          id: '123',
+          changes: [
+            {
+              value: {
+                messaging_product: 'whatsapp',
+                metadata: { display_phone_number: '+521234567890', phone_number_id: '123' },
+                contacts: [{ profile: { name: 'Test User' }, wa_id: '521234567890' }],
+                messages: [
+                  {
+                    from: '521234567890',
+                    id: 'wamid.test',
+                    timestamp: '123',
+                    text: { body: 'Hola' },
+                    type: 'text',
+                  },
+                ],
+              },
+              field: 'messages',
+            },
+          ],
+        },
+      ],
     }
 
     const res = await request.post('/api/webhooks/whatsapp', {
@@ -57,7 +69,9 @@ test.describe('API Endpoints', () => {
   })
 
   test('FLOW-A3: WhatsApp webhook GET returns verification challenge', async ({ request }) => {
-    const res = await request.get('/api/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=test&hub.challenge=challenge123')
+    const res = await request.get(
+      '/api/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=test&hub.challenge=challenge123',
+    )
     // May return 200 with challenge or 403 if token doesn't match
     expect(res.status()).toBeLessThan(500)
   })

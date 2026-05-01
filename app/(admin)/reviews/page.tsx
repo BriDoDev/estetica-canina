@@ -66,12 +66,10 @@ export default async function ReviewsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Reseñas</h1>
-        <p className="text-slate-500">
-          Gestiona las reseñas mostradas en la página principal
-        </p>
+        <p className="text-slate-500">Gestiona las reseñas mostradas en la página principal</p>
       </div>
       {fetchError && (
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
           <span>⚠️</span> {fetchError}
         </div>
       )}

@@ -40,17 +40,17 @@ sequenceDiagram
     C->>C: Sube foto de mascota
     C->>SA: createAppointment(formData) via Server Action
     SA->>SA: Zod validation (appointmentSchema)
-    
+
     alt Datos inválidos
         SA-->>C: { error: "mensaje de validación" }
     end
-    
+
     SA->>S: UPSERT customers (email, full_name, phone, whatsapp_opt_in)
     S-->>SA: customer record
-    
+
     SA->>S: INSERT pets (customer_id, name, breed, age, weight, coat)
     S-->>SA: pet record
-    
+
     alt Foto de mascota incluida
         SA->>ST: upload pet-photos/{petId}/{timestamp}.{ext}
         ST-->>SA: upload path
@@ -60,15 +60,15 @@ sequenceDiagram
         SA->>AI: analyzePetPhoto(base64, mimeType)
         AI-->>SA: { coatType, condition, recommendations }
     end
-    
+
     SA->>S: INSERT appointments (pet_id, customer_id, service_type, scheduled_at, ai_analysis)
     S-->>SA: appointment record
-    
+
     alt Email configurado
         SA->>R: send confirmation email
         R-->>SA: sent
     end
-    
+
     SA->>SA: revalidatePath('/dashboard/appointments')
     SA-->>C: { appointmentId, success }
     C->>C: Mostrar pantalla de confirmación
@@ -105,11 +105,11 @@ sequenceDiagram
     participant S as Supabase
 
     H->>B: navigator.geolocation available?
-    
+
     alt No disponible
         H-->>B: status: 'unavailable', errorMsg
     end
-    
+
     H->>API: GET /api/salon-location
     API->>S: SELECT landing_config WHERE key='salon_location'
     S-->>API: { lat, lng, radiusKm, name }
@@ -117,7 +117,7 @@ sequenceDiagram
     H->>B: navigator.geolocation.getCurrentPosition()
     B-->>H: { latitude, longitude }
     H->>H: haversineKm(client, salon)
-    
+
     alt distance <= radiusKm
         H-->>B: status: 'in_range'
     else distance > radiusKm
@@ -140,7 +140,7 @@ sequenceDiagram
 
     A->>N: GET /login
     N-->>A: LoginForm (email + contraseña o magic link)
-    
+
     alt Email + Password
         A->>SA: supabase.auth.signInWithPassword({ email, password })
         SA-->>A: session + user
@@ -150,7 +150,7 @@ sequenceDiagram
         SA->>A: Click magic link → token exchange
         SA-->>A: session + user
     end
-    
+
     A->>N: redirect → /dashboard
     N->>MW: updateSession(request) — refresh token
     MW-->>N: session válida
@@ -169,18 +169,18 @@ sequenceDiagram
 
     A->>N: GET /dashboard
     N->>S: auth.getUser() — verificar sesión
-    
+
     alt No autenticado
         N-->>A: redirect /login
     end
-    
+
     par Consultas paralelas
         N->>S: SELECT count(*) FROM appointments
         N->>S: SELECT count(*) FROM customers
         N->>S: SELECT count(*) FROM pets
         N->>S: SELECT appointments + pet + customer (ORDER BY scheduled_at DESC LIMIT 5)
     end
-    
+
     S-->>N: counts + recent appointments
     N-->>A: Dashboard: 4 stat cards + recent appointments table
 ```
@@ -198,7 +198,7 @@ sequenceDiagram
     N->>S: SELECT appointments + pet + customer (ORDER BY scheduled_at)
     S-->>N: appointments list
     N-->>A: Tabla de citas con filtros y acciones
-    
+
     A->>N: Cambiar estado de cita (pending → confirmed)
     N->>SA: updateAppointmentStatus(id, 'confirmed')
     SA->>S: auth.getUser() — verificar admin
@@ -206,7 +206,7 @@ sequenceDiagram
     S-->>SA: updated
     SA->>SA: revalidatePath('/appointments')
     N-->>A: Tabla actualizada, badge cambia a "Confirmada"
-    
+
     alt Filtro por estado
         A->>N: Seleccionar filtro "Pendientes"
         N->>N: Filtrar client-side o re-fetch
@@ -402,11 +402,11 @@ sequenceDiagram
 
     WA->>API: POST /api/webhooks/whatsapp (webhook payload)
     API->>API: Verificar signature (hub.verify_token)
-    
+
     alt GET (verificación inicial)
         API-->>WA: hub.challenge
     end
-    
+
     alt POST (mensaje entrante)
         API->>API: Parse message (text, from, timestamp)
         API->>S: Buscar cliente por teléfono

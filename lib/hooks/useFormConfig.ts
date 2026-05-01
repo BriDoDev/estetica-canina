@@ -35,7 +35,9 @@ export function useFormConfig(): UseFormConfigResult {
     }
 
     load()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return { config, services, isLoading }

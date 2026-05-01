@@ -54,10 +54,14 @@ export default async function DashboardPage() {
     appointmentsCount = aptRes.status === 'fulfilled' ? aptRes.value.count : 0
     customersCount = custRes.status === 'fulfilled' ? custRes.value.count : 0
     petsCount = petRes.status === 'fulfilled' ? petRes.value.count : 0
-    recentAppointments = recentRes.status === 'fulfilled' ? recentRes.value.data as unknown as RecentAppointment[] : null
+    recentAppointments =
+      recentRes.status === 'fulfilled'
+        ? (recentRes.value.data as unknown as RecentAppointment[])
+        : null
 
-    const hasErrors = results.some(r => r.status === 'rejected')
-    if (hasErrors) fetchError = 'Algunos datos no pudieron cargarse. Verifica la conexión a Supabase.'
+    const hasErrors = results.some((r) => r.status === 'rejected')
+    if (hasErrors)
+      fetchError = 'Algunos datos no pudieron cargarse. Verifica la conexión a Supabase.'
   } catch (err) {
     console.error('[Dashboard]', err)
     fetchError = 'Error de conexión al cargar el dashboard. Verifica que Supabase esté accesible.'
@@ -67,31 +71,50 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       {/* MD3: headlineMedium + bodyLarge */}
       <div>
-        <h1 className="text-[28px] leading-9 font-normal tracking-normal text-slate-900">Dashboard</h1>
-        <p className="text-sm leading-5 text-slate-500 mt-1">Resumen general de Paws &amp; Glow</p>
+        <h1 className="text-[28px] leading-9 font-normal tracking-normal text-slate-900">
+          Dashboard
+        </h1>
+        <p className="mt-1 text-sm leading-5 text-slate-500">Resumen general de Paws &amp; Glow</p>
       </div>
 
       {fetchError && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-700 text-sm flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700">
           <span>⚠️</span> {fetchError}
         </div>
       )}
 
       {/* MD3: Elevated cards — elevation level 1, 16dp gap */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
-          { label: 'Citas totales', value: appointmentsCount ?? 0, icon: Calendar, color: 'text-indigo-600' },
+          {
+            label: 'Citas totales',
+            value: appointmentsCount ?? 0,
+            icon: Calendar,
+            color: 'text-indigo-600',
+          },
           { label: 'Clientes', value: customersCount ?? 0, icon: Users, color: 'text-blue-600' },
           { label: 'Mascotas', value: petsCount ?? 0, icon: PawPrint, color: 'text-violet-600' },
-          { label: 'Ingresos est.', value: formatCurrency(0), icon: TrendingUp, color: 'text-green-600' },
+          {
+            label: 'Ingresos est.',
+            value: formatCurrency(0),
+            icon: TrendingUp,
+            color: 'text-green-600',
+          },
         ].map((stat) => (
-          <Card key={stat.label} className="rounded-2xl border-0 shadow-md hover:shadow-lg transition-shadow duration-200">
+          <Card
+            key={stat.label}
+            className="rounded-2xl border-0 shadow-md transition-shadow duration-200 hover:shadow-lg"
+          >
             <CardContent className="p-5">
               {/* MD3: bodySmall label + headlineSmall value */}
-              <p className="text-xs leading-4 font-medium text-slate-500 tracking-wide">{stat.label}</p>
-              <p className="text-[22px] leading-7 font-normal text-slate-900 mt-1.5">{stat.value}</p>
+              <p className="text-xs leading-4 font-medium tracking-wide text-slate-500">
+                {stat.label}
+              </p>
+              <p className="mt-1.5 text-[22px] leading-7 font-normal text-slate-900">
+                {stat.value}
+              </p>
               <div className="mt-3">
-                <stat.icon className={`w-6 h-6 ${stat.color} opacity-80`} />
+                <stat.icon className={`h-6 w-6 ${stat.color} opacity-80`} />
               </div>
             </CardContent>
           </Card>
@@ -101,7 +124,9 @@ export default async function DashboardPage() {
       {/* MD3: outlined card for list — 0dp elevation */}
       <Card className="rounded-2xl border border-slate-200 shadow-none">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base leading-6 font-medium text-slate-900">Citas recientes</CardTitle>
+          <CardTitle className="text-base leading-6 font-medium text-slate-900">
+            Citas recientes
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {recentAppointments && recentAppointments.length > 0 ? (
@@ -109,29 +134,29 @@ export default async function DashboardPage() {
               {(recentAppointments as unknown as RecentAppointment[]).map((apt) => (
                 <div
                   key={apt.id}
-                  className="flex items-center justify-between py-3 px-3 rounded-xl hover:bg-slate-50 transition-colors"
+                  className="flex items-center justify-between rounded-xl px-3 py-3 transition-colors hover:bg-slate-50"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center flex-shrink-0">
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-100 to-violet-100">
                       <span className="text-xs font-bold text-indigo-600">
                         {apt.pet?.name?.[0]?.toUpperCase() ?? '?'}
                       </span>
                     </div>
                     <div>
-                      <p className="font-medium text-sm text-slate-800">
+                      <p className="text-sm font-medium text-slate-800">
                         {apt.customer?.full_name} — {apt.pet?.name}
                       </p>
                       <p className="text-xs text-slate-400">{formatDate(apt.scheduled_at)}</p>
                     </div>
                   </div>
-                  <Badge className={`${statusColors[apt.status]} border-none text-xs rounded-lg`}>
+                  <Badge className={`${statusColors[apt.status]} rounded-lg border-none text-xs`}>
                     {statusLabels[apt.status]}
                   </Badge>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-slate-400 text-sm text-center py-6">No hay citas aún</p>
+            <p className="py-6 text-center text-sm text-slate-400">No hay citas aún</p>
           )}
         </CardContent>
       </Card>

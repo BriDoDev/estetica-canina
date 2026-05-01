@@ -20,10 +20,7 @@ export default async function ProductsPage() {
 
   try {
     const supabase = await createClient()
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .order('name', { ascending: true })
+    const { data } = await supabase.from('products').select('*').order('name', { ascending: true })
     products = (data ?? []) as ProductRow[]
   } catch (err) {
     console.error('[Products]', err)
@@ -37,7 +34,7 @@ export default async function ProductsPage() {
         <p className="text-slate-500">Inventario de productos de Paws &amp; Glow</p>
       </div>
       {fetchError && (
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
           <span>⚠️</span> {fetchError}
         </div>
       )}

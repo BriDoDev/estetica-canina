@@ -40,7 +40,7 @@ export default async function CustomersPage() {
       </div>
 
       {fetchError && (
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
           <span>⚠️</span> {fetchError}
         </div>
       )}
@@ -56,10 +56,10 @@ export default async function CustomersPage() {
                 <Link
                   key={customer.id}
                   href={`/customers/${customer.id}`}
-                  className="flex items-center justify-between py-3 px-2 border-b border-slate-100 last:border-0 hover:bg-slate-50 rounded-lg transition-colors group"
+                  className="group flex items-center justify-between rounded-lg border-b border-slate-100 px-2 py-3 transition-colors last:border-0 hover:bg-slate-50"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 text-xs font-bold text-white">
                       {customer.full_name
                         .split(' ')
                         .slice(0, 2)
@@ -76,21 +76,21 @@ export default async function CustomersPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     {customer.whatsapp_opt_in && (
-                      <Badge className="bg-green-100 text-green-700 border-none text-xs gap-1">
-                        <MessageCircle className="w-3 h-3" />
+                      <Badge className="gap-1 border-none bg-green-100 text-xs text-green-700">
+                        <MessageCircle className="h-3 w-3" />
                         WhatsApp
                       </Badge>
                     )}
-                    <span className="text-xs text-slate-400 hidden sm:block">
+                    <span className="hidden text-xs text-slate-400 sm:block">
                       {formatDate(customer.created_at)}
                     </span>
-                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
+                    <ChevronRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-slate-500" />
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="text-slate-400 text-sm text-center py-10">
+            <p className="py-10 text-center text-sm text-slate-400">
               No hay clientes registrados aún
             </p>
           )}

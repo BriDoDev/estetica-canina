@@ -35,7 +35,7 @@ export default async function AppointmentsPage() {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-slate-900">Citas</h1>
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
           <span>⚠️</span> {fetchError}
         </div>
       </div>

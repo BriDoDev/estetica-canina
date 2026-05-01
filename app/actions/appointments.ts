@@ -13,7 +13,7 @@ interface CreateAppointmentResult {
 }
 
 export async function createAppointmentAction(
-  formData: FormData
+  formData: FormData,
 ): Promise<CreateAppointmentResult> {
   try {
     const raw = {
@@ -23,12 +23,8 @@ export async function createAppointmentAction(
       whatsappOptIn: formData.get('whatsappOptIn') === 'true',
       petName: formData.get('petName') as string,
       petBreed: formData.get('petBreed') as string | undefined,
-      petAgeYears: formData.get('petAgeYears')
-        ? Number(formData.get('petAgeYears'))
-        : undefined,
-      petWeightKg: formData.get('petWeightKg')
-        ? Number(formData.get('petWeightKg'))
-        : undefined,
+      petAgeYears: formData.get('petAgeYears') ? Number(formData.get('petAgeYears')) : undefined,
+      petWeightKg: formData.get('petWeightKg') ? Number(formData.get('petWeightKg')) : undefined,
       coatType: (formData.get('coatType') as string) || undefined,
       serviceType: formData.get('serviceType') as string,
       scheduledAt: formData.get('scheduledAt') as string,
@@ -55,7 +51,7 @@ export async function createAppointmentAction(
           phone: validated.data.customerPhone as string,
           whatsapp_opt_in: validated.data.whatsappOptIn as boolean,
         },
-        { onConflict: 'email', ignoreDuplicates: false }
+        { onConflict: 'email', ignoreDuplicates: false },
       )
       .select()
       .single()
@@ -159,11 +155,13 @@ export async function getAppointmentsAction(): Promise<{
 
     const { data, error } = await supabase
       .from('appointments')
-      .select(`
+      .select(
+        `
         *,
         pet:pets(*),
         customer:customers(*)
-      `)
+      `,
+      )
       .order('scheduled_at', { ascending: true })
 
     if (error) {

@@ -132,8 +132,8 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
                   image_url: form.image_url || null,
                   is_active: form.is_active,
                 }
-              : p
-          )
+              : p,
+          ),
         )
       } else {
         const result = await createProductAction(formData)
@@ -175,9 +175,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
     startTransition(async () => {
       const result = await toggleProductActiveAction(id, !current)
       if (result.success) {
-        setProducts((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, is_active: !current } : p))
-        )
+        setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, is_active: !current } : p)))
       }
     })
   }
@@ -185,88 +183,80 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <Button onClick={openCreate} className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-          <Plus className="w-4 h-4" />
+        <Button onClick={openCreate} className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+          <Plus className="h-4 w-4" />
           Nuevo producto
         </Button>
         <span className="text-sm text-slate-500">{products.length} productos</span>
       </div>
 
       {products.length > 0 ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
             <div
               key={product.id}
-              className={`border rounded-2xl p-4 bg-white transition-opacity ${
+              className={`rounded-2xl border bg-white p-4 transition-opacity ${
                 product.is_active ? 'border-slate-200' : 'border-slate-100 opacity-60'
               }`}
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-12 h-12 rounded-xl overflow-hidden bg-indigo-50 flex items-center justify-center flex-shrink-0">
+              <div className="mb-3 flex items-start justify-between">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-50">
                   {product.image_url ? (
                     <Image
                       src={product.image_url}
                       alt={product.name}
                       width={48}
                       height={48}
-                      className="object-cover w-full h-full"
+                      className="h-full w-full object-cover"
                     />
                   ) : (
-                    <Package className="w-5 h-5 text-indigo-400" />
+                    <Package className="h-5 w-5 text-indigo-400" />
                   )}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Switch
                     checked={product.is_active}
-                    onCheckedChange={() =>
-                      handleToggleActive(product.id, product.is_active)
-                    }
+                    onCheckedChange={() => handleToggleActive(product.id, product.is_active)}
                     aria-label="Activo"
                   />
                   <button
                     onClick={() => openEdit(product)}
-                    className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-indigo-600 transition-colors"
+                    className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-indigo-600"
                     aria-label="Editar"
                   >
-                    <Pencil className="w-3.5 h-3.5" />
+                    <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => setDeleteId(product.id)}
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 transition-colors"
+                    className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
                     aria-label="Eliminar"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
 
-              <h3 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-1">
+              <h3 className="mb-1 line-clamp-1 text-sm font-semibold text-slate-800">
                 {product.name}
               </h3>
               {product.description && (
-                <p className="text-xs text-slate-500 mb-3 line-clamp-2">
-                  {product.description}
-                </p>
+                <p className="mb-3 line-clamp-2 text-xs text-slate-500">{product.description}</p>
               )}
 
-              <div className="flex items-center justify-between mt-3">
-                <span className="font-bold text-indigo-600">
-                  {formatCurrency(product.price)}
-                </span>
+              <div className="mt-3 flex items-center justify-between">
+                <span className="font-bold text-indigo-600">{formatCurrency(product.price)}</span>
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-slate-100 text-slate-600 border-none text-xs">
+                  <Badge className="border-none bg-slate-100 text-xs text-slate-600">
                     {categoryLabels[product.category] ?? product.category}
                   </Badge>
-                  <span className="text-xs text-slate-400">
-                    Stock: {product.stock_quantity}
-                  </span>
+                  <span className="text-xs text-slate-400">Stock: {product.stock_quantity}</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 text-slate-400 text-sm">
+        <div className="py-16 text-center text-sm text-slate-400">
           No hay productos registrados. ¡Agrega el primero!
         </div>
       )}
@@ -275,9 +265,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>
-              {editingProduct ? 'Editar producto' : 'Nuevo producto'}
-            </DialogTitle>
+            <DialogTitle>{editingProduct ? 'Editar producto' : 'Nuevo producto'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
@@ -292,9 +280,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
               <Label>Descripción</Label>
               <Textarea
                 value={form.description}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, description: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="Descripción del producto..."
                 rows={2}
               />
@@ -317,9 +303,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
                   value={form.stock_quantity}
                   type="number"
                   min="0"
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, stock_quantity: e.target.value }))
-                  }
+                  onChange={(e) => setForm((f) => ({ ...f, stock_quantity: e.target.value }))}
                   placeholder="0"
                 />
               </div>
@@ -328,9 +312,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
               <Label>Categoría</Label>
               <Select
                 value={form.category}
-                onValueChange={(v) =>
-                  setForm((f) => ({ ...f, category: v as ProductCategory }))
-                }
+                onValueChange={(v) => setForm((f) => ({ ...f, category: v as ProductCategory }))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -348,9 +330,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
               <Label>URL de imagen</Label>
               <Input
                 value={form.image_url}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, image_url: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
                 placeholder="https://..."
                 type="url"
               />
@@ -363,9 +343,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
               />
               <Label htmlFor="product-active">Producto activo</Label>
             </div>
-            {formError && (
-              <p className="text-red-500 text-sm">{formError}</p>
-            )}
+            {formError && <p className="text-sm text-red-500">{formError}</p>}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
@@ -374,9 +352,9 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
             <Button
               onClick={saveDialog}
               disabled={isPending}
-              className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+              className="gap-2 bg-indigo-600 hover:bg-indigo-700"
             >
-              {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {editingProduct ? 'Guardar cambios' : 'Crear producto'}
             </Button>
           </DialogFooter>
@@ -389,17 +367,13 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar producto?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. El producto será eliminado
-              permanentemente.
+              Esta acción no se puede deshacer. El producto será eliminado permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>

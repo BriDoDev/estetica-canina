@@ -65,32 +65,32 @@ export async function TestimonialsSection() {
   const reviews = await getReviews()
 
   return (
-    <section className="py-24 bg-[#fafaf8]">
+    <section className="bg-[#fafaf8] py-24">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-14">
-          <p className="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-2">
+        <div className="mb-14 text-center">
+          <p className="mb-2 text-sm font-semibold tracking-widest text-amber-600 uppercase">
             ⭐ Opiniones reales
           </p>
-          <h2 className="text-4xl font-extrabold text-slate-900 mb-4">
+          <h2 className="mb-4 text-4xl font-extrabold text-slate-900">
             Lo que dicen nuestros clientes
           </h2>
-          <p className="text-lg text-slate-500 max-w-xl mx-auto">
+          <p className="mx-auto max-w-xl text-lg text-slate-500">
             Más de 500 mascotas felices nos respaldan.
           </p>
         </div>
 
         {/* Horizontal scroll on mobile, grid on desktop */}
-        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
+        <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
           {reviews.map((review) => (
             <div
               key={review.name}
-              className="flex-shrink-0 w-[300px] snap-start md:w-auto bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow"
+              className="w-[300px] flex-shrink-0 snap-start rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md md:w-auto"
             >
-              <div className="flex gap-0.5 mb-4">
+              <div className="mb-4 flex gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={`w-4 h-4 ${
+                    className={`h-4 w-4 ${
                       i < review.rating
                         ? 'fill-amber-400 text-amber-400'
                         : 'fill-slate-200 text-slate-200'
@@ -98,18 +98,16 @@ export async function TestimonialsSection() {
                   />
                 ))}
               </div>
-              <p className="text-slate-600 text-sm mb-5 leading-relaxed">
+              <p className="mb-5 text-sm leading-relaxed text-slate-600">
                 &ldquo;{review.comment}&rdquo;
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 text-xs font-bold text-white">
                   {getInitials(review.name)}
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-slate-800">{review.name}</p>
-                  {review.pet && (
-                    <p className="text-xs text-slate-400">{review.pet}</p>
-                  )}
+                  <p className="text-sm font-semibold text-slate-800">{review.name}</p>
+                  {review.pet && <p className="text-xs text-slate-400">{review.pet}</p>}
                 </div>
               </div>
             </div>

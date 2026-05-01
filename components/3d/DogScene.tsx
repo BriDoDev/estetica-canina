@@ -11,10 +11,8 @@ const SceneCanvas = dynamic(
   () => import('./SceneCanvas').then((m) => ({ default: m.SceneCanvas })),
   {
     ssr: false,
-    loading: () => (
-      <div className="w-full h-full bg-slate-100 animate-pulse rounded-3xl" />
-    ),
-  }
+    loading: () => <div className="h-full w-full animate-pulse rounded-3xl bg-slate-100" />,
+  },
 )
 
 interface DogSceneProps {
@@ -43,7 +41,7 @@ export function DogScene({ className }: DogSceneProps) {
   }, [])
 
   return (
-    <div ref={containerRef} className={className ?? 'w-full h-[500px]'}>
+    <div ref={containerRef} className={className ?? 'h-[500px] w-full'}>
       <SceneCanvas scrollProgress={scrollProgress} />
     </div>
   )

@@ -88,34 +88,31 @@ export async function ServicesSection() {
   const services = await getServices()
 
   return (
-    <section id="services" className="py-24 bg-white">
+    <section id="services" className="bg-white py-24">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-14">
-          <p className="text-sm font-semibold text-indigo-600 uppercase tracking-widest mb-2">
+        <div className="mb-14 text-center">
+          <p className="mb-2 text-sm font-semibold tracking-widest text-indigo-600 uppercase">
             🐾 Lo que ofrecemos
           </p>
-          <h2 className="text-4xl font-extrabold text-slate-900 mb-4">
-            Nuestros Servicios
-          </h2>
-          <p className="text-lg text-slate-500 max-w-xl mx-auto">
-            Cada servicio está diseñado pensando en el bienestar y felicidad de tu
-            mascota.
+          <h2 className="mb-4 text-4xl font-extrabold text-slate-900">Nuestros Servicios</h2>
+          <p className="mx-auto max-w-xl text-lg text-slate-500">
+            Cada servicio está diseñado pensando en el bienestar y felicidad de tu mascota.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
             <Card
               key={service.name}
-              className="group hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 border-slate-100 bg-[#fafaf8] rounded-2xl overflow-hidden"
+              className="group overflow-hidden rounded-2xl border-slate-100 bg-[#fafaf8] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
             >
               {service.imageUrl ? (
-                <div className="relative w-full h-40 overflow-hidden">
+                <div className="relative h-40 w-full overflow-hidden">
                   <Image
                     src={service.imageUrl}
                     alt={service.name}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   {service.badge && (
                     <div className="absolute top-3 right-3">
@@ -131,7 +128,7 @@ export async function ServicesSection() {
               <CardHeader className="pb-3">
                 {!service.imageUrl && (
                   <div className="flex items-start justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center mb-3 text-2xl group-hover:scale-110 transition-transform">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-2xl transition-transform group-hover:scale-110">
                       {service.icon}
                     </div>
                     {service.badge && (
@@ -143,13 +140,11 @@ export async function ServicesSection() {
                     )}
                   </div>
                 )}
-                <CardTitle className="text-slate-800 text-lg">{service.name}</CardTitle>
+                <CardTitle className="text-lg text-slate-800">{service.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-500 text-sm mb-4 leading-relaxed">
-                  {service.description}
-                </p>
-                <p className="font-bold text-indigo-600 text-base">{service.price}</p>
+                <p className="mb-4 text-sm leading-relaxed text-slate-500">{service.description}</p>
+                <p className="text-base font-bold text-indigo-600">{service.price}</p>
               </CardContent>
             </Card>
           ))}

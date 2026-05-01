@@ -24,16 +24,8 @@ export default async function FormBuilderPage() {
   try {
     const supabase = await createClient()
     const [configResult, servicesResult] = await Promise.all([
-      supabase
-        .from('landing_config')
-        .select('value')
-        .eq('key', 'appointment_form_config')
-        .single(),
-      supabase
-        .from('landing_config')
-        .select('value')
-        .eq('key', 'services')
-        .single(),
+      supabase.from('landing_config').select('value').eq('key', 'appointment_form_config').single(),
+      supabase.from('landing_config').select('value').eq('key', 'services').single(),
     ])
 
     if (configResult.data?.value) {
@@ -56,7 +48,7 @@ export default async function FormBuilderPage() {
         </p>
       </div>
       {fetchError && (
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
           <span>⚠️</span> {fetchError}
         </div>
       )}

@@ -14,11 +14,7 @@ interface HeroConfig {
 
 export default async function HomePage() {
   const supabase = await createClient()
-  const { data } = await supabase
-    .from('landing_config')
-    .select('value')
-    .eq('key', 'hero')
-    .single()
+  const { data } = await supabase.from('landing_config').select('value').eq('key', 'hero').single()
 
   const hero = (data?.value as HeroConfig | null) ?? {}
 
@@ -33,16 +29,14 @@ export default async function HomePage() {
       <ServicesSection />
       <TestimonialsSection />
 
-      <section id="booking" className="py-24 bg-[#fafaf8]">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-indigo-600 uppercase tracking-widest mb-2">
+      <section id="booking" className="bg-[#fafaf8] py-24">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="mb-12 text-center">
+            <p className="mb-2 text-sm font-semibold tracking-widest text-indigo-600 uppercase">
               🐾 Reserva tu turno
             </p>
-            <h2 className="text-4xl font-extrabold text-slate-900 mb-4">
-              Agenda tu cita
-            </h2>
-            <p className="text-lg text-slate-500 max-w-xl mx-auto">
+            <h2 className="mb-4 text-4xl font-extrabold text-slate-900">Agenda tu cita</h2>
+            <p className="mx-auto max-w-xl text-lg text-slate-500">
               Sube la foto de tu mascota y nuestra IA te recomendará el servicio ideal.
             </p>
           </div>

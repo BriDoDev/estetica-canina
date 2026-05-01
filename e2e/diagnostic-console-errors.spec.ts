@@ -45,7 +45,10 @@ test.describe('Diagnostic: Full User Flow Console Errors', () => {
     }
 
     // Look for next/continue buttons
-    const nextBtn = page.locator('button').filter({ hasText: /siguiente|continuar/i }).first()
+    const nextBtn = page
+      .locator('button')
+      .filter({ hasText: /siguiente|continuar/i })
+      .first()
     if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await nextBtn.click()
       await page.waitForTimeout(1000)
@@ -78,7 +81,10 @@ test.describe('Diagnostic: Full User Flow Console Errors', () => {
       await customerName.fill('Test User QA')
       await page.locator('#customerEmail').fill('testuser@qa.com')
       await page.locator('#customerPhone').fill('+525512345678')
-      const next1 = page.locator('button').filter({ hasText: /siguiente|continuar/i }).first()
+      const next1 = page
+        .locator('button')
+        .filter({ hasText: /siguiente|continuar/i })
+        .first()
       if (await next1.isVisible({ timeout: 3000 }).catch(() => false)) {
         await next1.click()
         await page.waitForTimeout(1000)
@@ -91,7 +97,10 @@ test.describe('Diagnostic: Full User Flow Console Errors', () => {
       await petName.fill('Max')
       const petBreed = page.locator('#petBreed')
       if (await petBreed.isVisible()) await petBreed.fill('Golden Retriever')
-      const next2 = page.locator('button').filter({ hasText: /siguiente|continuar/i }).first()
+      const next2 = page
+        .locator('button')
+        .filter({ hasText: /siguiente|continuar/i })
+        .first()
       if (await next2.isVisible({ timeout: 3000 }).catch(() => false)) {
         await next2.click()
         await page.waitForTimeout(1000)
@@ -99,7 +108,10 @@ test.describe('Diagnostic: Full User Flow Console Errors', () => {
     }
 
     // Step 3: Service selection
-    const serviceBtn = page.locator('button').filter({ hasText: /Baño|Corte|Grooming|Spa/i }).first()
+    const serviceBtn = page
+      .locator('button')
+      .filter({ hasText: /Baño|Corte|Grooming|Spa/i })
+      .first()
     if (await serviceBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
       await serviceBtn.click()
       await page.waitForTimeout(500)

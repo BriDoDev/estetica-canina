@@ -13,12 +13,17 @@ const GROOMING_STYLES = [
   { id: 'teddy_bear', name: 'Teddy Bear', description: 'Corte redondeado y esponjoso' },
   { id: 'puppy_cut', name: 'Puppy Cut', description: 'Corte uniforme corto en todo el cuerpo' },
   { id: 'lion_cut', name: 'Lion Cut', description: 'Cuerpo rapado con melena y pompón en la cola' },
-  { id: 'breed_standard', name: 'Estándar de Raza', description: 'Corte según el estándar de la raza' },
+  {
+    id: 'breed_standard',
+    name: 'Estándar de Raza',
+    description: 'Corte según el estándar de la raza',
+  },
 ]
 
 function buildEditPrompt(styleName: string): string {
   const details: Record<string, string> = {
-    'Teddy Bear': 'round fluffy even cut all over, fur trimmed to equal rounded length like a teddy bear',
+    'Teddy Bear':
+      'round fluffy even cut all over, fur trimmed to equal rounded length like a teddy bear',
     'Puppy Cut': 'short uniform cut all over the body, 1-2 inches length, neat tidy puppy look',
     'Lion Cut': 'body shaved very short, full voluminous mane around head/neck, fluffy tail pompom',
     'Estándar de Raza': 'breed standard professional show cut, precise elegant grooming',
@@ -35,13 +40,13 @@ function getImageDimensions(base64: string): { width: number; height: number } |
   try {
     const buf = Buffer.from(base64, 'base64')
     // JPEG: starts with FF D8 FF
-    if (buf[0] === 0xFF && buf[1] === 0xD8) {
+    if (buf[0] === 0xff && buf[1] === 0xd8) {
       // Parse JPEG header for dimensions
       let i = 2
       while (i < buf.length - 1) {
-        if (buf[i] === 0xFF) {
+        if (buf[i] === 0xff) {
           const marker = buf[i + 1]
-          if (marker === 0xC0 || marker === 0xC2) {
+          if (marker === 0xc0 || marker === 0xc2) {
             const h = buf.readUInt16BE(i + 5)
             const w = buf.readUInt16BE(i + 7)
             return { width: w, height: h }
@@ -53,12 +58,14 @@ function getImageDimensions(base64: string): { width: number; height: number } |
       }
     }
     // PNG: check IHDR
-    if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4E && buf[3] === 0x47) {
+    if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
       const w = buf.readUInt32BE(16)
       const h = buf.readUInt32BE(20)
       return { width: w, height: h }
     }
-  } catch { /* fall through */ }
+  } catch {
+    /* fall through */
+  }
   return null
 }
 
@@ -66,7 +73,7 @@ export async function generateGroomingPreview(
   breed: string,
   count = 1,
   imageBase64?: string,
-  imageMimeType?: string
+  imageMimeType?: string,
 ): Promise<GroomingStylePreview[]> {
   const styles = GROOMING_STYLES.slice(0, Math.min(count, GROOMING_STYLES.length))
   const previews: GroomingStylePreview[] = []
@@ -102,22 +109,45 @@ export async function generateGroomingPreview(
         const json = await response.json()
         const url = json?.data?.[0]?.url ?? ''
         if (!url) {
-          console.warn(`[Grooming] DALL-E 2 no URL for ${style.id}:`, JSON.stringify(json).slice(0, 300))
+          console.warn(
+            `[Grooming] DALL-E 2 no URL for ${style.id}:`,
+            JSON.stringify(json).slice(0, 300),
+          )
         }
-        previews.push({ styleId: style.id, name: style.name, description: style.description, imageUrl: url })
+        previews.push({
+          styleId: style.id,
+          name: style.name,
+          description: style.description,
+          imageUrl: url,
+        })
       } else {
         // Fallback: DALL-E 3 text-to-image
         const prompt = `Professional studio photograph of a freshly groomed ${breed} dog with a ${style.name} style. ${style.description}. Clean white background, professional pet photography lighting, high quality 4K, photorealistic. The dog looks happy and beautiful.`
 
         const response = await openai.images.generate({
-          model: 'dall-e-3', prompt, n: 1, size: '1024x1024', quality: 'standard', style: 'natural',
+          model: 'dall-e-3',
+          prompt,
+          n: 1,
+          size: '1024x1024',
+          quality: 'standard',
+          style: 'natural',
         })
         const url = response.data?.[0]?.url ?? ''
-        previews.push({ styleId: style.id, name: style.name, description: style.description, imageUrl: url })
+        previews.push({
+          styleId: style.id,
+          name: style.name,
+          description: style.description,
+          imageUrl: url,
+        })
       }
     } catch (err) {
       console.error(`[Grooming] Failed for ${style.id}:`, err)
-      previews.push({ styleId: style.id, name: style.name, description: style.description, imageUrl: '' })
+      previews.push({
+        styleId: style.id,
+        name: style.name,
+        description: style.description,
+        imageUrl: '',
+      })
     }
   }
 

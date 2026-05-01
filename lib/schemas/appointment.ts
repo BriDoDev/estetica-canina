@@ -12,15 +12,13 @@ export const appointmentSchema = z.object({
   petBreed: z.string().optional(),
   petAgeYears: z.preprocess(
     (val) => (val === '' || val === null ? undefined : val),
-    z.coerce.number().min(0).max(30).optional()
+    z.coerce.number().min(0).max(30).optional(),
   ),
   petWeightKg: z.preprocess(
     (val) => (val === '' || val === null ? undefined : val),
-    z.coerce.number().min(0.1).max(150).optional()
+    z.coerce.number().min(0.1).max(150).optional(),
   ),
-  coatType: z
-    .enum(['short', 'medium', 'long', 'curly', 'double'])
-    .optional(),
+  coatType: z.enum(['short', 'medium', 'long', 'curly', 'double']).optional(),
   serviceType: z.enum([
     'bath',
     'haircut',
@@ -37,14 +35,10 @@ export const appointmentSchema = z.object({
   petPhotoFile: z
     .instanceof(File)
     .nullish()
+    .refine((file) => !file || file.size <= 5 * 1024 * 1024, 'La foto debe ser menor a 5MB')
     .refine(
-      (file) => !file || file.size <= 5 * 1024 * 1024,
-      'La foto debe ser menor a 5MB'
-    )
-    .refine(
-      (file) =>
-        !file || ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
-      'Solo se permiten imágenes JPG, PNG o WebP'
+      (file) => !file || ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
+      'Solo se permiten imágenes JPG, PNG o WebP',
     ),
 })
 

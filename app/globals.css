@@ -1,36 +1,39 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --color-primary: #FF8C7A;
-  --color-primary-foreground: #4A1E1E;
-  --color-background: #FFF8F0;
-  --color-foreground: #4A3F6B;
-  --color-card: #FFFFFF;
-  --color-card-foreground: #4A3F6B;
-  --color-secondary: #B5EAD7;
-  --color-secondary-foreground: #3A6B5C;
-  --color-muted: #F5EDFA;
-  --color-muted-foreground: #8B7FA8;
-  --color-accent: #C3B1E1;
-  --color-accent-foreground: #4A3F6B;
-  --color-destructive: #FFB3B3;
-  --color-destructive-foreground: #7A3B3B;
-  --color-border: #F0E4D4;
-  --color-input: #F0E4D4;
-  --color-ring: #FF8C7A;
-  --color-success: #A8E6CF;
-  --color-success-foreground: #3A6B5C;
-  --color-warning: #FFE5B4;
-  --color-warning-foreground: #7A5C3B;
+  --color-primary: #ff8c7a;
+  --color-primary-foreground: #4a1e1e;
+  --color-background: #fff8f0;
+  --color-foreground: #4a3f6b;
+  --color-card: #ffffff;
+  --color-card-foreground: #4a3f6b;
+  --color-secondary: #b5ead7;
+  --color-secondary-foreground: #3a6b5c;
+  --color-muted: #f5edfa;
+  --color-muted-foreground: #8b7fa8;
+  --color-accent: #c3b1e1;
+  --color-accent-foreground: #4a3f6b;
+  --color-destructive: #ffb3b3;
+  --color-destructive-foreground: #7a3b3b;
+  --color-border: #f0e4d4;
+  --color-input: #f0e4d4;
+  --color-ring: #ff8c7a;
+  --color-success: #a8e6cf;
+  --color-success-foreground: #3a6b5c;
+  --color-warning: #ffe5b4;
+  --color-warning-foreground: #7a5c3b;
   --radius: 12px;
   --radius-sm: 8px;
   --radius-lg: 20px;
   --radius-full: 9999px;
-  --shadow-card: 0 4px 14px -2px rgba(255,140,122,0.12),0 2px 6px -1px rgba(74,63,107,0.06);
-  --font-sans: 'Quicksand','Nunito',system-ui,sans-serif;
+  --shadow-card: 0 4px 14px -2px rgba(255, 140, 122, 0.12), 0 2px 6px -1px rgba(74, 63, 107, 0.06);
+  --font-sans: 'Quicksand', 'Nunito', system-ui, sans-serif;
 }
 
-* { border-color: var(--color-border); box-sizing: border-box; }
+* {
+  border-color: var(--color-border);
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -45,31 +48,83 @@ body {
 
 /* iOS zoom prevention */
 @media (max-width: 639px) {
-  input, textarea, select { font-size: 16px !important; }
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
 /* Prevent overflow */
-img, video, table { max-width: 100%; height: auto; }
+img,
+video,
+table {
+  max-width: 100%;
+  height: auto;
+}
 
 /* A11y focus */
-:focus-visible { outline: 2px solid #FF8C7A; outline-offset: 2px; }
+:focus-visible {
+  outline: 2px solid #ff8c7a;
+  outline-offset: 2px;
+}
 
 /* Tap targets */
 @media (max-width: 639px) {
-  button, [role="button"] { min-height: 44px; }
+  button,
+  [role='button'] {
+    min-height: 44px;
+  }
 }
 
 /* Smooth */
-button, a { transition: all .15s ease; }
-button:active { transform: scale(.97); }
+button,
+a {
+  transition: all 0.15s ease;
+}
+button:active {
+  transform: scale(0.97);
+}
 
 /* Animations */
-@keyframes float { 0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)} }
-@keyframes pop-in { 0%{transform:scale(.8);opacity:0}70%{transform:scale(1.05)}100%{transform:scale(1);opacity:1} }
-.animate-float { animation: float 3s ease-in-out infinite; }
-.animate-pop-in { animation: pop-in .4s ease-out forwards; }
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes pop-in {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+.animate-pop-in {
+  animation: pop-in 0.4s ease-out forwards;
+}
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--color-muted); border-radius: 3px; }
-::-webkit-scrollbar-thumb { background: var(--color-accent); border-radius: 3px; }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-muted);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 3px;
+}
