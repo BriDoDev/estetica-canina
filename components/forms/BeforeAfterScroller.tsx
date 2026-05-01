@@ -77,7 +77,7 @@ export function BeforeAfterScroller({
         onTouchEnd={handleMouseUp}
         onTouchMove={handleTouchMove}
       >
-        {/* After image (full width behind) */}
+        {/* After image (full background - bottom layer) */}
         {activePreview && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -88,9 +88,9 @@ export function BeforeAfterScroller({
           />
         )}
 
-        {/* Before image (clipped from right) */}
+        {/* Before image (overlay - clipped to show only right side) */}
         <div
-          className="absolute inset-0 overflow-hidden"
+          className="absolute inset-0"
           style={{ clipPath: `inset(0 0 0 ${sliderPos}%)` }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -99,7 +99,6 @@ export function BeforeAfterScroller({
             alt="Original"
             className="absolute inset-0 h-full w-full object-contain"
             draggable={false}
-            style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
           />
         </div>
 

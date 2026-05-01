@@ -96,6 +96,27 @@ export function AppointmentForm() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const formTopRef = useRef<HTMLDivElement>(null)
 
+  // Rotating loading messages during AI analysis
+  const loadingMessages = [
+    'Analizando la foto de tu mascota...',
+    'Detectando raza y tipo de pelaje...',
+    'Evaluando el estado del pelaje...',
+    'Buscando los mejores cortes para tu mascota...',
+    'Preparando recomendaciones personalizadas...',
+  ]
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0)
+
+  useEffect(() => {
+    if (!isAnalyzing) {
+      setLoadingMsgIndex(0)
+      return
+    }
+    const interval = setInterval(() => {
+      setLoadingMsgIndex((prev) => (prev + 1) % loadingMessages.length)
+    }, 2500)
+    return () => clearInterval(interval)
+  }, [isAnalyzing, loadingMessages.length])
+
   // Auto-select the only grooming style if exactly 1 preview is generated
   useEffect(() => {
     const entries = Object.entries(groomingPreviews)
@@ -458,6 +479,7 @@ export function AppointmentForm() {
   return (
     <>
       <PawLoader isLoading={isSubmitting} message="Agendando tu cita..." />
+      <PawLoader isLoading={isAnalyzing} message={loadingMessages[loadingMsgIndex]} />
 
       <div ref={formTopRef} className="mx-auto max-w-5xl scroll-mt-8 overflow-x-hidden">
         {geo.status !== 'in_range' ? (
@@ -678,9 +700,20 @@ export function AppointmentForm() {
                             </div>
 
                             {isAnalyzing && (
-                              <div className="mt-2 flex items-center gap-2 text-sm text-indigo-600">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Obteniendo los datos de tu mascota y generando el mejor corte...
+                              <div className="mt-3 animate-pulse space-y-2 rounded-xl border border-indigo-200 bg-indigo-50 p-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="h-4 w-4 rounded-full bg-indigo-200" />
+                                  <div className="h-3 w-32 rounded bg-indigo-200" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {[...Array(4)].map((_, i) => (
+                                    <div key={i} className="space-y-1">
+                                      <div className="h-2.5 w-16 rounded bg-indigo-200" />
+                                      <div className="h-2.5 w-24 rounded bg-indigo-100" />
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="h-2 w-40 rounded bg-indigo-200" />
                               </div>
                             )}
                             {aiError && !isAnalyzing && (
@@ -870,6 +903,47 @@ export function AppointmentForm() {
                                         La vista previa aparecerá en el panel lateral →
                                       </p>
                                     )}
+                                  </div>
+                                )}
+
+                                {/* Before/After scroller below analysis */}
+                                {previewEntries.length > 0 && (
+                                  <div className="mt-3 border-t border-indigo-200 pt-3">
+                                    <BeforeAfterScroller
+                                      originalImage={petPhotoPreview!}
+                                      previews={previewEntries.map(([styleId, p]) => ({
+                                        styleId,
+                                        name: p.name,
+                                        description: p.description,
+                                        imageUrl: p.imageUrl,
+                                      }))}
+                                      selectedStyleId={selectedGroomingStyleId}
+                                      onSelectStyle={setSelectedGroomingStyleId}
+                                      isSelectable={previewEntries.length >= 1}
+                                    />
+                                    {selectedGroomingStyleId && (
+                                      <p className="mt-2 text-center text-xs text-green-600">
+                                        <CheckCircle className="mr-1 inline h-3 w-3" />
+                                        Corte seleccionado:{' '}
+                                        {groomingPreviews[selectedGroomingStyleId]?.name}
+                                      </p>
+                                    )}
+                                    {previewEntries.length > 1 && !selectedGroomingStyleId && (
+                                      <p className="mt-2 text-center text-xs text-amber-600">
+                                        <AlertCircle className="mr-1 inline h-3 w-3" />
+                                        Selecciona uno de los cortes para continuar
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Loading skeleton while generating */}
+                                {generatingStyleId && !previewEntries.length && (
+                                  <div className="mt-3 animate-pulse border-t border-indigo-200 pt-3">
+                                    <div className="space-y-2">
+                                      <div className="aspect-square w-full rounded-xl bg-indigo-100" />
+                                      <div className="h-3 w-32 rounded bg-indigo-100" />
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -1328,50 +1402,18 @@ export function AppointmentForm() {
               </form>
             </div>
 
-            {/* Right / Bottom: side panel — pet photo + grooming preview with scroller */}
+            {/* Right / Bottom: side panel — pet photo + AI analysis info */}
             {hasSidePanel && (
               <div className="w-full shrink-0 space-y-4 lg:sticky lg:top-6 lg:w-72">
                 {petPhotoPreview && (
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-slate-600">
-                        {previewEntries.length > 0 ? 'Antes y Después' : 'Foto actual'}
-                      </CardTitle>
+                      <CardTitle className="text-sm text-slate-600">Foto actual</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {previewEntries.length > 0 ? (
-                        <>
-                          <BeforeAfterScroller
-                            originalImage={petPhotoPreview}
-                            previews={previewEntries.map(([styleId, p]) => ({
-                              styleId,
-                              name: p.name,
-                              description: p.description,
-                              imageUrl: p.imageUrl,
-                            }))}
-                            selectedStyleId={selectedGroomingStyleId}
-                            onSelectStyle={setSelectedGroomingStyleId}
-                            isSelectable={previewEntries.length >= 1}
-                          />
-                          {selectedGroomingStyleId && (
-                            <p className="mt-2 text-center text-xs text-green-600">
-                              <CheckCircle className="mr-1 inline h-3 w-3" />
-                              Corte seleccionado:{' '}
-                              {groomingPreviews[selectedGroomingStyleId]?.name}
-                            </p>
-                          )}
-                          {previewEntries.length > 1 && !selectedGroomingStyleId && (
-                            <p className="mt-2 text-center text-xs text-amber-600">
-                              <AlertCircle className="mr-1 inline h-3 w-3" />
-                              Selecciona uno de los cortes para continuar
-                            </p>
-                          )}
-                        </>
-                      ) : (
-                        <div className="relative w-full overflow-hidden rounded-xl bg-slate-100" style={{ aspectRatio: '1 / 1' }}>
-                          <Image src={petPhotoPreview} alt="Mascota" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-contain" />
-                        </div>
-                      )}
+                      <div className="relative w-full overflow-hidden rounded-xl bg-slate-100" style={{ aspectRatio: '1 / 1' }}>
+                        <Image src={petPhotoPreview} alt="Mascota" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-contain" />
+                      </div>
                       {aiAnalysis && (
                         <div className="mt-3 space-y-1 text-xs text-slate-600">
                           <p>
@@ -1397,13 +1439,13 @@ export function AppointmentForm() {
                   <Card>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-sm text-slate-600">
-                        Vista previa del corte
+                        Editando foto...
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="flex h-44 w-full flex-col items-center justify-center gap-2 rounded-xl bg-slate-100">
                         <Loader2 className="h-6 w-6 animate-spin text-[#FF8C7A]" />
-                        <p className="text-xs text-slate-500">Editando foto con IA...</p>
+                        <p className="text-xs text-slate-500">Generando vista previa...</p>
                       </div>
                     </CardContent>
                   </Card>
