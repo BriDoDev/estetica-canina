@@ -37,10 +37,10 @@ export async function editPetPhotoWithStyle(
     model: 'gpt-image-1.5',
     image: file,
     prompt,
+    input_fidelity: 'high',
     background: 'opaque',
     output_format: 'png',
-    size: '1024x1024',
-    response_format: 'b64_json',
+    size: 'auto',
   })
 
   const base64 = response.data?.[0]?.b64_json ?? ''
