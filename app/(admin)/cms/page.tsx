@@ -77,7 +77,7 @@ export default async function CmsPage() {
         </div>
       )}
 
-      <CmsEditor hero={hero} contact={contact} hours={hours} />
+      <CmsEditor hero={hero} contact={contact} hours={hours} key={JSON.stringify({ hero, contact, hours })} />
 
       {/* Shortcuts to Services and Reviews */}
       <div className="grid gap-4 sm:grid-cols-2">

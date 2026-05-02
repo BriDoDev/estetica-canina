@@ -13,6 +13,7 @@ import { createAppointmentAction } from '@/app/actions/appointments'
 import { analyzePetAction } from '@/app/actions/analyze-pet'
 import { editGroomingPhotoAction } from '@/app/actions/edit-grooming'
 import { suggestStylesAction } from '@/app/actions/suggest-styles'
+import { recommendServiceAction } from '@/app/actions/recommend-service'
 import { useFormConfig } from '@/lib/hooks/useFormConfig'
 import { useGeolocation } from '@/lib/hooks/useGeolocation'
 import { Button } from '@/components/ui/button'
@@ -30,12 +31,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { PetAnalysisResult, GroomingStyleSuggestion } from '@/types'
-import { Camera, CheckCircle, AlertCircle, Loader2, Sparkles, X, AlertTriangle, Scissors } from 'lucide-react'
+import { Camera, CheckCircle, AlertCircle, Loader2, Sparkles, X, AlertTriangle } from 'lucide-react'
 import { DateTimePicker } from '@/components/forms/DateTimePicker'
 import { BeforeAfterScroller } from '@/components/forms/BeforeAfterScroller'
 import Image from 'next/image'
 import { PawLoader } from '@/components/ui/PawLoader'
-import { compressImageForAPI } from '@/lib/image-compression'
 import type { LandingService } from '@/app/api/form-config/route'
 
 type Step = 'customer' | 'pet' | 'service' | 'confirm'
@@ -98,6 +98,9 @@ export function AppointmentForm() {
     base64: string
     mimeType: string
   } | null>(null)
+  const [aiRecommendedServiceId, setAiRecommendedServiceId] = useState<string | null>(null)
+  const [aiRecommendationReason, setAiRecommendationReason] = useState<string | null>(null)
+  const [recommendingService, setRecommendingService] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const formTopRef = useRef<HTMLDivElement>(null)
 
@@ -218,7 +221,6 @@ export function AppointmentForm() {
       const file = e.target.files?.[0]
       if (!file) return
 
-      // Validate file type early on client
       const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/heic', 'image/heif']
       if (!allowed.includes(file.type)) {
         setAiError(
@@ -239,17 +241,15 @@ export function AppointmentForm() {
       reader.onload = (ev) => setPetPhotoPreview(ev.target?.result as string)
       reader.readAsDataURL(file)
 
-      // Compress image before sending to server action (avoid 1MB limit)
       setIsAnalyzing(true)
       try {
-        const compressed = await compressImageForAPI(file)
-        // Cache compressed data so img2img can reuse it without re-compressing
-        setCompressedPhotoData({ base64: compressed.base64, mimeType: compressed.file.type })
         const fd = new FormData()
-        fd.append('petPhoto', compressed.file)
+        fd.append('petPhoto', file)
         const result = await analyzePetAction(fd)
         if (result.data) {
           setAiAnalysis(result.data)
+          // Cache server-compressed data for img2img reuse
+          setCompressedPhotoData({ base64: result.data.compressedBase64, mimeType: result.data.compressedMimeType })
           if (result.data.breed) {
             setValue('petBreed', result.data.breed)
           }
@@ -294,7 +294,7 @@ export function AppointmentForm() {
         setIsAnalyzing(false)
       }
     },
-    [geo.status, setValue],
+    [geo.status, setValue, groomingImageCount],
   )
 
   const runAIAnalysis = useCallback(
@@ -304,16 +304,13 @@ export function AppointmentForm() {
       setIsAnalyzing(true)
       setAiError(null)
       try {
-        // 1. Compress image for OpenAI API
-        const compressed = await compressImageForAPI(originalFile)
-
-        // 2. Send compressed image to AI
         const fd = new FormData()
-        fd.append('petPhoto', compressed.file)
+        fd.append('petPhoto', originalFile)
         const result = await analyzePetAction(fd)
 
         if (result.data) {
           setAiAnalysis(result.data)
+          setCompressedPhotoData({ base64: result.data.compressedBase64, mimeType: result.data.compressedMimeType })
           if (result.data.breed) {
             setValue('petBreed', result.data.breed)
           }
@@ -337,12 +334,17 @@ export function AppointmentForm() {
           if (result.data.specialNotes) {
             setValue('notes', result.data.specialNotes)
           }
-          // Cache compressed data for img2img reuse
-          setCompressedPhotoData({ base64: compressed.base64, mimeType: compressed.file.type })
-          return { compressedFile: compressed.file, aiResult: result.data }
+          // Convert server-compressed base64 back to File for appointment submit
+          const byteString = atob(result.data.compressedBase64)
+          const ab = new ArrayBuffer(byteString.length)
+          const ia = new Uint8Array(ab)
+          for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i)
+          const compressedBlob = new Blob([ab], { type: 'image/jpeg' })
+          const compressedFile = new File([compressedBlob], originalFile.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' })
+          return { compressedFile, aiResult: result.data }
         } else {
           setAiError(result.error)
-          return { compressedFile: compressed.file, aiResult: null }
+          return { compressedFile: originalFile, aiResult: null }
         }
       } catch (err) {
         console.error('[AI analysis]', err)
@@ -386,6 +388,27 @@ export function AppointmentForm() {
 
     const valid = await trigger(fieldsToValidate)
     if (!valid) return
+
+    // AI Service Recommendation: trigger when moving from pet to service
+    if (currentStep === 'pet' && aiAnalysis && aiAnalysis.isDog !== false && enabledServices.length > 0 && !aiRecommendedServiceId) {
+      setRecommendingService(true)
+      try {
+        const recResult = await recommendServiceAction(aiAnalysis, enabledServices)
+        if (recResult.data) {
+          setAiRecommendedServiceId(recResult.data.serviceId)
+          setAiRecommendationReason(recResult.data.reason)
+          const svcType = LANDING_TO_SERVICE_TYPE[recResult.data.serviceId]
+          if (svcType) {
+            setSelectedServiceId(recResult.data.serviceId)
+            setValue('serviceType', svcType)
+          }
+        }
+      } catch {
+        // silent fail — user can still pick manually
+      } finally {
+        setRecommendingService(false)
+      }
+    }
 
     const nextIndex = currentStepIndex + 1
     if (nextIndex < STEPS.length) {
@@ -1065,53 +1088,77 @@ export function AppointmentForm() {
                             Cargando servicios...
                           </div>
                         ) : enabledServices.length > 0 ? (
-                          <div className="grid grid-cols-2 gap-3">
-                            {enabledServices.map((svc) => {
-                              const svcType = LANDING_TO_SERVICE_TYPE[svc.id]
-                              const isSelected = selectedServiceId === svc.id
-                              return (
-                                <button
-                                  key={svc.id}
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedServiceId(svc.id)
-                                    if (svcType) setValue('serviceType', svcType)
-                                  }}
-                                  className={cn(
-                                    'overflow-hidden rounded-xl border-2 text-left transition-all',
-                                    isSelected
-                                      ? 'border-primary bg-primary/10'
-                                      : 'border-border hover:border-accent/50',
-                                  )}
-                                >
-                                  {svc.imageUrl && (
-                                    <div className="relative h-24 w-full">
-                                      <Image
-                                        src={svc.imageUrl}
-                                        alt={svc.name}
-                                        fill
-                                        className="object-cover"
-                                      />
-                                    </div>
-                                  )}
-                                  <div className="p-3">
-                                    <div className="mb-1 flex items-center gap-2">
-                                      {!svc.imageUrl && <span className="text-lg">{svc.icon}</span>}
-                                      <span
-                                        className={cn(
-                                          'text-sm font-medium',
-                                          isSelected ? 'text-foreground' : 'text-foreground',
+                          <>
+                            {aiRecommendedServiceId && aiRecommendationReason && (
+                              <div className="mb-3 flex items-start gap-2 rounded-xl border border-primary/30 bg-primary/10 p-3">
+                                <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                                <div>
+                                  <p className="text-sm font-semibold text-foreground">
+                                    Servicio recomendado por IA
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {aiRecommendationReason}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                            <div className="grid grid-cols-2 gap-3">
+                              {enabledServices.map((svc) => {
+                                const svcType = LANDING_TO_SERVICE_TYPE[svc.id]
+                                const isSelected = selectedServiceId === svc.id
+                                const isRecommended = aiRecommendedServiceId === svc.id
+                                return (
+                                  <button
+                                    key={svc.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedServiceId(svc.id)
+                                      if (svcType) setValue('serviceType', svcType)
+                                    }}
+                                    className={cn(
+                                      'overflow-hidden rounded-xl border-2 text-left transition-all',
+                                      isSelected
+                                        ? 'border-primary bg-primary/10'
+                                        : isRecommended
+                                          ? 'border-primary/50 bg-primary/5 ring-1 ring-primary/20'
+                                          : 'border-border hover:border-accent/50',
+                                    )}
+                                  >
+                                    {svc.imageUrl && (
+                                      <div className="relative h-24 w-full">
+                                        <Image
+                                          src={svc.imageUrl}
+                                          alt={svc.name}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                      </div>
+                                    )}
+                                    <div className="p-3">
+                                      <div className="mb-1 flex items-center gap-2">
+                                        {!svc.imageUrl && <span className="text-lg">{svc.icon}</span>}
+                                        <span
+                                          className={cn(
+                                            'text-sm font-medium',
+                                            isSelected ? 'text-foreground' : 'text-foreground',
+                                          )}
+                                        >
+                                          {svc.name}
+                                        </span>
+                                        {isRecommended && (
+                                          <Badge className="flex items-center gap-1 border-none bg-primary/20 px-1.5 py-0 text-[10px] font-semibold text-primary">
+                                            <Sparkles className="h-2.5 w-2.5" />
+                                            IA
+                                          </Badge>
                                         )}
-                                      >
-                                        {svc.name}
-                                      </span>
+                                      </div>
+                                      <p className="text-xs font-bold text-primary">{svc.price}</p>
                                     </div>
-                                    <p className="text-xs font-bold text-primary">{svc.price}</p>
-                                  </div>
-                                </button>
-                              )
-                            })}
-                          </div>
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </>
                         ) : (
                           // Fallback to static service labels if no enabled services
                           <div className="grid grid-cols-2 gap-3">
@@ -1355,10 +1402,18 @@ export function AppointmentForm() {
                     <Button
                       type="button"
                       onClick={nextStep}
+                      disabled={recommendingService}
                       className="order-first w-full sm:order-none sm:w-auto"
                       style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
                     >
-                      Siguiente
+                      {recommendingService ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Recomendando...
+                        </>
+                      ) : (
+                        'Siguiente'
+                      )}
                     </Button>
                   ) : (
                     <Button

@@ -73,7 +73,7 @@ export default async function ReviewsPage() {
           <span>⚠️</span> {fetchError}
         </div>
       )}
-      <ReviewsManager initialReviews={reviews} />
+      <ReviewsManager initialReviews={reviews} key={JSON.stringify(reviews)} />
     </div>
   )
 }

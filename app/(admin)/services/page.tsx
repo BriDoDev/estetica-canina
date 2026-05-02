@@ -102,7 +102,7 @@ export default async function ServicesPage() {
           <span>⚠️</span> {fetchError}
         </div>
       )}
-      <ServicesManager initialServices={services} />
+      <ServicesManager initialServices={services} key={JSON.stringify(services)} />
     </div>
   )
 }

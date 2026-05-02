@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { updateConfigAction } from '@/app/actions/landing-config'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { Loader2, Check, AlertCircle, Sparkles, Bell, MapPin } from 'lucide-react'
 
 type SaveState = 'idle' | 'saving' | 'success' | 'error'
@@ -61,6 +62,26 @@ export default function SettingsPage() {
   const [salonName, setSalonName] = useState<string>('San Salvador Cuauhtenco')
   const locationSave = useSectionSave('salon_location', 'Ubicación del local y radio de cobertura')
 
+  useEffect(() => {
+    fetch('/api/form-config')
+      .then((r) => r.json())
+      .then((data: { groomingImageCount?: number }) => {
+        if (typeof data.groomingImageCount === 'number') {
+          setGroomingCount(Math.min(4, Math.max(1, data.groomingImageCount)))
+        }
+      })
+      .catch(() => {})
+    fetch('/api/salon-location')
+      .then((r) => r.json())
+      .then((data: { lat?: number; lng?: number; radiusKm?: number; name?: string }) => {
+        if (typeof data.lat === 'number') setSalonLat(data.lat)
+        if (typeof data.lng === 'number') setSalonLng(data.lng)
+        if (typeof data.radiusKm === 'number') setSalonRadius(data.radiusKm)
+        if (data.name) setSalonName(data.name)
+      })
+      .catch(() => {})
+  }, [])
+
   return (
     <div className="max-w-3xl space-y-8">
       <div>
@@ -92,17 +113,23 @@ export default function SettingsPage() {
             <Label className="text-xs tracking-wide text-slate-500 uppercase">
               Imágenes de corte por análisis
             </Label>
-            <Input
-              type="number"
-              min={1}
-              max={4}
-              className="max-w-[120px]"
-              value={groomingCount}
-              onChange={(e) => {
-                const val = Math.min(4, Math.max(1, Number(e.target.value)))
-                setGroomingCount(isNaN(val) ? 1 : val)
-              }}
-            />
+            <div className="flex gap-1">
+              {[1, 2, 3, 4].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setGroomingCount(n)}
+                  className={cn(
+                    'flex h-9 w-9 items-center justify-center rounded-lg border text-sm font-semibold transition-all',
+                    groomingCount === n
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-white text-slate-600 hover:border-accent/50',
+                  )}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
             <p className="text-xs text-slate-400">
               Número de previews de corte que genera DALL-E al analizar una mascota
             </p>

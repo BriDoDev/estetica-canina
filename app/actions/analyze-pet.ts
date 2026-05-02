@@ -1,14 +1,15 @@
 'use server'
 
 import { analyzePetPhoto } from '@/lib/ai/analyze-pet'
+import sharp from 'sharp'
 import type { PetAnalysisResult } from '@/types'
 
-interface AnalyzePetResult {
-  data: PetAnalysisResult | null
+export interface AnalyzePetActionResult {
+  data: (PetAnalysisResult & { compressedBase64: string; compressedMimeType: string }) | null
   error: string | null
 }
 
-export async function analyzePetAction(formData: FormData): Promise<AnalyzePetResult> {
+export async function analyzePetAction(formData: FormData): Promise<AnalyzePetActionResult> {
   try {
     const file = formData.get('petPhoto') as File | null
 
@@ -16,21 +17,30 @@ export async function analyzePetAction(formData: FormData): Promise<AnalyzePetRe
       return { data: null, error: 'No se proporcionó una foto de la mascota' }
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return { data: null, error: 'La imagen es demasiado grande (máximo 5MB)' }
+    if (file.size > 10 * 1024 * 1024) {
+      return { data: null, error: 'La imagen es demasiado grande (máximo 10MB)' }
     }
 
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
     if (!allowedTypes.includes(file.type)) {
       return { data: null, error: 'Tipo de archivo no permitido' }
     }
 
     const arrayBuffer = await file.arrayBuffer()
-    const base64 = Buffer.from(arrayBuffer).toString('base64')
+    const inputBuffer = Buffer.from(arrayBuffer)
 
-    const analysis = await analyzePetPhoto(base64, file.type)
+    // Compress image server-side with sharp (max 1024px, JPEG)
+    const compressedBuffer = await sharp(inputBuffer)
+      .resize({ width: 1024, height: 1024, fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 75 })
+      .toBuffer()
 
-    return { data: analysis, error: null }
+    const compressedBase64 = compressedBuffer.toString('base64')
+    const compressedMimeType = 'image/jpeg'
+
+    const analysis = await analyzePetPhoto(compressedBase64, compressedMimeType)
+
+    return { data: { ...analysis, compressedBase64, compressedMimeType }, error: null }
   } catch (err) {
     console.error('[analyzePetAction] Error:', err)
     return {
