@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
-import { Star } from 'lucide-react'
+import Image from 'next/image'
+import { StageTag } from './StageTag'
+import { StageSection } from './StageSection'
 
 interface ReviewItem {
   name: string
@@ -33,13 +35,11 @@ const DEFAULT_REVIEWS: ReviewItem[] = [
   },
 ]
 
-function getInitials(name: string) {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
+const PET_AVATAR_BGS = ['#f4c79a', '#bcd6e6', '#d8e4b8', '#e8a4a4']
+
+function petInitial(review: ReviewItem) {
+  const source = (review.pet || review.name).match(/\(([^)]+)\)/)?.[1] ?? review.name
+  return source.trim().charAt(0).toUpperCase()
 }
 
 async function getReviews(): Promise<ReviewItem[]> {
@@ -56,7 +56,7 @@ async function getReviews(): Promise<ReviewItem[]> {
       return items.filter((r) => r.active !== false)
     }
   } catch {
-    // fall through to defaults
+    /* fall through to defaults */
   }
   return DEFAULT_REVIEWS
 }
@@ -65,55 +65,66 @@ export async function TestimonialsSection() {
   const reviews = await getReviews()
 
   return (
-    <section className="bg-[#fafaf8] py-24">
-      <div className="container mx-auto px-4">
-        <div className="mb-14 text-center">
-          <p className="mb-2 text-sm font-semibold tracking-widest text-amber-600 uppercase">
-            ⭐ Opiniones reales
-          </p>
-          <h2 className="mb-4 text-4xl font-extrabold text-foreground">
-            Lo que dicen nuestros clientes
+    <StageSection n={3} id="testimonios" className="bg-stage-3 relative overflow-hidden py-[72px]">
+      <div className="mx-auto w-full max-w-[500px] px-5">
+        <div className="mb-8 flex flex-col gap-3.5">
+          <StageTag n={3} label="Etapa 3 · Cepillado" />
+          <h2 className="h2 text-ink">
+            Lo que dicen
+            <br />
+            nuestros clientes.
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-            Más de 500 mascotas felices nos respaldan.
+          <p className="text-[16px] leading-[1.55] text-ink-2">
+            Más de 500 mascotas peinadas, cepilladas y consentidas.
           </p>
         </div>
 
-        {/* Horizontal scroll on mobile, grid on desktop */}
-        <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
-          {reviews.map((review) => (
+        <div className="stage-hero">
+          <Image
+            src="/images/stages/dog-3-cepillado.png"
+            alt="Perro cepillado con secadora"
+            width={950}
+            height={580}
+            className="h-auto w-full"
+          />
+          <span className="stage-hero__caption">Cepillado y secado</span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {reviews.map((review, i) => (
             <div
               key={review.name}
-              className="w-[300px] flex-shrink-0 snap-start rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md md:w-auto"
+              className="bg-paper"
+              style={{ borderRadius: 'var(--radius-lg)', padding: '22px 20px' }}
             >
-              <div className="mb-4 flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${
-                      i < review.rating
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'fill-muted text-muted'
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="mb-5 text-sm leading-relaxed text-muted-foreground">
-                &ldquo;{review.comment}&rdquo;
+              <span className="text-accent text-[13px] tracking-[1.5px]">
+                {'★'.repeat(review.rating)}
+                {'☆'.repeat(5 - review.rating)}
+              </span>
+              <p
+                className="font-display text-[18px] leading-[1.35]"
+                style={{ marginTop: 8, fontWeight: 400, letterSpacing: '-0.005em' }}
+              >
+                {review.comment}
               </p>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-primary text-xs font-bold text-white">
-                  {getInitials(review.name)}
+              <div className="mt-4 flex items-center gap-3">
+                <div
+                  className="grid h-10 w-10 flex-none place-items-center rounded-full font-display text-[16px] font-medium"
+                  style={{ background: PET_AVATAR_BGS[i % PET_AVATAR_BGS.length] }}
+                >
+                  {petInitial(review)}
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{review.name}</p>
-                  {review.pet && <p className="text-xs text-muted-foreground">{review.pet}</p>}
+                <div className="flex-1 leading-[1.25]">
+                  <div className="text-[13.5px] font-semibold text-ink">{review.name}</div>
+                  {review.pet && (
+                    <div className="text-[11.5px] text-ink-3">{review.pet}</div>
+                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-    </section>
+    </StageSection>
   )
 }

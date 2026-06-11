@@ -113,7 +113,7 @@ export function BeforeAfterScroller({
           className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
           style={{ left: `${sliderPos}%` }}
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#FF8C7A] shadow-lg">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#4C9329] shadow-lg">
             <svg
               width="14"
               height="14"
@@ -152,7 +152,7 @@ export function BeforeAfterScroller({
                 className={cn(
                   'flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all',
                   isActive
-                    ? 'border-[#FF8C7A] bg-[#FF8C7A]/10 text-[#FF8C7A]'
+                    ? 'border-[#4C9329] bg-[#4C9329]/10 text-[#4C9329]'
                     : 'border-border text-muted-foreground hover:border-accent/50',
                 )}
               >
@@ -173,7 +173,7 @@ export function BeforeAfterScroller({
             'flex w-full items-center justify-center gap-2 rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition-all',
             selectedStyleId === activePreview.styleId
               ? 'border-green-400 bg-green-50 text-green-700'
-              : 'border-[#FF8C7A] bg-white text-[#FF8C7A] hover:bg-[#FF8C7A]/5',
+              : 'border-[#4C9329] bg-white text-[#4C9329] hover:bg-[#4C9329]/5',
           )}
         >
           {selectedStyleId === activePreview.styleId ? (

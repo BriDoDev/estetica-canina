@@ -1,41 +1,38 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { updateConfigAction } from '@/app/actions/landing-config'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import { Loader2, Check, AlertCircle, Sparkles, Bell, MapPin } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { Icon } from '@/components/admin/Icon'
 
 type SaveState = 'idle' | 'saving' | 'success' | 'error'
 
 function SaveButton({ state, onSave }: { state: SaveState; onSave: () => void }) {
   return (
-    <Button
+    <button
+      type="button"
       onClick={onSave}
       disabled={state === 'saving'}
-      size="sm"
-      className="min-w-[120px] gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+      className="ds-btn ds-btn--sm ds-btn--accent"
+      style={{ minWidth: 130 }}
     >
       {state === 'saving' && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-      {state === 'success' && <Check className="h-3.5 w-3.5" />}
-      {state === 'error' && <AlertCircle className="h-3.5 w-3.5" />}
+      {state === 'success' && <Icon name="check" size="sm" />}
+      {state === 'error' && <Icon name="alert" size="sm" />}
       {state === 'saving'
-        ? 'Guardando...'
+        ? 'Guardando…'
         : state === 'success'
           ? 'Guardado'
           : state === 'error'
             ? 'Error'
             : 'Guardar'}
-    </Button>
+    </button>
   )
 }
 
 function useSectionSave(key: string, label: string) {
   const [state, setState] = useState<SaveState>('idle')
-
   const save = useCallback(
     async (value: unknown) => {
       setState('saving')
@@ -45,7 +42,6 @@ function useSectionSave(key: string, label: string) {
     },
     [key, label],
   )
-
   return { state, save }
 }
 
@@ -83,72 +79,75 @@ export default function SettingsPage() {
   }, [])
 
   return (
-    <div className="max-w-3xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Configuración General</h1>
-        <p className="text-slate-500">Ajustes globales de la plataforma</p>
-      </div>
+    <div className="ds-stack-6" style={{ maxWidth: 760 }}>
+      <header className="ds-stack-2">
+        <h1 className="ds-t-d1">Configuración General</h1>
+        <p className="ds-t-body ds-t-muted">Ajustes globales de la plataforma.</p>
+      </header>
 
-      {/* IA & Generación */}
-      <Card>
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+      {/* IA & generación */}
+      <section className="ds-card">
+        <div className="ds-card-head">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/30">
-              <Sparkles className="h-4 w-4 text-primary" />
+            <div
+              className="ds-avatar ds-avatar--lg ds-avatar-pet"
+              style={{ borderRadius: 10 }}
+            >
+              <Icon name="sparkle" />
             </div>
             <div>
-              <CardTitle className="text-base">IA &amp; Generación</CardTitle>
-              <CardDescription className="mt-0.5 text-xs">
-                Parámetros del motor de generación de imágenes
-              </CardDescription>
+              <div className="ds-card-head__title">IA &amp; Generación</div>
+              <div className="ds-card-head__sub">
+                Parámetros del motor de generación de imágenes.
+              </div>
             </div>
           </div>
           <SaveButton
             state={groomingSave.state}
             onSave={() => groomingSave.save(String(groomingCount))}
           />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-500 uppercase">
-              Imágenes de corte por análisis
-            </Label>
-            <div className="flex gap-1">
+        </div>
+        <div className="ds-stack-3">
+          <div className="ds-field">
+            <label className="ds-field__label">Imágenes de corte por análisis</label>
+            <div className="ds-btn-group">
               {[1, 2, 3, 4].map((n) => (
                 <button
                   key={n}
                   type="button"
                   onClick={() => setGroomingCount(n)}
-                  className={cn(
-                    'flex h-9 w-9 items-center justify-center rounded-lg border text-sm font-semibold transition-all',
-                    groomingCount === n
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border bg-white text-slate-600 hover:border-accent/50',
-                  )}
+                  className={`ds-btn${groomingCount === n ? ' is-on' : ''}`}
                 >
                   {n}
                 </button>
               ))}
             </div>
-            <p className="text-xs text-slate-400">
-              Número de previews de corte que genera DALL-E al analizar una mascota
+            <p className="ds-field__help">
+              Número de previews de corte que genera DALL-E al analizar una mascota.
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Ubicación del local */}
-      <Card>
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+      <section className="ds-card">
+        <div className="ds-card-head">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100">
-              <MapPin className="h-4 w-4 text-emerald-600" />
+            <div
+              className="ds-avatar ds-avatar--lg"
+              style={{
+                borderRadius: 10,
+                background: 'var(--success-soft)',
+                color: 'var(--success)',
+              }}
+            >
+              <Icon name="home" />
             </div>
             <div>
-              <CardTitle className="text-base">Ubicación del local</CardTitle>
-              <CardDescription className="mt-0.5 text-xs">
-                Coordenadas y radio de cobertura para la verificación de ubicación
-              </CardDescription>
+              <div className="ds-card-head__title">Ubicación del local</div>
+              <div className="ds-card-head__sub">
+                Coordenadas y radio de cobertura para la verificación de ubicación.
+              </div>
             </div>
           </div>
           <SaveButton
@@ -162,11 +161,11 @@ export default function SettingsPage() {
               })
             }
           />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label className="text-xs tracking-wide text-slate-500 uppercase">Latitud</Label>
+        </div>
+        <div className="ds-stack-3">
+          <div className="ds-grid-2">
+            <div className="ds-field">
+              <label className="ds-field__label">Latitud</label>
               <Input
                 type="number"
                 step="any"
@@ -174,8 +173,8 @@ export default function SettingsPage() {
                 onChange={(e) => setSalonLat(parseFloat(e.target.value) || 0)}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs tracking-wide text-slate-500 uppercase">Longitud</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">Longitud</label>
               <Input
                 type="number"
                 step="any"
@@ -184,11 +183,9 @@ export default function SettingsPage() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label className="text-xs tracking-wide text-slate-500 uppercase">
-                Radio máximo (km)
-              </Label>
+          <div className="ds-grid-2">
+            <div className="ds-field">
+              <label className="ds-field__label">Radio máximo (km)</label>
               <Input
                 type="number"
                 min={0.1}
@@ -200,14 +197,12 @@ export default function SettingsPage() {
                   setSalonRadius(isNaN(val) ? 1.5 : val)
                 }}
               />
-              <p className="text-xs text-slate-400">
-                Clientes fuera de este radio no podrán agendar ni usar IA
+              <p className="ds-field__help">
+                Clientes fuera de este radio no podrán agendar ni usar IA.
               </p>
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs tracking-wide text-slate-500 uppercase">
-                Nombre del local
-              </Label>
+            <div className="ds-field">
+              <label className="ds-field__label">Nombre del local</label>
               <Input
                 type="text"
                 value={salonName}
@@ -216,50 +211,41 @@ export default function SettingsPage() {
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      {/* Notificaciones */}
-      <Card className="opacity-60">
-        <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-4">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100">
-            <Bell className="h-4 w-4 text-slate-400" />
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-base text-slate-500">Notificaciones</CardTitle>
-              <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
-                Próximamente
-              </span>
+      {/* Notificaciones — disabled */}
+      <section className="ds-card" style={{ opacity: 0.6 }}>
+        <div className="ds-card-head">
+          <div className="flex items-center gap-3">
+            <div
+              className="ds-avatar ds-avatar--lg"
+              style={{ borderRadius: 10, background: 'var(--ink-3)', color: 'var(--ink-7)' }}
+            >
+              <Icon name="bell" />
             </div>
-            <CardDescription className="mt-0.5 text-xs">
-              Configuración de canales de notificación
-            </CardDescription>
+            <div>
+              <div className="flex items-center gap-2">
+                <div className="ds-card-head__title">Notificaciones</div>
+                <span className="ds-badge">Próximamente</span>
+              </div>
+              <div className="ds-card-head__sub">
+                Configuración de canales de notificación.
+              </div>
+            </div>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-400 uppercase">
-              Correo remitente (Resend)
-            </Label>
-            <Input
-              disabled
-              placeholder="noreply@tudominio.com"
-              className="max-w-sm cursor-not-allowed bg-slate-50 text-slate-400"
-            />
+        </div>
+        <div className="ds-stack-3">
+          <div className="ds-field">
+            <label className="ds-field__label">Correo remitente (Resend)</label>
+            <Input disabled placeholder="noreply@tudominio.com" style={{ maxWidth: 360 }} />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-400 uppercase">
-              Twilio WhatsApp
-            </Label>
-            <Input
-              disabled
-              placeholder="+1 415 523 8886"
-              className="max-w-sm cursor-not-allowed bg-slate-50 text-slate-400"
-            />
+          <div className="ds-field">
+            <label className="ds-field__label">Twilio WhatsApp</label>
+            <Input disabled placeholder="+1 415 523 8886" style={{ maxWidth: 360 }} />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   )
 }

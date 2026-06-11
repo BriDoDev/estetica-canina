@@ -10,9 +10,7 @@ import {
 } from '@/app/actions/products'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -38,8 +36,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Switch } from '@/components/ui/switch'
-import { Plus, Pencil, Trash2, Package, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
+import { Icon } from '@/components/admin/Icon'
 import type { ProductRow } from './page'
 
 interface ProductsManagerProps {
@@ -48,7 +47,7 @@ interface ProductsManagerProps {
 
 type ProductCategory = ProductRow['category']
 
-const categoryLabels: Record<ProductCategory, string> = {
+const CATEGORY_LABELS: Record<ProductCategory, string> = {
   shampoo: 'Shampoo',
   conditioner: 'Acondicionador',
   tool: 'Herramienta',
@@ -141,7 +140,6 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
           setFormError(result.error ?? 'Error al crear')
           return
         }
-        // Reload will happen via server revalidation; optimistically add placeholder
         setProducts((prev) => [
           ...prev,
           {
@@ -183,133 +181,154 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <Button onClick={openCreate} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-          <Plus className="h-4 w-4" />
+        <button type="button" onClick={openCreate} className="ds-btn ds-btn--accent">
+          <Icon name="plus" size="sm" />
           Nuevo producto
-        </Button>
-        <span className="text-sm text-muted-foreground">{products.length} productos</span>
+        </button>
+        <span className="ds-t-sm ds-t-muted">{products.length} productos</span>
       </div>
 
       {products.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="ds-grid-3">
           {products.map((product) => (
-            <div
+            <article
               key={product.id}
-              className={`rounded-2xl border bg-white p-4 transition-opacity ${
-                product.is_active ? 'border-border' : 'border-border opacity-60'
-              }`}
+              className="ds-card"
+              style={product.is_active ? undefined : { opacity: 0.6 }}
             >
-              <div className="mb-3 flex items-start justify-between">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-accent/20">
+              <div className="flex items-start justify-between" style={{ marginBottom: 12 }}>
+                <div
+                  className="ds-avatar ds-avatar--xl ds-avatar-pet"
+                  style={{ borderRadius: 12, overflow: 'hidden' }}
+                >
                   {product.image_url ? (
                     <Image
                       src={product.image_url}
                       alt={product.name}
-                      width={48}
-                      height={48}
+                      width={64}
+                      height={64}
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <Package className="h-5 w-5 text-accent" />
+                    <Icon name="cart" size="lg" />
                   )}
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="ds-row-actions" style={{ opacity: 1 }}>
                   <Switch
                     checked={product.is_active}
                     onCheckedChange={() => handleToggleActive(product.id, product.is_active)}
                     aria-label="Activo"
                   />
                   <button
+                    type="button"
                     onClick={() => openEdit(product)}
-                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+                    className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost"
                     aria-label="Editar"
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <Icon name="edit" size="sm" />
                   </button>
                   <button
+                    type="button"
                     onClick={() => setDeleteId(product.id)}
-                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600"
+                    className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost"
+                    style={{ color: 'var(--danger)' }}
                     aria-label="Eliminar"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Icon name="trash" size="sm" />
                   </button>
                 </div>
               </div>
 
-              <h3 className="mb-1 line-clamp-1 text-sm font-semibold text-foreground">
+              <h3 className="ds-t-d4" style={{ marginBottom: 4 }}>
                 {product.name}
               </h3>
               {product.description && (
-                <p className="mb-3 line-clamp-2 text-xs text-muted-foreground">{product.description}</p>
+                <p className="ds-t-sm ds-t-muted" style={{ marginBottom: 12 }}>
+                  {product.description}
+                </p>
               )}
 
-              <div className="mt-3 flex items-center justify-between">
-                <span className="font-bold text-primary">{formatCurrency(product.price)}</span>
+              <div className="flex items-center justify-between" style={{ marginTop: 12 }}>
+                <span
+                  className="ds-t-d4"
+                  style={{ color: 'var(--accent)', fontFamily: 'var(--display)' }}
+                >
+                  {formatCurrency(product.price)}
+                </span>
                 <div className="flex items-center gap-2">
-                  <Badge className="border-none bg-muted text-xs text-muted-foreground">
-                    {categoryLabels[product.category] ?? product.category}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">Stock: {product.stock_quantity}</span>
+                  <span className="ds-badge">
+                    {CATEGORY_LABELS[product.category] ?? product.category}
+                  </span>
+                  <span className="ds-t-xs ds-t-muted">Stock {product.stock_quantity}</span>
                 </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       ) : (
-        <div className="py-16 text-center text-sm text-muted-foreground">
-          No hay productos registrados. ¡Agrega el primero!
+        <div className="ds-empty">
+          <div className="ds-empty__icon">
+            <Icon name="cart" size="lg" />
+          </div>
+          <div className="ds-empty__title">Sin productos</div>
+          <div className="ds-empty__desc">
+            Agrega tu primer producto para comenzar a vender add-ons.
+          </div>
+          <button type="button" className="ds-btn ds-btn--accent" onClick={openCreate}>
+            <Icon name="plus" size="sm" />
+            Nuevo producto
+          </button>
         </div>
       )}
 
-      {/* Create / Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{editingProduct ? 'Editar producto' : 'Nuevo producto'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-1.5">
-              <Label>Nombre *</Label>
+          <div className="ds-stack-3" style={{ paddingBlock: 8 }}>
+            <div className="ds-field">
+              <label className="ds-field__label">Nombre <span className="ds-req">*</span></label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="Shampoo Premium"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Descripción</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">Descripción</label>
               <Textarea
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                placeholder="Descripción del producto..."
+                placeholder="Descripción del producto…"
                 rows={2}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Precio (MXN) *</Label>
+            <div className="ds-grid-2">
+              <div className="ds-field">
+                <label className="ds-field__label">Precio (MXN) <span className="ds-req">*</span></label>
                 <Input
-                  value={form.price}
                   type="number"
                   min="0"
                   step="0.01"
+                  value={form.price}
                   onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                   placeholder="299.00"
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label>Stock</Label>
+              <div className="ds-field">
+                <label className="ds-field__label">Stock</label>
                 <Input
-                  value={form.stock_quantity}
                   type="number"
                   min="0"
+                  value={form.stock_quantity}
                   onChange={(e) => setForm((f) => ({ ...f, stock_quantity: e.target.value }))}
                   placeholder="0"
                 />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Categoría</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">Categoría</label>
               <Select
                 value={form.category}
                 onValueChange={(v) => setForm((f) => ({ ...f, category: v as ProductCategory }))}
@@ -318,7 +337,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(categoryLabels).map(([value, label]) => (
+                  {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
                     </SelectItem>
@@ -326,42 +345,46 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label>URL de imagen</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">URL de imagen</label>
               <Input
+                type="url"
                 value={form.image_url}
                 onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
-                placeholder="https://..."
-                type="url"
+                placeholder="https://…"
               />
             </div>
-            <div className="flex items-center gap-3">
+            <label className="ds-row-2">
               <Switch
                 checked={form.is_active}
                 onCheckedChange={(v: boolean) => setForm((f) => ({ ...f, is_active: v }))}
-                id="product-active"
               />
-              <Label htmlFor="product-active">Producto activo</Label>
-            </div>
-            {formError && <p className="text-sm text-red-500">{formError}</p>}
+              <span className="ds-t-body">Producto activo</span>
+            </label>
+            {formError && (
+              <div className="ds-alert ds-alert--danger">
+                <Icon name="alert" className="ds-alert__icon" />
+                <div className="ds-alert__body">{formError}</div>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button
+            <button
+              type="button"
               onClick={saveDialog}
               disabled={isPending}
-              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+              className="ds-btn ds-btn--accent"
             >
-              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               {editingProduct ? 'Guardar cambios' : 'Crear producto'}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete confirm */}
       <AlertDialog open={!!deleteId} onOpenChange={(open: boolean) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -373,7 +396,7 @@ export function ProductsManager({ initialProducts }: ProductsManagerProps) {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-              {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>

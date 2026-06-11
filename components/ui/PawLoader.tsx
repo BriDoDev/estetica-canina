@@ -42,7 +42,7 @@ export function PawLoader({ isLoading, message = 'Cargando...' }: PawLoaderProps
           <div className="flex h-20 w-20 items-center justify-center">
             <svg
               viewBox="0 0 100 100"
-              className="h-full w-full fill-[#FF8C7A] opacity-90"
+              className="h-full w-full fill-[#4C9329] opacity-90"
               aria-hidden="true"
             >
               <ellipse cx="50" cy="75" rx="22" ry="18" />

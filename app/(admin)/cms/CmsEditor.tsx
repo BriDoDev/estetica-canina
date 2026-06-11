@@ -1,12 +1,10 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { updateConfigAction } from '@/app/actions/landing-config'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Check, AlertCircle } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { Icon } from '@/components/admin/Icon'
 
 interface HeroConfig {
   title?: string
@@ -37,23 +35,24 @@ type SaveState = 'idle' | 'saving' | 'success' | 'error'
 
 function SectionSaveButton({ state, onSave }: { state: SaveState; onSave: () => void }) {
   return (
-    <Button
+    <button
+      type="button"
       onClick={onSave}
       disabled={state === 'saving'}
-      size="sm"
-      className="min-w-[120px] gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+      className="ds-btn ds-btn--sm ds-btn--accent"
+      style={{ minWidth: 130 }}
     >
       {state === 'saving' && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-      {state === 'success' && <Check className="h-3.5 w-3.5" />}
-      {state === 'error' && <AlertCircle className="h-3.5 w-3.5" />}
+      {state === 'success' && <Icon name="check" size="sm" />}
+      {state === 'error' && <Icon name="alert" size="sm" />}
       {state === 'saving'
-        ? 'Guardando...'
+        ? 'Guardando…'
         : state === 'success'
           ? 'Guardado'
           : state === 'error'
             ? 'Error'
             : 'Guardar sección'}
-    </Button>
+    </button>
   )
 }
 
@@ -83,47 +82,43 @@ export function CmsEditor({ hero, contact, hours }: CmsEditorProps) {
   const hoursSave = useSectionSave('hours', 'Horarios')
 
   return (
-    <div className="space-y-6">
-      {/* Hero section */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-base">Hero — Portada</CardTitle>
+    <div className="ds-stack-6">
+      <section className="ds-card">
+        <div className="ds-card-head">
+          <div>
+            <div className="ds-card-head__title">Hero — Portada</div>
+            <div className="ds-card-head__sub">Título, subtítulo y CTAs visibles en la landing.</div>
+          </div>
           <SectionSaveButton state={heroSave.state} onSave={() => heroSave.save(heroForm)} />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-500 uppercase">
-              Título principal
-            </Label>
+        </div>
+        <div className="ds-stack-3">
+          <div className="ds-field">
+            <label className="ds-field__label">Título principal</label>
             <Input
               value={heroForm.title ?? ''}
               onChange={(e) => setHeroForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="Tu mascota merece brillar ✨"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-500 uppercase">Subtítulo</Label>
+          <div className="ds-field">
+            <label className="ds-field__label">Subtítulo</label>
             <Input
               value={heroForm.subtitle ?? ''}
               onChange={(e) => setHeroForm((f) => ({ ...f, subtitle: e.target.value }))}
-              placeholder="Estética canina de alto nivel..."
+              placeholder="Estética canina de alto nivel…"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label className="text-xs tracking-wide text-slate-500 uppercase">
-                Texto CTA primario
-              </Label>
+          <div className="ds-grid-2">
+            <div className="ds-field">
+              <label className="ds-field__label">CTA primario</label>
               <Input
                 value={heroForm.ctaPrimary ?? ''}
                 onChange={(e) => setHeroForm((f) => ({ ...f, ctaPrimary: e.target.value }))}
                 placeholder="Agendar cita"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs tracking-wide text-slate-500 uppercase">
-                Texto CTA secundario
-              </Label>
+            <div className="ds-field">
+              <label className="ds-field__label">CTA secundario</label>
               <Input
                 value={heroForm.ctaSecondary ?? ''}
                 onChange={(e) => setHeroForm((f) => ({ ...f, ctaSecondary: e.target.value }))}
@@ -131,86 +126,84 @@ export function CmsEditor({ hero, contact, hours }: CmsEditorProps) {
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      {/* Contact section */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-base">Información de contacto</CardTitle>
+      <section className="ds-card">
+        <div className="ds-card-head">
+          <div>
+            <div className="ds-card-head__title">Información de contacto</div>
+            <div className="ds-card-head__sub">Datos visibles en el footer.</div>
+          </div>
           <SectionSaveButton
             state={contactSave.state}
             onSave={() => contactSave.save(contactForm)}
           />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-500 uppercase">
-              Teléfono / WhatsApp
-            </Label>
+        </div>
+        <div className="ds-stack-3">
+          <div className="ds-field">
+            <label className="ds-field__label">Teléfono / WhatsApp</label>
             <Input
               value={contactForm.phone ?? ''}
               onChange={(e) => setContactForm((f) => ({ ...f, phone: e.target.value }))}
               placeholder="+52 55 1234 5678"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-500 uppercase">
-              Correo electrónico
-            </Label>
+          <div className="ds-field">
+            <label className="ds-field__label">Correo electrónico</label>
             <Input
+              type="email"
               value={contactForm.email ?? ''}
               onChange={(e) => setContactForm((f) => ({ ...f, email: e.target.value }))}
-              type="email"
               placeholder="hola@pawsandglow.mx"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-500 uppercase">Dirección</Label>
+          <div className="ds-field">
+            <label className="ds-field__label">Dirección</label>
             <Input
               value={contactForm.address ?? ''}
               onChange={(e) => setContactForm((f) => ({ ...f, address: e.target.value }))}
               placeholder="Calle, Ciudad, Estado"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      {/* Business hours */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-base">Horarios de atención</CardTitle>
+      <section className="ds-card">
+        <div className="ds-card-head">
+          <div>
+            <div className="ds-card-head__title">Horarios de atención</div>
+            <div className="ds-card-head__sub">Aparecen en el footer y en confirmaciones.</div>
+          </div>
           <SectionSaveButton state={hoursSave.state} onSave={() => hoursSave.save(hoursForm)} />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-500 uppercase">
-              Lunes – Viernes
-            </Label>
+        </div>
+        <div className="ds-stack-3">
+          <div className="ds-field">
+            <label className="ds-field__label">Lunes – Viernes</label>
             <Input
               value={hoursForm.weekdays ?? ''}
               onChange={(e) => setHoursForm((f) => ({ ...f, weekdays: e.target.value }))}
               placeholder="Lun–Vie: 9:00–19:00"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-500 uppercase">Sábado</Label>
+          <div className="ds-field">
+            <label className="ds-field__label">Sábado</label>
             <Input
               value={hoursForm.saturday ?? ''}
               onChange={(e) => setHoursForm((f) => ({ ...f, saturday: e.target.value }))}
               placeholder="Sáb: 9:00–17:00"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs tracking-wide text-slate-500 uppercase">Domingo</Label>
+          <div className="ds-field">
+            <label className="ds-field__label">Domingo</label>
             <Input
               value={hoursForm.sunday ?? ''}
               onChange={(e) => setHoursForm((f) => ({ ...f, sunday: e.target.value }))}
               placeholder="Dom: Cerrado"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>
   )
 }

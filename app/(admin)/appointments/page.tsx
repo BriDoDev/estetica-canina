@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { AppointmentsTracker } from '@/components/admin/AppointmentsTracker'
+import { Icon } from '@/components/admin/Icon'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,10 +34,17 @@ export default async function AppointmentsPage() {
 
   if (fetchError) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-slate-900">Citas</h1>
-        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
-          <span>⚠️</span> {fetchError}
+      <div className="ds-stack-6">
+        <header className="ds-stack-2">
+          <h1 className="ds-t-d1">Citas</h1>
+          <p className="ds-t-body ds-t-muted">Gestión y seguimiento post-cita.</p>
+        </header>
+        <div className="ds-alert ds-alert--warning">
+          <Icon name="alert" className="ds-alert__icon" />
+          <div className="ds-alert__body">
+            <strong>No pudimos cargar las citas</strong>
+            {fetchError}
+          </div>
         </div>
       </div>
     )

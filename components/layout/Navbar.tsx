@@ -25,7 +25,7 @@ export function Navbar() {
           </Link>
         </nav>
 
-        <Button asChild size="sm" style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }} className="hover:bg-primary/90">
+        <Button asChild size="sm" style={{ backgroundColor: '#4C9329', color: '#ffffff' }} className="hover:bg-primary/90">
           <Link href="#booking">Reservar ahora</Link>
         </Button>
       </div>

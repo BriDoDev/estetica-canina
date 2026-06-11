@@ -1,14 +1,10 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { formatDate, formatCurrency } from '@/lib/utils'
+import { useCallback, useState } from 'react'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import { completeAppointmentAction, updateAppointmentStatusAction } from '@/app/actions/tracking'
-import { CheckCircle, XCircle, PlayCircle, DollarSign, FileText } from 'lucide-react'
+import { getStatusMeta } from '@/lib/ds/status'
+import { Icon } from '@/components/admin/Icon'
 
 interface AppointmentRow {
   id: string
@@ -22,21 +18,16 @@ interface AppointmentRow {
   customer: { full_name: string; phone: string } | null
 }
 
-const statusColors: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  confirmed: 'bg-secondary/30 text-secondary-foreground',
-  in_progress: 'bg-accent/30 text-foreground',
-  completed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
-}
-const statusLabels: Record<string, string> = {
-  pending: 'Pendiente',
-  confirmed: 'Confirmada',
-  in_progress: 'En proceso',
-  completed: 'Completada',
-  cancelled: 'Cancelada',
-}
-const serviceLabels: Record<string, string> = {
+const STATUS_FILTERS: { id: string; label: string }[] = [
+  { id: 'all', label: 'Todas' },
+  { id: 'pending', label: 'Pendientes' },
+  { id: 'confirmed', label: 'Confirmadas' },
+  { id: 'in_progress', label: 'En proceso' },
+  { id: 'completed', label: 'Completadas' },
+  { id: 'cancelled', label: 'Canceladas' },
+]
+
+const SERVICE_LABELS: Record<string, string> = {
   bath: 'Baño',
   haircut: 'Corte',
   bath_haircut: 'Baño + Corte',
@@ -111,267 +102,282 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
     setSaving(false)
   }, [completingId, completePrice, completeNotes])
 
-  const FilterChip = ({ f }: { f: string }) => (
-    <button
-      key={f}
-      onClick={() => setFilter(f)}
-      className={`flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${filter === f ? 'font-semibold text-[#4A1E1E]' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
-      style={filter === f ? { backgroundColor: '#FFDAD6' } : {}}
-    >
-      {f === 'all' ? 'Todas' : (statusLabels[f] ?? f)}
-    </button>
-  )
-
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 sm:text-[28px]">Citas</h1>
-          <p className="text-sm text-muted-foreground">Gestión y seguimiento post-cita</p>
+    <div className="ds-stack-6">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="ds-stack-2">
+          <h1 className="ds-t-d1">Citas</h1>
+          <p className="ds-t-body ds-t-muted">Gestión y seguimiento post-cita.</p>
         </div>
-        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
-          {['all', 'pending', 'confirmed', 'in_progress', 'completed', 'cancelled'].map((f) => (
-            <FilterChip key={f} f={f} />
+        <div className="ds-btn-group" role="tablist" aria-label="Filtrar por estado">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => setFilter(f.id)}
+              className={`ds-btn${filter === f.id ? ' is-on' : ''}`}
+            >
+              {f.label}
+            </button>
           ))}
         </div>
-      </div>
+      </header>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          <span>⚠️</span> {error}
+        <div className="ds-alert ds-alert--danger">
+          <Icon name="alert" className="ds-alert__icon" />
+          <div className="ds-alert__body">
+            <strong>Algo salió mal</strong>
+            {error}
+          </div>
           <button
+            type="button"
+            aria-label="Cerrar"
             onClick={() => setError(null)}
-            className="ml-auto text-red-400 hover:text-red-600"
+            className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost"
           >
-            ✕
+            <Icon name="x" size="sm" />
           </button>
         </div>
       )}
 
       {/* Desktop table */}
-      <Card className="hidden rounded-2xl border border-border shadow-sm sm:block">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-medium">
-            {filter === 'all' ? 'Todas las citas' : statusLabels[filter]} ({filtered.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filtered.length > 0 ? (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="px-2 py-2 text-left text-xs font-medium text-slate-400">
-                    Cliente
-                  </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-slate-400">
-                    Mascota
-                  </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-slate-400">
-                    Servicio
-                  </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-slate-400">Fecha</th>
-                  <th className="px-2 py-2 text-right text-xs font-medium text-slate-400">
-                    Precio
-                  </th>
-                  <th className="px-2 py-2 text-center text-xs font-medium text-slate-400">
-                    Estado
-                  </th>
-                  <th className="px-2 py-2 text-right text-xs font-medium text-slate-400">
-                    Acciones
-                  </th>
+      <section className="hidden sm:block">
+        <div className="ds-table-wrap">
+          <table className="ds-table">
+            <thead>
+              <tr>
+                <th>Cliente · Mascota</th>
+                <th>Servicio</th>
+                <th>Fecha</th>
+                <th style={{ textAlign: 'right' }}>Precio</th>
+                <th>Estado</th>
+                <th style={{ textAlign: 'right' }}>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={6}>
+                    <div className="ds-empty">
+                      <div className="ds-empty__icon">
+                        <Icon name="calendar" size="lg" />
+                      </div>
+                      <div className="ds-empty__title">Sin citas en este estado</div>
+                      <div className="ds-empty__desc">
+                        Ajusta el filtro o espera a que se registren nuevas citas.
+                      </div>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filtered.map((apt) => {
-                  const active = !['completed', 'cancelled'].includes(apt.status)
-                  return (
-                    <tr
-                      key={apt.id}
-                      className={active ? 'rounded-xl hover:bg-muted' : 'opacity-60'}
-                    >
-                      <td className="px-2 py-3">
-                        <p className="text-sm font-medium">{apt.customer?.full_name}</p>
-                        <p className="text-xs text-slate-400">{apt.customer?.phone}</p>
-                      </td>
-                      <td className="px-2 py-3">
-                        <p className="text-sm font-medium">{apt.pet?.name}</p>
-                        {apt.pet?.breed && (
-                          <p className="text-xs text-slate-400">{apt.pet.breed}</p>
-                        )}
-                      </td>
-                      <td className="px-2 py-3 text-sm">{serviceLabels[apt.service_type]}</td>
-                      <td className="px-2 py-3">
-                        <p className="text-sm">{formatDate(apt.scheduled_at)}</p>
-                        {apt.completed_at && (
-                          <p className="mt-0.5 flex items-center gap-1 text-xs text-green-600">
-                            <CheckCircle className="h-3 w-3" />
-                            {formatDate(apt.completed_at)}
-                          </p>
-                        )}
-                      </td>
-                      <td className="px-2 py-3 text-right">
-                        {apt.actual_price ? (
-                          <span className="text-sm font-semibold text-green-700">
-                            {formatCurrency(apt.actual_price)}
-                          </span>
-                        ) : (
-                          <span className="text-slate-300">—</span>
-                        )}
-                      </td>
-                      <td className="px-2 py-3 text-center">
-                        <Badge
-                          className={`${statusColors[apt.status]} rounded-lg border-none text-xs`}
-                        >
-                          {statusLabels[apt.status]}
-                        </Badge>
-                        {apt.tracking_notes && (
-                          <div
-                            className="mt-1 flex justify-center gap-1 text-xs text-slate-400"
-                            title={apt.tracking_notes}
-                          >
-                            <FileText className="h-3 w-3" />
-                            Nota
+              )}
+              {filtered.map((apt) => {
+                const meta = getStatusMeta(apt.status)
+                const active = !['completed', 'cancelled'].includes(apt.status)
+                const petName = apt.pet?.name ?? '—'
+                const initial = petName.charAt(0).toUpperCase() || '?'
+                return (
+                  <tr key={apt.id} style={!active ? { opacity: 0.6 } : undefined}>
+                    <td>
+                      <div className="ds-identity">
+                        <div className="ds-avatar ds-avatar--md ds-avatar-pet">{initial}</div>
+                        <div className="ds-identity__body">
+                          <div className="ds-identity__name">
+                            {apt.customer?.full_name ?? 'Sin nombre'}
                           </div>
-                        )}
-                      </td>
-                      <td className="px-2 py-3">
-                        <div className="flex items-center justify-end gap-1">
-                          {apt.status === 'pending' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 gap-1 text-xs"
-                              onClick={() => handleStatusChange(apt.id, 'confirmed')}
-                              disabled={saving}
-                            >
-                              <CheckCircle className="h-3 w-3" />
-                              Confirmar
-                            </Button>
-                          )}
-                          {apt.status === 'confirmed' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 gap-1 text-xs"
-                              onClick={() => handleStatusChange(apt.id, 'in_progress')}
-                              disabled={saving}
-                            >
-                              <PlayCircle className="h-3 w-3" />
-                              Iniciar
-                            </Button>
-                          )}
-                          {apt.status === 'in_progress' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 gap-1 border-green-300 text-xs text-green-600"
-                              onClick={() => {
-                                setCompletingId(apt.id)
-                                setCompletePrice('')
-                                setCompleteNotes('')
-                              }}
-                              disabled={saving}
-                            >
-                              <DollarSign className="h-3 w-3" />
-                              Cobrar
-                            </Button>
-                          )}
-                          {active && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 text-xs text-red-500"
-                              onClick={() => handleStatusChange(apt.id, 'cancelled')}
-                              disabled={saving}
-                            >
-                              <XCircle className="h-3 w-3" />
-                            </Button>
-                          )}
+                          <div className="ds-identity__sub">
+                            {petName}
+                            {apt.pet?.breed ? ` · ${apt.pet.breed}` : ''}
+                            {apt.customer?.phone ? ` · ${apt.customer.phone}` : ''}
+                          </div>
                         </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          ) : (
-            <p className="py-10 text-center text-sm text-slate-400">No hay citas en este estado</p>
+                      </div>
+                    </td>
+                    <td>{SERVICE_LABELS[apt.service_type] ?? apt.service_type}</td>
+                    <td className="ds-t-mono">
+                      {formatDate(apt.scheduled_at)}
+                      {apt.completed_at && (
+                        <div
+                          className="ds-t-xs"
+                          style={{ color: 'var(--success)', marginTop: 2 }}
+                        >
+                          ✓ {formatDate(apt.completed_at)}
+                        </div>
+                      )}
+                    </td>
+                    <td className="ds-num">
+                      {apt.actual_price ? (
+                        <span style={{ color: 'var(--success)', fontWeight: 600 }}>
+                          {formatCurrency(apt.actual_price)}
+                        </span>
+                      ) : (
+                        <span className="ds-t-muted">—</span>
+                      )}
+                    </td>
+                    <td>
+                      <span className={meta.dsClass}>{meta.label}</span>
+                      {apt.tracking_notes && (
+                        <div
+                          className="ds-t-xs ds-t-muted"
+                          style={{ marginTop: 4 }}
+                          title={apt.tracking_notes}
+                        >
+                          <Icon name="msg" size="sm" /> Nota
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <div className="ds-row-actions" style={{ justifyContent: 'flex-end' }}>
+                        {apt.status === 'pending' && (
+                          <button
+                            type="button"
+                            className="ds-btn ds-btn--sm ds-btn--outline"
+                            onClick={() => handleStatusChange(apt.id, 'confirmed')}
+                            disabled={saving}
+                          >
+                            <Icon name="check" size="sm" />
+                            Confirmar
+                          </button>
+                        )}
+                        {apt.status === 'confirmed' && (
+                          <button
+                            type="button"
+                            className="ds-btn ds-btn--sm ds-btn--outline"
+                            onClick={() => handleStatusChange(apt.id, 'in_progress')}
+                            disabled={saving}
+                          >
+                            <Icon name="chevron-r" size="sm" />
+                            Iniciar
+                          </button>
+                        )}
+                        {apt.status === 'in_progress' && (
+                          <button
+                            type="button"
+                            className="ds-btn ds-btn--sm ds-btn--accent"
+                            onClick={() => {
+                              setCompletingId(apt.id)
+                              setCompletePrice('')
+                              setCompleteNotes('')
+                            }}
+                            disabled={saving}
+                          >
+                            <Icon name="check" size="sm" />
+                            Cobrar
+                          </button>
+                        )}
+                        {active && (
+                          <button
+                            type="button"
+                            aria-label="Cancelar"
+                            className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost"
+                            style={{ color: 'var(--danger)' }}
+                            onClick={() => handleStatusChange(apt.id, 'cancelled')}
+                            disabled={saving}
+                          >
+                            <Icon name="x" size="sm" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+          {filtered.length > 0 && (
+            <footer className="ds-pagination">
+              <span>
+                {filtered.length} {filtered.length === 1 ? 'cita' : 'citas'}
+              </span>
+              <span className="ds-t-mono">
+                {filter === 'all' ? 'Mostrando todas' : `Filtro: ${filter}`}
+              </span>
+            </footer>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {/* Mobile cards */}
-      <div className="space-y-3 sm:hidden">
-        <p className="text-sm text-slate-400">{filtered.length} citas</p>
+      <section className="ds-stack-3 sm:hidden">
+        <p className="ds-t-sm ds-t-muted">
+          {filtered.length} {filtered.length === 1 ? 'cita' : 'citas'}
+        </p>
         {filtered.map((apt) => {
+          const meta = getStatusMeta(apt.status)
           const active = !['completed', 'cancelled'].includes(apt.status)
           return (
-            <div
+            <article
               key={apt.id}
-              className={`rounded-2xl border p-4 ${active ? 'border-border bg-white shadow-sm' : 'bg-muted opacity-60'}`}
+              className={`ds-card${active ? '' : ' ds-card--inset'}`}
+              style={!active ? { opacity: 0.7 } : undefined}
             >
-              <div className="mb-2 flex items-start justify-between">
+              <header
+                className="flex items-start justify-between gap-3"
+                style={{ marginBottom: 10 }}
+              >
                 <div>
-                  <p className="text-sm font-semibold">{apt.customer?.full_name}</p>
-                  <p className="text-xs text-slate-400">{apt.customer?.phone}</p>
+                  <p className="ds-t-d4">{apt.customer?.full_name ?? '—'}</p>
+                  <p className="ds-t-xs ds-t-muted">{apt.customer?.phone}</p>
                 </div>
-                <Badge className={`${statusColors[apt.status]} rounded-lg border-none text-xs`}>
-                  {statusLabels[apt.status]}
-                </Badge>
-              </div>
-              <div className="mb-3 grid grid-cols-2 gap-2 text-sm">
+                <span className={meta.dsClass}>{meta.label}</span>
+              </header>
+              <div className="ds-grid-2" style={{ gap: 8, marginBottom: 12 }}>
                 <div>
-                  <p className="text-xs text-slate-400">Mascota</p>
-                  <p className="font-medium">
+                  <p className="ds-t-label">Mascota</p>
+                  <p className="ds-t-body">
                     {apt.pet?.name}
                     {apt.pet?.breed && (
-                      <span className="text-xs text-slate-400"> · {apt.pet.breed}</span>
+                      <span className="ds-t-xs ds-t-muted"> · {apt.pet.breed}</span>
                     )}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">Servicio</p>
-                  <p className="font-medium">{serviceLabels[apt.service_type]}</p>
+                  <p className="ds-t-label">Servicio</p>
+                  <p className="ds-t-body">{SERVICE_LABELS[apt.service_type] ?? apt.service_type}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">Fecha</p>
-                  <p className="text-sm">{formatDate(apt.scheduled_at)}</p>
+                  <p className="ds-t-label">Fecha</p>
+                  <p className="ds-t-body ds-t-mono">{formatDate(apt.scheduled_at)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">Precio</p>
-                  <p className="font-semibold text-green-700">
+                  <p className="ds-t-label">Precio</p>
+                  <p
+                    className="ds-t-body"
+                    style={{ color: apt.actual_price ? 'var(--success)' : 'var(--ink-7)', fontWeight: 600 }}
+                  >
                     {apt.actual_price ? formatCurrency(apt.actual_price) : '—'}
                   </p>
                 </div>
               </div>
               {active && (
-                <div className="flex gap-2 border-t border-border pt-2">
+                <div
+                  className="flex gap-2"
+                  style={{ borderTop: '1px solid var(--ink-3)', paddingTop: 10 }}
+                >
                   {apt.status === 'pending' && (
-                    <Button
-                      size="sm"
-                      className="h-9 flex-1 text-xs"
-                      style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
+                    <button
+                      type="button"
+                      className="ds-btn ds-btn--accent ds-btn--block"
                       onClick={() => handleStatusChange(apt.id, 'confirmed')}
                       disabled={saving}
                     >
                       Confirmar
-                    </Button>
+                    </button>
                   )}
                   {apt.status === 'confirmed' && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-9 flex-1 text-xs"
+                    <button
+                      type="button"
+                      className="ds-btn ds-btn--outline ds-btn--block"
                       onClick={() => handleStatusChange(apt.id, 'in_progress')}
                       disabled={saving}
                     >
                       Iniciar
-                    </Button>
+                    </button>
                   )}
                   {apt.status === 'in_progress' && (
-                    <Button
-                      size="sm"
-                      className="h-9 flex-1 bg-green-600 text-xs text-white hover:bg-green-700"
+                    <button
+                      type="button"
+                      className="ds-btn ds-btn--accent ds-btn--block"
                       onClick={() => {
                         setCompletingId(apt.id)
                         setCompletePrice('')
@@ -380,69 +386,89 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
                       disabled={saving}
                     >
                       Cobrar y completar
-                    </Button>
+                    </button>
                   )}
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-9 text-xs text-red-500"
+                  <button
+                    type="button"
+                    aria-label="Cancelar"
+                    className="ds-btn ds-btn--icon ds-btn--ghost"
+                    style={{ color: 'var(--danger)' }}
                     onClick={() => handleStatusChange(apt.id, 'cancelled')}
                     disabled={saving}
                   >
-                    Cancelar
-                  </Button>
+                    <Icon name="x" size="sm" />
+                  </button>
                 </div>
               )}
               {apt.tracking_notes && (
-                <p className="mt-2 text-xs text-slate-400 italic">{apt.tracking_notes}</p>
+                <p className="ds-t-xs ds-t-muted" style={{ marginTop: 8, fontStyle: 'italic' }}>
+                  {apt.tracking_notes}
+                </p>
               )}
-            </div>
+            </article>
           )
         })}
-      </div>
+      </section>
 
       {/* Complete modal */}
       {completingId && (
-        <Card className="rounded-2xl border-2 border-green-300">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg text-green-800">
-              <CheckCircle className="h-5 w-5" />
-              Completar cita y registrar pago
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">
-                Precio cobrado (MXN) *
-              </label>
-              <div className="relative">
-                <span className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400">$</span>
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="550.00"
-                  className="min-h-[44px] pl-7"
-                  value={completePrice}
-                  onChange={(e) => setCompletePrice(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleComplete()}
+        <div
+          className="fixed inset-0 z-50 grid place-items-center p-4"
+          style={{ background: 'rgba(15, 15, 13, 0.5)' }}
+          onClick={() => setCompletingId(null)}
+        >
+          <div className="ds-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="ds-modal__head">
+              <div
+                className="ds-modal__head__icon"
+                style={{ background: 'var(--success-soft)', color: 'var(--success)' }}
+              >
+                <Icon name="check" size="md" />
+              </div>
+              <div className="ds-modal__head__body">
+                <div className="ds-modal__title">Completar cita y registrar pago</div>
+                <div className="ds-modal__desc">
+                  Ingresa el monto cobrado para marcar la cita como completada.
+                </div>
+              </div>
+            </div>
+            <div className="ds-modal__body ds-stack-3">
+              <div className="ds-field">
+                <label className="ds-field__label" htmlFor="price">
+                  Precio cobrado (MXN) <span className="ds-req">*</span>
+                </label>
+                <div className="ds-input-group">
+                  <span className="ds-t-muted">$</span>
+                  <input
+                    id="price"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="550.00"
+                    value={completePrice}
+                    onChange={(e) => setCompletePrice(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleComplete()}
+                  />
+                </div>
+              </div>
+              <div className="ds-field">
+                <label className="ds-field__label" htmlFor="notes">
+                  Notas de seguimiento
+                </label>
+                <textarea
+                  id="notes"
+                  className="ds-textarea"
+                  placeholder="Comportamiento, recomendaciones…"
+                  rows={3}
+                  value={completeNotes}
+                  onChange={(e) => setCompleteNotes(e.target.value)}
                 />
               </div>
             </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">
-                Notas de seguimiento
-              </label>
-              <Textarea
-                placeholder="Comportamiento, recomendaciones..."
-                rows={3}
-                value={completeNotes}
-                onChange={(e) => setCompleteNotes(e.target.value)}
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
+            <div className="ds-modal__foot">
+              <button
+                type="button"
+                className="ds-btn ds-btn--ghost"
                 onClick={() => {
                   setCompletingId(null)
                   setCompletePrice('')
@@ -450,18 +476,19 @@ export function AppointmentsTracker({ initialAppointments }: Props) {
                 }}
               >
                 Cancelar
-              </Button>
-              <Button
-                className="gap-2 bg-green-600 text-white hover:bg-green-700"
+              </button>
+              <button
+                type="button"
+                className="ds-btn ds-btn--accent"
                 onClick={handleComplete}
                 disabled={saving}
               >
-                <CheckCircle className="h-4 w-4" />
-                {saving ? 'Guardando...' : 'Confirmar pago'}
-              </Button>
+                <Icon name="check" size="sm" />
+                {saving ? 'Guardando…' : 'Confirmar pago'}
+              </button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   )

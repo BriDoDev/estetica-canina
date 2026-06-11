@@ -1,10 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
+import { Icon } from '@/components/admin/Icon'
+import { getStatusMeta } from '@/lib/ds/status'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Calendar, Users, PawPrint, TrendingUp } from 'lucide-react'
-import { formatCurrency, formatDate } from '@/lib/utils'
 
 interface RecentAppointment {
   id: string
@@ -14,21 +13,12 @@ interface RecentAppointment {
   customer: { full_name: string } | null
 }
 
-const statusColors: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  confirmed: 'bg-secondary/30 text-secondary-foreground',
-  in_progress: 'bg-accent/30 text-foreground',
-  completed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
-}
-
-const statusLabels: Record<string, string> = {
-  pending: 'Pendiente',
-  confirmed: 'Confirmada',
-  in_progress: 'En proceso',
-  completed: 'Completada',
-  cancelled: 'Cancelada',
-}
+const PET_AVATAR_BGS = [
+  'ds-avatar ds-avatar--md ds-avatar-pet',
+  'ds-avatar ds-avatar--md ds-avatar-pet--brown',
+  'ds-avatar ds-avatar--md ds-avatar-pet--gray',
+  'ds-avatar ds-avatar--md ds-avatar-pet--cream',
+]
 
 export default async function DashboardPage() {
   let appointmentsCount: number | null = 0
@@ -67,99 +57,105 @@ export default async function DashboardPage() {
     fetchError = 'Error de conexión al cargar el dashboard. Verifica que Supabase esté accesible.'
   }
 
+  const stats: { label: string; value: string | number; icon: 'calendar' | 'users' | 'paw' | 'chart' }[] = [
+    { label: 'Citas totales', value: appointmentsCount ?? 0, icon: 'calendar' },
+    { label: 'Clientes', value: customersCount ?? 0, icon: 'users' },
+    { label: 'Mascotas', value: petsCount ?? 0, icon: 'paw' },
+    { label: 'Ingresos est.', value: formatCurrency(0), icon: 'chart' },
+  ]
+
   return (
-    <div className="space-y-8">
-      {/* MD3: headlineMedium + bodyLarge */}
-      <div>
-        <h1 className="text-[28px] leading-9 font-normal tracking-normal text-slate-900">
-          Dashboard
-        </h1>
-        <p className="mt-1 text-sm leading-5 text-slate-500">Resumen general de Paws &amp; Glow</p>
-      </div>
+    <div className="ds-stack-6">
+      <header className="flex items-start justify-between gap-4">
+        <div className="ds-stack-2">
+          <h1 className="ds-t-d1">Dashboard</h1>
+          <p className="ds-t-body ds-t-muted">Resumen general de Paws &amp; Glow.</p>
+        </div>
+      </header>
 
       {fetchError && (
-        <div className="flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700">
-          <span>⚠️</span> {fetchError}
+        <div className="ds-alert ds-alert--warning">
+          <Icon name="alert" className="ds-alert__icon" />
+          <div className="ds-alert__body">
+            <strong>No pudimos cargar todos los datos</strong>
+            {fetchError}
+          </div>
         </div>
       )}
 
-      {/* MD3: Elevated cards — elevation level 1, 16dp gap */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {[
-          {
-            label: 'Citas totales',
-            value: appointmentsCount ?? 0,
-            icon: Calendar,
-            color: 'text-primary',
-          },
-          { label: 'Clientes', value: customersCount ?? 0, icon: Users, color: 'text-secondary' },
-          { label: 'Mascotas', value: petsCount ?? 0, icon: PawPrint, color: 'text-accent' },
-          {
-            label: 'Ingresos est.',
-            value: formatCurrency(0),
-            icon: TrendingUp,
-            color: 'text-green-600',
-          },
-        ].map((stat) => (
-          <Card
-            key={stat.label}
-            className="rounded-2xl border-0 shadow-md transition-shadow duration-200 hover:shadow-lg"
-          >
-            <CardContent className="p-5">
-              {/* MD3: bodySmall label + headlineSmall value */}
-              <p className="text-xs leading-4 font-medium tracking-wide text-slate-500">
-                {stat.label}
-              </p>
-              <p className="mt-1.5 text-[22px] leading-7 font-normal text-slate-900">
-                {stat.value}
-              </p>
-              <div className="mt-3">
-                <stat.icon className={`h-6 w-6 ${stat.color} opacity-80`} />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* MD3: outlined card for list — 0dp elevation */}
-      <Card className="rounded-2xl border border-slate-200 shadow-none">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base leading-6 font-medium text-slate-900">
-            Citas recientes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {recentAppointments && recentAppointments.length > 0 ? (
-            <div className="space-y-1">
-              {(recentAppointments as unknown as RecentAppointment[]).map((apt) => (
-                <div
-                  key={apt.id}
-                  className="flex items-center justify-between rounded-xl px-3 py-3 transition-colors hover:bg-slate-50"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent/30 to-primary/30">
-                      <span className="text-xs font-bold text-primary">
-                        {apt.pet?.name?.[0]?.toUpperCase() ?? '?'}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-800">
-                        {apt.customer?.full_name} — {apt.pet?.name}
-                      </p>
-                      <p className="text-xs text-slate-400">{formatDate(apt.scheduled_at)}</p>
-                    </div>
-                  </div>
-                  <Badge className={`${statusColors[apt.status]} rounded-lg border-none text-xs`}>
-                    {statusLabels[apt.status]}
-                  </Badge>
-                </div>
-              ))}
+      <section className="ds-grid-4">
+        {stats.map((stat) => (
+          <div className="ds-stat" key={stat.label}>
+            <div className="ds-stat__label">
+              <Icon name={stat.icon} size="sm" />
+              {stat.label}
             </div>
-          ) : (
-            <p className="py-6 text-center text-sm text-slate-400">No hay citas aún</p>
-          )}
-        </CardContent>
-      </Card>
+            <div className="ds-stat__value">{stat.value}</div>
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <div className="ds-card-head" style={{ marginBottom: 12 }}>
+          <div>
+            <div className="ds-card-head__title">Citas recientes</div>
+            <div className="ds-card-head__sub">Últimas 5 citas registradas en el salón.</div>
+          </div>
+        </div>
+
+        {recentAppointments && recentAppointments.length > 0 ? (
+          <div className="ds-table-wrap">
+            <table className="ds-table">
+              <thead>
+                <tr>
+                  <th>Cliente · Mascota</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentAppointments.map((apt, i) => {
+                  const meta = getStatusMeta(apt.status)
+                  const petName = apt.pet?.name ?? '—'
+                  const initial = petName.charAt(0).toUpperCase() || '?'
+                  return (
+                    <tr key={apt.id}>
+                      <td>
+                        <div className="ds-identity">
+                          <div className={PET_AVATAR_BGS[i % PET_AVATAR_BGS.length]}>{initial}</div>
+                          <div className="ds-identity__body">
+                            <div className="ds-identity__name">
+                              {apt.customer?.full_name ?? 'Sin nombre'}
+                            </div>
+                            <div className="ds-identity__sub">
+                              {petName}
+                              {apt.pet?.breed ? ` · ${apt.pet.breed}` : ''}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="ds-t-mono">{formatDate(apt.scheduled_at)}</td>
+                      <td>
+                        <span className={meta.dsClass}>{meta.label}</span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="ds-empty">
+            <div className="ds-empty__icon">
+              <Icon name="calendar" size="lg" />
+            </div>
+            <div className="ds-empty__title">Sin citas aún</div>
+            <div className="ds-empty__desc">
+              Cuando se registren citas en el sistema aparecerán aquí.
+            </div>
+          </div>
+        )}
+      </section>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
-import { CmsEditor } from './CmsEditor'
 import Link from 'next/link'
-import { ArrowRight, Scissors, Star } from 'lucide-react'
+import { CmsEditor } from './CmsEditor'
+import { Icon } from '@/components/admin/Icon'
 
 export const dynamic = 'force-dynamic'
 
@@ -63,54 +63,69 @@ export default async function CmsPage() {
   }
 
   return (
-    <div className="max-w-3xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">CMS Landing</h1>
-        <p className="text-slate-500">
-          Edita el contenido de la página principal directamente desde aquí
+    <div className="ds-stack-6" style={{ maxWidth: 760 }}>
+      <header className="ds-stack-2">
+        <h1 className="ds-t-d1">CMS Landing</h1>
+        <p className="ds-t-body ds-t-muted">
+          Edita el contenido de la página principal directamente desde aquí.
         </p>
-      </div>
+      </header>
 
       {fetchError && (
-        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
-          <span>⚠️</span> {fetchError}
+        <div className="ds-alert ds-alert--warning">
+          <Icon name="alert" className="ds-alert__icon" />
+          <div className="ds-alert__body">
+            <strong>Cargando defaults</strong>
+            {fetchError}
+          </div>
         </div>
       )}
 
-      <CmsEditor hero={hero} contact={contact} hours={hours} key={JSON.stringify({ hero, contact, hours })} />
+      <CmsEditor
+        hero={hero}
+        contact={contact}
+        hours={hours}
+        key={JSON.stringify({ hero, contact, hours })}
+      />
 
-      {/* Shortcuts to Services and Reviews */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="ds-grid-2">
         <Link
           href="/services"
-          className="group flex items-center justify-between rounded-2xl border border-border p-4 transition-colors hover:border-accent/30 hover:bg-accent/20"
+          className="ds-card group flex items-center justify-between"
+          style={{ textDecoration: 'none' }}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/30">
-              <Scissors className="h-5 w-5 text-primary" />
+            <div
+              className="ds-avatar ds-avatar--lg ds-avatar-pet"
+              style={{ borderRadius: 12 }}
+            >
+              <Icon name="scissors" />
             </div>
             <div>
-              <p className="font-semibold text-slate-800">Servicios</p>
-              <p className="text-xs text-slate-400">Gestionar servicios del landing</p>
+              <p className="ds-t-d4">Servicios</p>
+              <p className="ds-t-xs ds-t-muted">Gestionar servicios del landing</p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-accent" />
+          <Icon name="arrow-r" size="sm" className="ds-t-muted" />
         </Link>
-
         <Link
           href="/reviews"
-          className="group flex items-center justify-between rounded-2xl border border-border p-4 transition-colors hover:border-accent/30 hover:bg-accent/20"
+          className="ds-card group flex items-center justify-between"
+          style={{ textDecoration: 'none' }}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
-              <Star className="h-5 w-5 text-amber-600" />
+            <div
+              className="ds-avatar ds-avatar--lg ds-avatar-pet--cream"
+              style={{ borderRadius: 12 }}
+            >
+              <Icon name="sparkle" />
             </div>
             <div>
-              <p className="font-semibold text-slate-800">Reseñas</p>
-              <p className="text-xs text-slate-400">Gestionar reseñas del landing</p>
+              <p className="ds-t-d4">Reseñas</p>
+              <p className="ds-t-xs ds-t-muted">Gestionar reseñas del landing</p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-accent" />
+          <Icon name="arrow-r" size="sm" className="ds-t-muted" />
         </Link>
       </div>
     </div>

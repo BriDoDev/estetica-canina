@@ -1,9 +1,28 @@
 import type { Metadata, Viewport } from 'next'
-import { Quicksand } from 'next/font/google'
+import { Fredoka, Manrope, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { ServiceWorkerRegistration } from '@/components/ui/ServiceWorkerRegistration'
 
-const quicksand = Quicksand({ subsets: ['latin'], weight: ['400', '500', '600', '700'] })
+const fredoka = Fredoka({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-fredoka',
+  display: 'swap',
+})
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-manrope',
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+})
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -33,14 +52,17 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es">
+    <html
+      lang="es"
+      className={`${fredoka.variable} ${manrope.variable} ${jetbrainsMono.variable}`}
+    >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#FF8C7A" />
+        <meta name="theme-color" content="#1e5631" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
-      <body className={quicksand.className}>
+      <body className="font-sans">
         {children}
         <ServiceWorkerRegistration />
       </body>

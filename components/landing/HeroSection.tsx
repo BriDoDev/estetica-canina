@@ -1,9 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Sparkles, Calendar } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
+import { useStageSection } from './StageProvider'
+import { StageTag } from './StageTag'
 
 interface HeroSectionProps {
   title?: string
@@ -12,134 +12,131 @@ interface HeroSectionProps {
   ctaSecondary?: string
 }
 
-function PawPrintDecor({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 100 100" className={className} aria-hidden="true" fill="currentColor">
-      <ellipse cx="50" cy="75" rx="22" ry="18" />
-      <ellipse cx="25" cy="52" rx="10" ry="13" transform="rotate(-15 25 52)" />
-      <ellipse cx="75" cy="52" rx="10" ry="13" transform="rotate(15 75 52)" />
-      <ellipse cx="38" cy="38" rx="9" ry="12" transform="rotate(-5 38 38)" />
-      <ellipse cx="62" cy="38" rx="9" ry="12" transform="rotate(5 62 38)" />
-    </svg>
+function renderTitle(title: string) {
+  const parts = title.split(/\*([^*]+)\*/g)
+  return parts.map((part, i) =>
+    i % 2 === 1 ? (
+      <em key={i} style={{ color: 'var(--color-bone)', fontStyle: 'normal' }}>
+        {part}
+      </em>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
   )
 }
 
 export function HeroSection({
-  title = 'Tu mascota merece brillar ✨',
-  subtitle = 'Estética canina de alto nivel con diagnóstico por inteligencia artificial. Analizamos a tu mascota y te recomendamos el cuidado perfecto. Resultados que se ven y se sienten.',
-  ctaPrimary = 'Agendar cita',
+  title = 'Tu mejor amigo, en su *mejor versión*.',
+  subtitle = 'Estética canina con IA: sube una foto y descubre el corte ideal para la raza, edad y pelaje de tu perro. Reservas en 4 pasos.',
+  ctaPrimary = 'Agenda una cita',
   ctaSecondary = 'Ver servicios',
 }: HeroSectionProps) {
-  const scrollToBooking = () => {
-    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const scrollToServices = () => {
-    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const ref = useStageSection(1)
 
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden bg-[#fafaf8]">
-      {/* Decorative paw prints */}
-      <PawPrintDecor className="pointer-events-none absolute top-16 left-8 h-12 w-12 rotate-12 text-accent/40" />
-      <PawPrintDecor className="pointer-events-none absolute top-32 right-16 h-8 w-8 -rotate-20 text-amber-200/60" />
-      <PawPrintDecor className="pointer-events-none absolute bottom-24 left-1/4 h-10 w-10 rotate-45 text-accent/30" />
-      <PawPrintDecor className="pointer-events-none absolute right-8 bottom-40 h-14 w-14 -rotate-12 text-warning/40" />
-      <PawPrintDecor className="pointer-events-none absolute top-1/2 left-4 h-6 w-6 rotate-30 text-accent/30" />
+    <section
+      ref={ref}
+      id="hero"
+      className="bg-stage-1 relative overflow-hidden pt-7 pb-14"
+      data-stage-section="1"
+    >
+      <div className="mx-auto w-full max-w-[500px] px-5">
+        <StageTag n={1} label="Etapa 1 · Desastre" light />
 
-      {/* Soft blobs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/3 -right-1/4 h-[700px] w-[700px] rounded-full bg-accent/30 blur-3xl" />
-        <div className="absolute -bottom-1/4 -left-1/4 h-[500px] w-[500px] rounded-full bg-primary/20 blur-3xl" />
-      </div>
+        <h1
+          className="display mt-4 text-paper-2"
+          style={{ fontWeight: 500 }}
+        >
+          {renderTitle(title)}
+        </h1>
 
-      <div className="relative z-10 container mx-auto grid items-center gap-12 px-4 py-20 lg:grid-cols-2">
-        {/* Text content */}
-        <div className="space-y-7">
-          <Badge
-            variant="secondary"
-            className="border-none bg-[#FFDAD6] px-3 py-1 text-[#4A1E1E]"
+        <p
+          className="mt-5 max-w-[420px] text-[16.5px] leading-[1.55]"
+          style={{ color: 'rgba(255,255,255,0.78)' }}
+        >
+          {subtitle}
+        </p>
+
+        <div className="mt-7 flex flex-wrap gap-2.5">
+          <a href="#agenda" className="btn btn--accent">
+            {ctaPrimary}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m9 5 7 7-7 7" />
+            </svg>
+          </a>
+          <a
+            href="#servicios"
+            className="btn btn--ghost"
+            style={{
+              color: 'var(--color-paper-2)',
+              borderColor: 'rgba(255,255,255,0.6)',
+            }}
           >
-            <Sparkles className="mr-1.5 h-3 w-3" />
-            IA Vision para tu mascota
-          </Badge>
-
-          <h1 className="text-5xl leading-tight font-extrabold tracking-tight text-foreground lg:text-6xl">
-            {title}
-          </h1>
-
-          <p className="max-w-md text-lg leading-relaxed text-muted-foreground">{subtitle}</p>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button
-              size="lg"
-              onClick={scrollToBooking}
-              className="w-full gap-2 shadow-lg shadow-primary/20 sm:w-auto"
-              style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
-            >
-              <Calendar className="h-4 w-4" />
-              {ctaPrimary}
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={scrollToServices}
-              className="w-full gap-2 border-border text-foreground hover:bg-muted sm:w-auto"
-            >
-              {ctaSecondary}
-            </Button>
-          </div>
-
-          {/* Stats bar */}
-          <div className="flex flex-wrap gap-6 pt-2">
-            {[
-              { value: '500+', label: 'mascotas atendidas' },
-              { value: '4.9★', label: 'calificación' },
-              { value: '3 años', label: 'de experiencia' },
-            ].map((stat) => (
-              <div key={stat.label} className="flex flex-col">
-                <span className="text-2xl font-extrabold text-primary">{stat.value}</span>
-                <span className="text-xs tracking-wide text-muted-foreground uppercase">{stat.label}</span>
-              </div>
-            ))}
-          </div>
+            {ctaSecondary}
+          </a>
         </div>
 
-        {/* Dog image */}
-        <div className="relative flex items-center justify-center">
-          {/* Decorative ring */}
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="h-[440px] w-[440px] rounded-full border-2 border-dashed border-accent/40" />
-          </div>
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="h-[380px] w-[380px] rounded-full bg-accent/20" />
-          </div>
-
-          <div className="relative h-[360px] w-[320px] overflow-hidden rounded-3xl border-4 border-white shadow-2xl shadow-primary/20 lg:h-[400px] lg:w-[360px]">
+        <div className="relative mt-9">
+          <div
+            className="relative overflow-hidden"
+            style={{
+              borderRadius: 'var(--radius-xl)',
+              background: 'var(--color-stage-1)',
+              aspectRatio: '950 / 580',
+            }}
+          >
             <Image
-              src="/images/hero-dog.png"
-              alt="Perro feliz después de su sesión de grooming en Paws & Glow"
+              src="/images/stages/dog-1-desastre.png"
+              alt="Perro despeinado, antes del grooming"
               fill
               className="object-cover"
               priority
-              sizes="(max-width: 768px) 320px, 360px"
+              sizes="(max-width: 500px) 100vw, 500px"
             />
           </div>
+          <span
+            className="absolute -bottom-3.5 right-3.5 inline-flex items-center gap-1.5 rounded-full bg-paper px-4 py-2.5 text-[12px] font-bold uppercase tracking-[0.04em] text-ink"
+          >
+            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+            Antes
+          </span>
+        </div>
 
-          {/* Floating IA badge */}
-          <div className="absolute top-4 right-0 flex items-center gap-2 rounded-2xl border border-accent/30 bg-white px-4 py-2 shadow-lg shadow-accent/30 lg:right-4">
-            <Sparkles className="h-4 w-4 text-accent" />
-            <span className="text-sm font-semibold text-foreground">IA Vision ✨</span>
-          </div>
-
-          {/* Floating paw badge */}
-          <div className="absolute bottom-6 left-0 flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 shadow-lg shadow-amber-100 lg:-left-4">
-            <span className="text-lg">🐾</span>
-            <div>
-              <p className="text-xs font-bold text-amber-800">Premium Grooming</p>
-              <p className="text-xs text-amber-600">Cuidado con amor</p>
+        <div
+          className="mt-12 grid grid-cols-3 py-5.5"
+          style={{
+            borderTop: '1px solid rgba(255,255,255,0.22)',
+            borderBottom: '1px solid rgba(255,255,255,0.22)',
+            paddingTop: 22,
+            paddingBottom: 22,
+          }}
+        >
+          {[
+            { n: '+3,200', l: 'Visitas' },
+            { n: '4.9★', l: 'Rating' },
+            { n: '8 km', l: 'Cobertura' },
+          ].map((s, i) => (
+            <div
+              key={s.l}
+              className="text-paper-2 px-2 text-center"
+              style={
+                i > 0 ? { borderLeft: '1px solid rgba(255,255,255,0.22)' } : undefined
+              }
+            >
+              <div
+                className="font-display"
+                style={{ fontSize: 30, fontWeight: 500, lineHeight: 1, letterSpacing: '-0.02em' }}
+              >
+                {s.n}
+              </div>
+              <span
+                className="mt-2 block text-[10.5px] uppercase tracking-[0.14em] font-semibold"
+                style={{ opacity: 0.7 }}
+              >
+                {s.l}
+              </span>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

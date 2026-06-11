@@ -1,6 +1,13 @@
+import { IconSprite } from '@/components/admin/IconSprite'
+
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#F5EDFA] to-[#FFDAD6] p-4">
+    <div
+      data-app="admin"
+      className="flex min-h-screen items-center justify-center p-4"
+      style={{ background: 'var(--bg)' }}
+    >
+      <IconSprite />
       {children}
     </div>
   )

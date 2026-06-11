@@ -3,11 +3,8 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, PawPrint } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { Icon } from '@/components/admin/Icon'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
@@ -38,49 +35,64 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader className="pb-2 text-center">
-        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary">
-          <PawPrint className="h-6 w-6 text-primary-foreground" />
+    <div className="ds-card w-full max-w-sm">
+      <div className="ds-stack-4 text-center" style={{ marginBottom: 18 }}>
+        <div
+          className="mx-auto grid h-12 w-12 place-items-center rounded-full font-display text-xl text-white"
+          style={{ background: 'var(--brand-deep)', fontWeight: 500 }}
+        >
+          P
         </div>
-        <CardTitle className="text-2xl text-foreground">Paws & Glow</CardTitle>
-        <p className="text-sm text-muted-foreground">Acceso al panel de administración</p>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Correo</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@pawsandglow.mx"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+        <div>
+          <h1 className="ds-t-d2">Paws &amp; Glow</h1>
+          <p className="ds-t-sm ds-t-muted">Acceso al panel de administración</p>
+        </div>
+      </div>
 
-          {error && <p className="rounded-lg bg-red-50 p-2 text-xs text-red-500">{error}</p>}
+      <form onSubmit={handleLogin} className="ds-stack-3">
+        <div className="ds-field">
+          <label htmlFor="email" className="ds-field__label">
+            Correo
+          </label>
+          <input
+            id="email"
+            type="email"
+            className="ds-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="admin@pawsandglow.mx"
+            required
+          />
+        </div>
+        <div className="ds-field">
+          <label htmlFor="password" className="ds-field__label">
+            Contraseña
+          </label>
+          <input
+            id="password"
+            type="password"
+            className="ds-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full" style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
-          >
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Iniciar sesión'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        {error && (
+          <div className="ds-alert ds-alert--danger">
+            <Icon name="alert" className="ds-alert__icon" />
+            <div className="ds-alert__body">{error}</div>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="ds-btn ds-btn--accent ds-btn--lg ds-btn--block"
+        >
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Iniciar sesión'}
+        </button>
+      </form>
+    </div>
   )
 }

@@ -5,8 +5,6 @@ import { updateConfigAction } from '@/app/actions/landing-config'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -25,7 +23,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Switch } from '@/components/ui/switch'
-import { Plus, Pencil, Trash2, Loader2, GripVertical, ImagePlus, X } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { Icon } from '@/components/admin/Icon'
 import Image from 'next/image'
 import type { ServiceItem } from './page'
 
@@ -197,70 +196,87 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <Button onClick={openCreate} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-          <Plus className="h-4 w-4" />
+        <button type="button" onClick={openCreate} className="ds-btn ds-btn--accent">
+          <Icon name="plus" size="sm" />
           Nuevo servicio
-        </Button>
+        </button>
         <div className="flex items-center gap-3">
-          {saveMsg && <span className="text-sm text-muted-foreground">{saveMsg}</span>}
-          <Button onClick={saveAll} disabled={saving} variant="outline" className="gap-2">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          {saveMsg && <span className="ds-t-sm ds-t-muted">{saveMsg}</span>}
+          <button
+            type="button"
+            onClick={saveAll}
+            disabled={saving}
+            className="ds-btn ds-btn--outline"
+          >
+            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             Guardar cambios
-          </Button>
+          </button>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="ds-grid-3">
         {services.map((svc) => (
-          <div
+          <article
             key={svc.id}
-            className={`overflow-hidden rounded-2xl border bg-white transition-opacity ${svc.active ? 'border-border' : 'border-border opacity-60'}`}
+            className="ds-card overflow-hidden"
+            style={{ padding: 0, opacity: svc.active ? 1 : 0.6 }}
           >
-            {svc.imageUrl ? (
+            {svc.imageUrl && (
               <div className="relative h-40 w-full">
-                <Image src={svc.imageUrl} alt={svc.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+                <Image
+                  src={svc.imageUrl}
+                  alt={svc.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                />
               </div>
-            ) : null}
-            <div className={`p-4 ${svc.imageUrl ? '' : ''}`}>
+            )}
+            <div style={{ padding: 16 }}>
               <div className="mb-3 flex items-start justify-between">
                 <div className="flex items-center gap-2">
-                  <GripVertical className="h-4 w-4 cursor-grab text-muted-foreground" />
+                  <Icon name="dots" size="sm" className="ds-t-muted" />
                   {!svc.imageUrl && <span className="text-2xl">{svc.icon}</span>}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="ds-row-actions" style={{ opacity: 1 }}>
                   <Switch
                     checked={svc.active}
                     onCheckedChange={() => toggleActive(svc.id)}
                     aria-label="Activo"
                   />
                   <button
+                    type="button"
                     onClick={() => openEdit(svc)}
-                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-slate-100 hover:text-primary"
+                    className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost"
                     aria-label="Editar"
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <Icon name="edit" size="sm" />
                   </button>
                   <button
+                    type="button"
                     onClick={() => setDeleteId(svc.id)}
-                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600"
+                    className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost"
+                    style={{ color: 'var(--danger)' }}
                     aria-label="Eliminar"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Icon name="trash" size="sm" />
                   </button>
                 </div>
               </div>
-              <h3 className="mb-1 font-semibold text-foreground">{svc.name}</h3>
-              <p className="mb-3 line-clamp-2 text-xs text-muted-foreground">{svc.description}</p>
+              <h3 className="ds-t-d4" style={{ marginBottom: 4 }}>
+                {svc.name}
+              </h3>
+              <p className="ds-t-sm ds-t-muted" style={{ marginBottom: 12 }}>
+                {svc.description}
+              </p>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-primary">{svc.price}</span>
-                {svc.badge && (
-                  <Badge className="border-none bg-accent/30 text-xs text-foreground">
-                    {svc.badge}
-                  </Badge>
-                )}
+                <span className="ds-t-body" style={{ fontWeight: 700, color: 'var(--accent)' }}>
+                  {svc.price}
+                </span>
+                {svc.badge && <span className="ds-badge ds-badge--accent">{svc.badge}</span>}
               </div>
             </div>
-          </div>
+          </article>
         ))}
       </div>
 
@@ -270,32 +286,55 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
           <DialogHeader>
             <DialogTitle>{editingService ? 'Editar servicio' : 'Nuevo servicio'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            {/* Image upload */}
-            <div className="space-y-1.5">
-              <Label>Imagen del servicio</Label>
+          <div className="ds-stack-3" style={{ paddingBlock: 8 }}>
+            <div className="ds-field">
+              <label className="ds-field__label">Imagen del servicio</label>
               {imagePreview ? (
                 <div className="relative">
-                  <div className="relative h-40 w-full overflow-hidden rounded-xl border border-border">
-                    <Image src={imagePreview} alt="Preview" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+                  <div
+                    className="relative h-40 w-full overflow-hidden"
+                    style={{ borderRadius: 12, border: '1px solid var(--ink-4)' }}
+                  >
+                    <Image
+                      src={imagePreview}
+                      alt="Preview"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover"
+                    />
                   </div>
                   <button
                     type="button"
                     onClick={removeImage}
-                    className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-100 text-red-500 transition-colors hover:bg-red-200"
+                    aria-label="Quitar imagen"
+                    className="ds-btn ds-btn--icon ds-btn--sm"
+                    style={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      background: 'var(--surface)',
+                      color: 'var(--danger)',
+                    }}
                   >
-                    <X className="h-4 w-4" />
+                    <Icon name="x" size="sm" />
                   </button>
                 </div>
               ) : (
                 <button
                   type="button"
                   onClick={() => imageInputRef.current?.click()}
-                  className="flex h-32 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-accent hover:bg-accent/10 hover:text-primary"
+                  className="flex h-32 w-full flex-col items-center justify-center gap-2"
+                  style={{
+                    borderRadius: 12,
+                    border: '2px dashed var(--ink-5)',
+                    color: 'var(--ink-8)',
+                  }}
                 >
-                  <ImagePlus className="h-6 w-6" />
-                  <span className="text-sm font-medium">Subir imagen</span>
-                  <span className="text-xs text-muted-foreground">JPG, PNG o WebP · Máx 2MB</span>
+                  <Icon name="image" size="lg" />
+                  <span className="ds-t-body" style={{ fontWeight: 600 }}>
+                    Subir imagen
+                  </span>
+                  <span className="ds-t-xs ds-t-muted">JPG, PNG o WebP · Máx 2MB</span>
                 </button>
               )}
               <input
@@ -307,9 +346,9 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Icono (emoji)</Label>
+            <div className="ds-grid-2">
+              <div className="ds-field">
+                <label className="ds-field__label">Icono (emoji)</label>
                 <Input
                   value={form.icon}
                   onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))}
@@ -317,8 +356,8 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
                   className="text-xl"
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label>Badge (opcional)</Label>
+              <div className="ds-field">
+                <label className="ds-field__label">Badge (opcional)</label>
                 <Input
                   value={form.badge ?? ''}
                   onChange={(e) => setForm((f) => ({ ...f, badge: e.target.value || null }))}
@@ -326,51 +365,51 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
                 />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Nombre *</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">Nombre <span className="ds-req">*</span></label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="Nombre del servicio"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Descripción</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">Descripción</label>
               <Input
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="Breve descripción del servicio"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Precio</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">Precio</label>
               <Input
                 value={form.price}
                 onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                 placeholder="Desde $250"
               />
             </div>
-            <div className="flex items-center gap-3">
+            <label className="ds-row-2">
               <Switch
                 checked={form.active}
                 onCheckedChange={(v: boolean) => setForm((f) => ({ ...f, active: v }))}
-                id="active-switch"
               />
-              <Label htmlFor="active-switch">Activo en la página</Label>
-            </div>
+              <span className="ds-t-body">Activo en la página</span>
+            </label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={dialogSaving}>
               Cancelar
             </Button>
-            <Button
+            <button
+              type="button"
               onClick={saveDialog}
               disabled={!form.name.trim() || dialogSaving}
-              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+              className="ds-btn ds-btn--accent"
             >
               {dialogSaving && <Loader2 className="h-4 w-4 animate-spin" />}
               {editingService ? 'Guardar cambios' : 'Crear servicio'}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

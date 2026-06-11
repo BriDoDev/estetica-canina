@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { ReviewsManager } from './ReviewsManager'
+import { Icon } from '@/components/admin/Icon'
 
 export const dynamic = 'force-dynamic'
 
@@ -63,14 +64,20 @@ export default async function ReviewsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Reseñas</h1>
-        <p className="text-slate-500">Gestiona las reseñas mostradas en la página principal</p>
-      </div>
+    <div className="ds-stack-6">
+      <header className="ds-stack-2">
+        <h1 className="ds-t-d1">Reseñas</h1>
+        <p className="ds-t-body ds-t-muted">
+          Gestiona las reseñas mostradas en la página principal.
+        </p>
+      </header>
       {fetchError && (
-        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
-          <span>⚠️</span> {fetchError}
+        <div className="ds-alert ds-alert--warning">
+          <Icon name="alert" className="ds-alert__icon" />
+          <div className="ds-alert__body">
+            <strong>Cargando defaults</strong>
+            {fetchError}
+          </div>
         </div>
       )}
       <ReviewsManager initialReviews={reviews} key={JSON.stringify(reviews)} />

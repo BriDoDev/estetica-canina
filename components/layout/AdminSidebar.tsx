@@ -1,40 +1,47 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { cn } from '@/lib/utils'
-import {
-  LayoutDashboard,
-  Calendar,
-  Users,
-  Package,
-  Settings,
-  Settings2,
-  PawPrint,
-  LogOut,
-  Scissors,
-  Star,
-  Menu,
-  X,
-} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Icon } from '@/components/admin/Icon'
+import { IconSprite, type IconName } from '@/components/admin/IconSprite'
+import { AdminTopbar } from './AdminTopbar'
 
-const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/appointments', icon: Calendar, label: 'Citas' },
-  { href: '/customers', icon: Users, label: 'Clientes' },
-  { href: '/products', icon: Package, label: 'Productos' },
-  { href: '/services', icon: Scissors, label: 'Servicios' },
-  { href: '/reviews', icon: Star, label: 'Reseñas' },
-  { href: '/cms', icon: Settings, label: 'CMS' },
-  { href: '/settings', icon: Settings2, label: 'Configuración' },
+interface NavGroup {
+  label: string
+  items: { href: string; icon: IconName; label: string }[]
+}
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: 'Operación',
+    items: [
+      { href: '/dashboard', icon: 'home', label: 'Dashboard' },
+      { href: '/appointments', icon: 'calendar', label: 'Citas' },
+      { href: '/customers', icon: 'users', label: 'Clientes' },
+    ],
+  },
+  {
+    label: 'Catálogo',
+    items: [
+      { href: '/products', icon: 'cart', label: 'Productos' },
+      { href: '/services', icon: 'scissors', label: 'Servicios' },
+      { href: '/reviews', icon: 'sparkle', label: 'Reseñas' },
+    ],
+  },
+  {
+    label: 'Sistema',
+    items: [
+      { href: '/cms', icon: 'image', label: 'CMS' },
+      { href: '/settings', icon: 'cog', label: 'Configuración' },
+    ],
+  },
 ]
 
-export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
+function SidebarContent({ onClose }: { onClose: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
-
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   const handleLogout = async () => {
@@ -44,113 +51,111 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
     router.refresh()
   }
 
-  const sidebarContent = (
-    <aside className="flex h-full w-56 shrink-0 flex-col border-r border-border bg-card lg:w-60">
-      <div className="flex items-center justify-between border-b border-border p-4 lg:p-5">
-        <div className="flex items-center gap-3">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ backgroundColor: '#FF8C7A' }}
-          >
-            <PawPrint className="h-5 w-5 text-white" />
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-foreground">Paws &amp; Glow</p>
-            <p className="text-xs text-muted-foreground">Panel Admin</p>
-          </div>
+  return (
+    <aside className="ds-sidebar h-full" style={{ width: '100%' }}>
+      <div className="ds-sidebar__brand">
+        <div className="ds-sidebar__brand__mark">P</div>
+        <div className="min-w-0 flex-1">
+          <div className="ds-sidebar__brand__name truncate">Paws &amp; Glow</div>
+          <div className="ds-sidebar__brand__sub">Panel Admin</div>
         </div>
-        {/* Close button — mobile only */}
         <button
+          type="button"
           onClick={onClose}
-          className="rounded-lg p-1 text-muted-foreground hover:bg-muted lg:hidden"
+          aria-label="Cerrar menú"
+          className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost lg:hidden"
         >
-          <X className="h-5 w-5" />
+          <Icon name="x" size="sm" />
         </button>
       </div>
 
-      <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
-        {navItems.map((item) => {
-          const active = isActive(item.href)
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className={cn(
-                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
-                active
-                  ? 'font-semibold text-[#4A1E1E]'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-              )}
-              style={active ? { backgroundColor: '#FFDAD6' } : undefined}
-            >
-              <item.icon
-                className={cn('h-4 w-4 flex-shrink-0', active ? 'text-[#4A1E1E]' : 'text-muted-foreground')}
-              />
-              <span className="truncate">{item.label}</span>
-            </Link>
-          )
-        })}
+      <nav className="flex-1 overflow-y-auto" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {NAV_GROUPS.map((group) => (
+          <div className="ds-sidebar__group" key={group.label}>
+            <div className="ds-sidebar__group__label">{group.label}</div>
+            {group.items.map((item) => {
+              const active = isActive(item.href)
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  className={`ds-nav-item${active ? ' is-on' : ''}`}
+                >
+                  <Icon name={item.icon} />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              )
+            })}
+          </div>
+        ))}
       </nav>
 
-      <div className="border-t border-border p-3">
+      <div style={{ paddingTop: 12, borderTop: '1px solid var(--ink-3)' }}>
         <button
+          type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="ds-nav-item w-full"
+          style={{ background: 'transparent' }}
         >
-          <LogOut className="h-4 w-4 flex-shrink-0" />
-          Cerrar sesión
+          <Icon name="arrow-r" />
+          <span>Cerrar sesión</span>
         </button>
       </div>
     </aside>
-  )
-
-  return (
-    <>
-      {/* Desktop: always visible */}
-      <div className="sticky top-0 hidden h-screen lg:block">{sidebarContent}</div>
-      {/* Mobile: overlay drawer */}
-      {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-          <div className="animate-in slide-in-from-left absolute top-0 bottom-0 left-0 w-64 duration-200">
-            {sidebarContent}
-          </div>
-        </div>
-      )}
-    </>
   )
 }
 
 export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-
-  // Close sidebar on route change
   const pathname = usePathname()
+
   useEffect(() => {
     queueMicrotask(() => setSidebarOpen(false))
   }, [pathname])
 
   return (
-    <div className="flex min-h-screen bg-[#FFF8F0]">
-      <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      <main className="min-w-0 flex-1">
-        {/* Mobile header */}
-        <div className="sticky top-0 z-40 flex items-center gap-3 border-b border-border bg-card/90 px-4 py-3 backdrop-blur lg:hidden">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="rounded-lg p-1.5 text-foreground hover:bg-muted"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <div className="flex items-center gap-2">
-            <PawPrint className="h-5 w-5" style={{ color: '#FF8C7A' }} />
-            <span className="text-sm font-semibold text-foreground">Paws &amp; Glow</span>
-          </div>
+    <div data-app="admin" className="min-h-screen">
+      <IconSprite />
+      <div
+        className="min-h-screen p-4 lg:p-5"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'var(--sidebar-w) 1fr',
+          gap: 16,
+          background: 'var(--bg)',
+        }}
+      >
+        {/* Desktop sidebar */}
+        <div className="sticky top-5 hidden lg:block" style={{ alignSelf: 'start', height: 'calc(100vh - 40px)' }}>
+          <SidebarContent onClose={() => setSidebarOpen(false)} />
         </div>
-        <div className="overflow-auto p-4 lg:p-6">{children}</div>
-      </main>
+
+        {/* Mobile drawer */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div className="absolute inset-0 bg-black/30" onClick={() => setSidebarOpen(false)} />
+            <div className="absolute top-0 bottom-0 left-0 w-[280px] p-4" style={{ background: 'var(--bg)' }}>
+              <SidebarContent onClose={() => setSidebarOpen(false)} />
+            </div>
+          </div>
+        )}
+
+        {/* Main column */}
+        <div className="min-w-0" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <AdminTopbar onMenuClick={() => setSidebarOpen(true)} />
+          <main className="min-w-0">{children}</main>
+        </div>
+      </div>
+
+      {/* On mobile, grid collapses to single column — hide first column */}
+      <style>{`
+        @media (max-width: 1023px) {
+          [data-app="admin"] > div:first-of-type {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

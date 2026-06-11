@@ -82,7 +82,7 @@ export function DateTimePicker({
   }
 
   const borderClass = cn(
-    'min-h-[44px] flex items-center gap-2 w-full rounded-xl border bg-white px-3 py-2 text-sm cursor-pointer transition-colors hover:border-[#FF8C7A]',
+    'min-h-[44px] flex items-center gap-2 w-full rounded-xl border bg-white px-3 py-2 text-sm cursor-pointer transition-colors hover:border-[#4C9329]',
     error
       ? 'border-red-400'
       : touched && !error
@@ -132,9 +132,9 @@ export function DateTimePicker({
                   weekday: 'text-xs font-medium text-muted-foreground text-center h-8',
                   weeks: '',
                   week: 'grid grid-cols-7',
-                  day: 'text-center text-sm h-9 w-9 rounded-lg aria-selected:bg-[#FF8C7A] aria-selected:text-white hover:bg-[#FF8C7A]/10 transition-colors',
+                  day: 'text-center text-sm h-9 w-9 rounded-lg aria-selected:bg-[#4C9329] aria-selected:text-white hover:bg-[#4C9329]/10 transition-colors',
                   day_button: 'w-full h-full flex items-center justify-center',
-                  today: 'font-bold text-[#FF8C7A]',
+                  today: 'font-bold text-[#4C9329]',
                   outside: 'text-muted-foreground/50',
                   disabled: 'text-muted-foreground/50 cursor-not-allowed',
                 }}
@@ -152,7 +152,7 @@ export function DateTimePicker({
                   type="button"
                   disabled={!selectedDate}
                   onClick={() => setView('time')}
-                  className="flex w-full items-center justify-center gap-2 border-t border-border py-2.5 text-sm font-medium text-[#FF8C7A] transition-colors hover:bg-[#FF8C7A]/5 disabled:opacity-40"
+                  className="flex w-full items-center justify-center gap-2 border-t border-border py-2.5 text-sm font-medium text-[#4C9329] transition-colors hover:bg-[#4C9329]/5 disabled:opacity-40"
                 >
                   <Clock className="h-4 w-4" />
                   {selectedTime ? `Hora: ${selectedTime}` : 'Seleccionar hora'}
@@ -182,8 +182,8 @@ export function DateTimePicker({
                     className={cn(
                       'rounded-lg px-2 py-2 text-sm font-medium transition-colors',
                       selectedTime === time
-                        ? 'bg-[#FF8C7A] text-white'
-                        : 'text-foreground hover:bg-[#FF8C7A]/10',
+                        ? 'bg-[#4C9329] text-white'
+                        : 'text-foreground hover:bg-[#4C9329]/10',
                     )}
                   >
                     {time}

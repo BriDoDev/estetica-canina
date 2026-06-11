@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import Image from 'next/image'
+import { StageTag } from './StageTag'
+import { StageSection } from './StageSection'
 
 interface ServiceItem {
   icon: string
@@ -58,13 +58,6 @@ const DEFAULT_SERVICES: ServiceItem[] = [
   },
 ]
 
-const badgeStyles: Record<string, string> = {
-  Popular: 'bg-secondary/30 text-secondary-foreground',
-  Recomendado: 'bg-[#FFDAD6] text-[#4A1E1E]',
-  'IA Diagnóstico': 'bg-accent/30 text-accent-foreground',
-  Premium: 'bg-warning text-warning-foreground',
-}
-
 async function getServices(): Promise<ServiceItem[]> {
   try {
     const supabase = await createClient()
@@ -79,7 +72,7 @@ async function getServices(): Promise<ServiceItem[]> {
       return items.filter((s) => s.active !== false)
     }
   } catch {
-    // fall through to defaults
+    /* fall through to defaults */
   }
   return DEFAULT_SERVICES
 }
@@ -88,68 +81,86 @@ export async function ServicesSection() {
   const services = await getServices()
 
   return (
-    <section id="services" className="bg-white py-24">
-      <div className="container mx-auto px-4">
-        <div className="mb-14 text-center">
-          <p className="mb-2 text-sm font-semibold tracking-widest text-accent uppercase">
-            🐾 Lo que ofrecemos
-          </p>
-          <h2 className="mb-4 text-4xl font-extrabold text-foreground">Nuestros Servicios</h2>
-          <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-            Cada servicio está diseñado pensando en el bienestar y felicidad de tu mascota.
+    <StageSection n={2} id="servicios" className="bg-stage-2 relative overflow-hidden py-[72px]">
+      <div className="mx-auto w-full max-w-[500px] px-5">
+        <div className="mb-8 flex flex-col gap-3.5">
+          <StageTag n={2} label="Etapa 2 · El baño" />
+          <h2 className="h2 text-ink">
+            Servicios pensados
+            <br />
+            para cada pelaje.
+          </h2>
+          <p className="text-[16px] leading-[1.55] text-ink-2">
+            Desde un baño express hasta un día completo de spa. Todos incluyen revisión rápida de
+            oídos y almohadillas.
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="stage-hero">
+          <Image
+            src="/images/stages/dog-2-bano.png"
+            alt="Perro en el baño con burbujas"
+            width={950}
+            height={580}
+            className="h-auto w-full"
+          />
+          <span className="stage-hero__caption">Listo para el baño</span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           {services.map((service) => (
-            <Card
+            <div
               key={service.name}
-              className="group overflow-hidden rounded-2xl border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/15"
+              className="bg-paper grid items-center gap-3.5 rounded-[14px] p-4.5"
+              style={{ gridTemplateColumns: '44px 1fr auto', padding: 18 }}
             >
-              {service.imageUrl ? (
-                <div className="relative h-40 w-full overflow-hidden">
-                  <Image
-                    src={service.imageUrl}
-                    alt={service.name}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  {service.badge && (
-                    <div className="absolute top-3 right-3">
-                      <Badge
-                        className={`${badgeStyles[service.badge] ?? 'bg-muted text-muted-foreground'} border-none text-xs shadow`}
-                      >
-                        {service.badge}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-              ) : null}
-              <CardHeader className="pb-3">
-                {!service.imageUrl && (
-                  <div className="flex items-start justify-between">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/20 text-2xl transition-transform group-hover:scale-110">
-                      {service.icon}
-                    </div>
-                    {service.badge && (
-                      <Badge
-                        className={`${badgeStyles[service.badge] ?? 'bg-muted text-muted-foreground'} border-none text-xs`}
-                      >
-                        {service.badge}
-                      </Badge>
-                    )}
-                  </div>
-                )}
-                <CardTitle className="text-lg text-foreground">{service.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-4 text-sm leading-relaxed text-muted-foreground">{service.description}</p>
-                <p className="text-base font-bold text-primary">{service.price}</p>
-              </CardContent>
-            </Card>
+              <div
+                className="grid h-11 w-11 place-items-center rounded-xl text-xl text-ink"
+                style={{ background: 'var(--color-stage-2)' }}
+              >
+                {service.icon}
+              </div>
+              <div className="leading-tight">
+                <h3 className="text-[16px] font-medium text-ink" style={{ marginBottom: 2 }}>
+                  {service.name}
+                </h3>
+                <p className="m-0 text-[12.5px] leading-[1.4] text-ink-3">{service.description}</p>
+              </div>
+              <div
+                className="whitespace-nowrap pl-1 font-display text-[16px] font-medium text-ink"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                {service.price.replace(/^Desde\s*/i, '')}
+              </div>
+            </div>
           ))}
         </div>
+
+        <div className="process">
+          <div className="eyebrow">El proceso</div>
+          <h3 className="font-display text-[24px] font-medium" style={{ marginTop: 8, fontWeight: 500 }}>
+            De desastre a radiante en 4 pasos.
+          </h3>
+          <div className="process__steps">
+            <div className="process__step">
+              <div className="dot s1">1</div>
+              <div className="name">Desastre</div>
+            </div>
+            <div className="process__step">
+              <div className="dot s2">2</div>
+              <div className="name">Baño</div>
+            </div>
+            <div className="process__step">
+              <div className="dot s3">3</div>
+              <div className="name">Cepillado</div>
+            </div>
+            <div className="process__step">
+              <div className="dot s4">4</div>
+              <div className="name">Radiante</div>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+    </StageSection>
   )
 }

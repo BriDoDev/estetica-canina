@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { updateConfigAction } from '@/app/actions/landing-config'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
@@ -24,7 +23,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Switch } from '@/components/ui/switch'
-import { Plus, Pencil, Trash2, Loader2, Star } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { Icon } from '@/components/admin/Icon'
 import type { ReviewItem } from './page'
 
 interface ReviewsManagerProps {
@@ -33,6 +33,15 @@ interface ReviewsManagerProps {
 
 function generateId() {
   return Math.random().toString(36).slice(2, 10)
+}
+
+function initialsFor(name: string): string {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((n) => n[0] ?? '')
+    .join('')
+    .toUpperCase()
 }
 
 const EMPTY_REVIEW: Omit<ReviewItem, 'id'> = {
@@ -47,15 +56,31 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
   return (
     <div className="flex gap-1">
       {[1, 2, 3, 4, 5].map((n) => (
-        <button key={n} type="button" onClick={() => onChange(n)} className="focus:outline-none">
-          <Star
-            className={`h-6 w-6 transition-colors ${
-              n <= value ? 'fill-amber-400 text-amber-400' : 'fill-slate-200 text-muted'
-            }`}
-          />
+        <button
+          key={n}
+          type="button"
+          onClick={() => onChange(n)}
+          aria-label={`${n} ${n === 1 ? 'estrella' : 'estrellas'}`}
+          style={{
+            fontSize: 22,
+            lineHeight: 1,
+            color: n <= value ? 'var(--accent)' : 'var(--ink-5)',
+            background: 'transparent',
+          }}
+        >
+          ★
         </button>
       ))}
     </div>
+  )
+}
+
+function StarRow({ rating }: { rating: number }) {
+  return (
+    <span style={{ color: 'var(--accent)', letterSpacing: '2px', fontSize: 13 }}>
+      {'★'.repeat(rating)}
+      <span style={{ color: 'var(--ink-5)' }}>{'★'.repeat(5 - rating)}</span>
+    </span>
   )
 }
 
@@ -118,143 +143,142 @@ export function ReviewsManager({ initialReviews }: ReviewsManagerProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <Button onClick={openCreate} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-          <Plus className="h-4 w-4" />
+        <button type="button" onClick={openCreate} className="ds-btn ds-btn--accent">
+          <Icon name="plus" size="sm" />
           Nueva reseña
-        </Button>
+        </button>
         <div className="flex items-center gap-3">
-          {saveMsg && <span className="text-sm text-muted-foreground">{saveMsg}</span>}
-          <Button onClick={saveAll} disabled={saving} variant="outline" className="gap-2">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          {saveMsg && <span className="ds-t-sm ds-t-muted">{saveMsg}</span>}
+          <button
+            type="button"
+            onClick={saveAll}
+            disabled={saving}
+            className="ds-btn ds-btn--outline"
+          >
+            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             Guardar cambios
-          </Button>
+          </button>
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="ds-stack-3">
         {reviews.map((review) => (
-          <div
+          <article
             key={review.id}
-            className={`rounded-2xl border bg-white p-4 transition-opacity ${review.active ? 'border-border' : 'border-border opacity-60'}`}
+            className="ds-card"
+            style={review.active ? undefined : { opacity: 0.6 }}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-start gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-primary text-xs font-bold text-white">
-                  {review.name
-                    .split(' ')
-                    .slice(0, 2)
-                    .map((n) => n[0])
-                    .join('')
-                    .toUpperCase()}
+                <div className="ds-avatar ds-avatar--md ds-avatar-pet">
+                  {initialsFor(review.name)}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-foreground">{review.name}</p>
-                  {review.pet && <p className="text-xs text-muted-foreground">{review.pet}</p>}
-                  <div className="my-1.5 flex gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-3.5 w-3.5 ${
-                          i < review.rating
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'fill-slate-200 text-muted'
-                        }`}
-                      />
-                    ))}
+                  <p className="ds-t-d4" style={{ marginBottom: 2 }}>
+                    {review.name}
+                  </p>
+                  {review.pet && <p className="ds-t-xs ds-t-muted">{review.pet}</p>}
+                  <div style={{ marginTop: 4, marginBottom: 6 }}>
+                    <StarRow rating={review.rating} />
                   </div>
-                  <p className="line-clamp-2 text-sm text-muted-foreground">{review.comment}</p>
+                  <p className="ds-t-sm ds-t-muted">{review.comment}</p>
                 </div>
               </div>
-              <div className="flex flex-shrink-0 items-center gap-2">
+              <div className="ds-row-actions" style={{ opacity: 1 }}>
                 <Switch
                   checked={review.active}
                   onCheckedChange={() => toggleActive(review.id)}
                   aria-label="Visible"
                 />
                 <button
+                  type="button"
                   onClick={() => openEdit(review)}
-                  className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+                  className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost"
                   aria-label="Editar"
                 >
-                  <Pencil className="h-3.5 w-3.5" />
+                  <Icon name="edit" size="sm" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => setDeleteId(review.id)}
-                  className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600"
+                  className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost"
+                  style={{ color: 'var(--danger)' }}
                   aria-label="Eliminar"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Icon name="trash" size="sm" />
                 </button>
               </div>
             </div>
-          </div>
+          </article>
         ))}
       </div>
 
-      {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{editingReview ? 'Editar reseña' : 'Nueva reseña'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-1.5">
-              <Label>Nombre del cliente *</Label>
+          <div className="ds-stack-3" style={{ paddingBlock: 8 }}>
+            <div className="ds-field">
+              <label className="ds-field__label">
+                Nombre del cliente <span className="ds-req">*</span>
+              </label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="María García"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Mascota (opcional)</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">Mascota (opcional)</label>
               <Input
                 value={form.pet ?? ''}
                 onChange={(e) => setForm((f) => ({ ...f, pet: e.target.value }))}
                 placeholder="Dueña de Luna (Shih Tzu)"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Calificación</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">Calificación</label>
               <StarPicker
                 value={form.rating}
                 onChange={(v) => setForm((f) => ({ ...f, rating: v }))}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Comentario *</Label>
+            <div className="ds-field">
+              <label className="ds-field__label">
+                Comentario <span className="ds-req">*</span>
+              </label>
               <Textarea
                 value={form.comment}
                 onChange={(e) => setForm((f) => ({ ...f, comment: e.target.value }))}
-                placeholder="Escribe el comentario del cliente..."
+                placeholder="Escribe el comentario del cliente…"
                 rows={3}
               />
             </div>
-            <div className="flex items-center gap-3">
+            <label className="ds-row-2">
               <Switch
                 checked={form.active}
                 onCheckedChange={(v: boolean) => setForm((f) => ({ ...f, active: v }))}
-                id="review-active"
               />
-              <Label htmlFor="review-active">Visible en la página</Label>
-            </div>
+              <span className="ds-t-body">Visible en la página</span>
+            </label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button
+            <button
+              type="button"
               onClick={saveDialog}
               disabled={!form.name.trim() || !form.comment.trim()}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="ds-btn ds-btn--accent"
             >
               {editingReview ? 'Guardar cambios' : 'Crear reseña'}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete confirm */}
       <AlertDialog open={!!deleteId} onOpenChange={(open: boolean) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

@@ -470,27 +470,29 @@ export function AppointmentForm() {
 
   if (submitSuccess) {
     return (
-      <Card className="mx-auto max-w-lg">
-        <CardContent className="flex flex-col items-center gap-4 py-12">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle className="h-8 w-8 text-green-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-foreground">¡Cita agendada!</h2>
-          <p className="text-center text-muted-foreground">
-            Recibirás una confirmación en tu correo. Te esperamos con{' '}
-            <strong>{watch('petName')}</strong> el día de tu cita.
-          </p>
-          <Button
-            onClick={() => {
-              setSubmitSuccess(false)
-              setCurrentStep('customer')
-            }}
-            variant="outline"
-          >
-            Agendar otra cita
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="form-card mx-auto max-w-lg text-center">
+        <div
+          className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
+          style={{ background: 'rgba(27, 168, 122, 0.12)' }}
+        >
+          <CheckCircle className="h-8 w-8" style={{ color: 'var(--color-success)' }} />
+        </div>
+        <h3>¡Cita agendada!</h3>
+        <p className="lede">
+          Recibirás una confirmación en tu correo. Te esperamos con{' '}
+          <strong>{watch('petName')}</strong> el día de tu cita.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setSubmitSuccess(false)
+            setCurrentStep('customer')
+          }}
+          className="btn btn--ghost"
+        >
+          Agendar otra cita
+        </button>
+      </div>
     )
   }
 
@@ -535,14 +537,16 @@ export function AppointmentForm() {
     }
     if (geo.status === 'in_range') {
       return (
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-3">
-          <CheckCircle className="h-4 w-4 flex-shrink-0 text-green-500" />
-          <div>
-            <p className="text-sm font-semibold text-green-800">¡Estamos cerca de ti!</p>
+        <div className="zone-banner">
+          <div className="zone-banner__icon">
+            <CheckCircle className="h-4 w-4" strokeWidth={3} />
+          </div>
+          <div className="zone-banner__text">
+            <strong>¡Estamos cerca de ti!</strong>
             {geo.distanceKm !== null && (
-              <p className="text-xs text-green-600">
+              <small>
                 A {geo.distanceKm} km de {geo.salonName}
-              </p>
+              </small>
             )}
           </div>
         </div>
@@ -577,39 +581,27 @@ export function AppointmentForm() {
             <div className="min-w-0 flex-1">
               <GeoStatusBanner />
               {/* Step indicator */}
-              <div className="mb-8 flex items-center gap-2">
-                {STEPS.map((step, idx) => (
-                  <div key={step} className="flex flex-1 items-center gap-2">
-                    <div
-                      className={cn(
-                        'flex items-center gap-2 text-sm font-medium transition-colors',
-                        idx <= currentStepIndex ? 'text-primary' : 'text-muted-foreground',
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          'flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-bold transition-colors',
-                          idx < currentStepIndex
-                            ? 'border-primary bg-primary text-primary-foreground'
-                            : idx === currentStepIndex
-                              ? 'border-primary text-primary'
-                              : 'border-border text-muted-foreground',
+              <div className="stepper" role="tablist">
+                {STEPS.map((step, idx) => {
+                  const state =
+                    idx === currentStepIndex
+                      ? ' is-current'
+                      : idx < currentStepIndex
+                        ? ' is-done'
+                        : ''
+                  return (
+                    <div key={step} className={`step-item${state}`}>
+                      <div className="step-circle">
+                        {idx < currentStepIndex ? (
+                          <CheckCircle className="h-3.5 w-3.5" strokeWidth={3} />
+                        ) : (
+                          idx + 1
                         )}
-                      >
-                        {idx < currentStepIndex ? '✓' : idx + 1}
                       </div>
-                      <span className="hidden sm:block">{stepLabels[step]}</span>
+                      <span className="step-label hidden sm:block">{stepLabels[step]}</span>
                     </div>
-                    {idx < STEPS.length - 1 && (
-                      <div
-                        className={cn(
-                          'h-0.5 flex-1 transition-colors',
-                          idx < currentStepIndex ? 'bg-primary' : 'bg-muted',
-                        )}
-                      />
-                    )}
-                  </div>
-                ))}
+                  )
+                })}
               </div>
 
               <form
@@ -1404,7 +1396,7 @@ export function AppointmentForm() {
                       onClick={nextStep}
                       disabled={recommendingService}
                       className="order-first w-full sm:order-none sm:w-auto"
-                      style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
+                      style={{ backgroundColor: 'var(--color-accent)', color: '#fff' }}
                     >
                       {recommendingService ? (
                         <>
@@ -1421,9 +1413,10 @@ export function AppointmentForm() {
                       tabIndex={-1}
                       disabled={isSubmitting}
                       className="order-first w-full sm:order-none sm:w-auto sm:min-w-[160px]"
-                      style={{ backgroundColor: '#FF8C7A', color: '#4A1E1E' }}
+                      style={{ backgroundColor: 'var(--color-accent)', color: '#fff' }}
                     >
-                      <CheckCircle className="mr-2 h-4 w-4" />✅ Confirmar y Agendar
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Confirmar y Agendar
                     </Button>
                   )}
                 </div>

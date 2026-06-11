@@ -1,32 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { formatDate, formatCurrency } from '@/lib/utils'
-import { ArrowLeft, MessageCircle, Mail, Phone, Calendar, Dog, ClipboardList } from 'lucide-react'
 import Image from 'next/image'
+import { Icon } from '@/components/admin/Icon'
+import { getStatusMeta } from '@/lib/ds/status'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
-const statusLabels: Record<string, string> = {
-  pending: 'Pendiente',
-  confirmed: 'Confirmada',
-  in_progress: 'En proceso',
-  completed: 'Completada',
-  cancelled: 'Cancelada',
-}
-
-const statusColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-700',
-  confirmed: 'bg-secondary/30 text-secondary-foreground',
-  in_progress: 'bg-accent/30 text-foreground',
-  completed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
-}
-
-const serviceLabels: Record<string, string> = {
+const SERVICE_LABELS: Record<string, string> = {
   bath: 'Baño',
   haircut: 'Corte de pelo',
   bath_haircut: 'Baño + Corte',
@@ -35,12 +17,21 @@ const serviceLabels: Record<string, string> = {
   full_grooming: 'Grooming Completo',
 }
 
-const coatLabels: Record<string, string> = {
+const COAT_LABELS: Record<string, string> = {
   short: 'Pelo corto',
   medium: 'Pelo mediano',
   long: 'Pelo largo',
   curly: 'Pelo rizado',
   double: 'Doble capa',
+}
+
+function initialsFor(name: string): string {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((n) => n[0] ?? '')
+    .join('')
+    .toUpperCase()
 }
 
 interface PageProps {
@@ -52,7 +43,6 @@ export default async function CustomerDetailPage({ params }: PageProps) {
   const supabase = await createClient()
 
   const { data: customer } = await supabase.from('customers').select('*').eq('id', id).single()
-
   if (!customer) notFound()
 
   const { data: pets } = await supabase
@@ -68,180 +58,198 @@ export default async function CustomerDetailPage({ params }: PageProps) {
     .order('scheduled_at', { ascending: false })
 
   return (
-    <div className="max-w-4xl space-y-6">
-      {/* Back button */}
-      <div>
-        <Button variant="ghost" size="sm" asChild className="-ml-2 gap-2 text-muted-foreground">
-          <Link href="/customers">
-            <ArrowLeft className="h-4 w-4" />
-            Volver a Clientes
-          </Link>
-        </Button>
-      </div>
+    <div className="ds-stack-6" style={{ maxWidth: 960 }}>
+      <nav className="ds-crumbs">
+        <Link href="/customers">Clientes</Link>
+        <span className="ds-crumbs__sep">/</span>
+        <span className="ds-crumbs__current">{customer.full_name}</span>
+      </nav>
 
-      {/* Customer info */}
-      <Card>
-        <CardHeader className="pb-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-primary text-lg font-bold text-white">
-                {customer.full_name
-                  .split(' ')
-                  .slice(0, 2)
-                  .map((n: string) => n[0])
-                  .join('')
-                  .toUpperCase()}
+      {/* Customer card */}
+      <section className="ds-card">
+        <div className="flex items-start justify-between gap-4">
+          <div className="ds-identity">
+            <div className="ds-avatar ds-avatar--xl ds-avatar-pet">
+              {initialsFor(customer.full_name)}
+            </div>
+            <div className="ds-identity__body">
+              <div className="ds-t-d3" style={{ marginBottom: 2 }}>
+                {customer.full_name}
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">{customer.full_name}</h1>
-                <p className="text-sm text-muted-foreground">
-                  Cliente desde {formatDate(customer.created_at)}
-                </p>
+              <div className="ds-t-sm ds-t-muted">
+                Cliente desde {formatDate(customer.created_at)}
               </div>
             </div>
-            {customer.whatsapp_opt_in && (
-              <Badge className="gap-1.5 border-none bg-green-100 text-green-700">
-                <MessageCircle className="h-3.5 w-3.5" />
-                WhatsApp activo
-              </Badge>
-            )}
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 text-sm sm:grid-cols-2">
-            <div className="flex items-center gap-2.5 text-muted-foreground">
-              <Mail className="h-4 w-4 flex-shrink-0 text-accent" />
-              {customer.email}
-            </div>
-            <div className="flex items-center gap-2.5 text-muted-foreground">
-              <Phone className="h-4 w-4 flex-shrink-0 text-accent" />
-              {customer.phone}
-            </div>
-            {customer.notes && (
-              <div className="rounded-lg border border-amber-100 bg-amber-50 p-3 text-xs text-amber-800 sm:col-span-2">
-                <strong>Notas:</strong> {customer.notes}
-              </div>
-            )}
+          {customer.whatsapp_opt_in && (
+            <span className="ds-badge ds-badge--success">
+              <Icon name="msg" size="sm" />
+              WhatsApp activo
+            </span>
+          )}
+        </div>
+        <div className="ds-grid-2" style={{ gap: 12, marginTop: 16 }}>
+          <div className="ds-row-2 ds-t-body ds-t-muted">
+            <Icon name="msg" size="sm" />
+            {customer.email}
           </div>
-        </CardContent>
-      </Card>
+          <div className="ds-row-2 ds-t-body ds-t-muted">
+            <Icon name="cog" size="sm" />
+            {customer.phone}
+          </div>
+          {customer.notes && (
+            <div
+              className="ds-alert ds-alert--warning"
+              style={{ gridColumn: '1 / -1', marginTop: 4 }}
+            >
+              <Icon name="info" className="ds-alert__icon" />
+              <div className="ds-alert__body">
+                <strong>Notas internas</strong>
+                {customer.notes}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Pets */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Dog className="h-5 w-5 text-accent" />
-            Mascotas ({pets?.length ?? 0})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {pets && pets.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {pets.map((pet) => (
-                <div
-                  key={pet.id}
-                  className="flex items-start gap-4 rounded-xl border border-border bg-muted p-4"
-                >
+      <section>
+        <div className="ds-card-head" style={{ marginBottom: 12 }}>
+          <div>
+            <div className="ds-card-head__title">Mascotas ({pets?.length ?? 0})</div>
+            <div className="ds-card-head__sub">Pelajes, tallas y notas especiales.</div>
+          </div>
+        </div>
+        {pets && pets.length > 0 ? (
+          <div className="ds-grid-2">
+            {pets.map((pet) => (
+              <article key={pet.id} className="ds-card ds-card--inset">
+                <div className="flex items-start gap-3">
                   {pet.photo_url ? (
-                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl">
+                    <div
+                      style={{
+                        position: 'relative',
+                        width: 64,
+                        height: 64,
+                        borderRadius: 12,
+                        overflow: 'hidden',
+                        flex: '0 0 auto',
+                      }}
+                    >
                       <Image src={pet.photo_url} alt={pet.name} fill sizes="64px" className="object-cover" />
                     </div>
                   ) : (
-                    <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl bg-accent/30">
-                      <span className="text-2xl">🐕</span>
+                    <div
+                      className="ds-avatar ds-avatar--xl ds-avatar-pet"
+                      style={{ borderRadius: 12 }}
+                    >
+                      <Icon name="paw" size="lg" />
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-foreground">{pet.name}</p>
-                    {pet.breed && <p className="text-sm text-muted-foreground">{pet.breed}</p>}
-                    <div className="mt-2 flex flex-wrap gap-1.5">
+                    <div className="ds-t-d4">{pet.name}</div>
+                    {pet.breed && <div className="ds-t-sm ds-t-muted">{pet.breed}</div>}
+                    <div className="flex flex-wrap gap-1.5" style={{ marginTop: 8 }}>
                       {pet.coat_type && (
-                        <Badge className="border-none bg-accent/20 text-xs text-indigo-700">
-                          {coatLabels[pet.coat_type] ?? pet.coat_type}
-                        </Badge>
+                        <span className="ds-badge ds-badge--accent">
+                          {COAT_LABELS[pet.coat_type] ?? pet.coat_type}
+                        </span>
                       )}
                       {pet.age_years != null && (
-                        <Badge className="border-none bg-muted text-xs text-muted-foreground">
-                          {pet.age_years} años
-                        </Badge>
+                        <span className="ds-badge">{pet.age_years} años</span>
                       )}
                       {pet.weight_kg != null && (
-                        <Badge className="border-none bg-muted text-xs text-muted-foreground">
-                          {pet.weight_kg} kg
-                        </Badge>
+                        <span className="ds-badge">{pet.weight_kg} kg</span>
                       )}
                     </div>
                     {pet.special_notes && (
-                      <p className="mt-1 truncate text-xs text-muted-foreground">{pet.special_notes}</p>
+                      <p
+                        className="ds-t-xs ds-t-muted truncate"
+                        style={{ marginTop: 6 }}
+                      >
+                        {pet.special_notes}
+                      </p>
                     )}
                   </div>
                 </div>
-              ))}
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="ds-empty">
+            <div className="ds-empty__icon">
+              <Icon name="paw" size="lg" />
             </div>
-          ) : (
-            <p className="py-6 text-center text-sm text-muted-foreground">Sin mascotas registradas</p>
-          )}
-        </CardContent>
-      </Card>
+            <div className="ds-empty__title">Sin mascotas registradas</div>
+          </div>
+        )}
+      </section>
 
       {/* Appointments */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5 text-accent" />
-            Citas ({appointments?.length ?? 0})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {appointments && appointments.length > 0 ? (
-            <div className="space-y-3">
-              {appointments.map((appt) => {
-                const analysis = appt.ai_analysis as Record<string, unknown> | null
-                return (
-                  <div
-                    key={appt.id}
-                    className="flex items-start justify-between gap-4 border-b border-border py-3 last:border-0"
-                  >
-                    <div className="flex min-w-0 items-start gap-3">
-                      <Calendar className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" />
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-foreground">
-                          {serviceLabels[appt.service_type] ?? appt.service_type}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Intl.DateTimeFormat('es-MX', {
-                            dateStyle: 'medium',
-                            timeStyle: 'short',
-                          }).format(new Date(appt.scheduled_at))}
-                        </p>
+      <section>
+        <div className="ds-card-head" style={{ marginBottom: 12 }}>
+          <div>
+            <div className="ds-card-head__title">Citas ({appointments?.length ?? 0})</div>
+            <div className="ds-card-head__sub">Historial de servicios contratados.</div>
+          </div>
+        </div>
+        {appointments && appointments.length > 0 ? (
+          <div className="ds-table-wrap">
+            <table className="ds-table">
+              <thead>
+                <tr>
+                  <th>Servicio</th>
+                  <th>Fecha</th>
+                  <th style={{ textAlign: 'right' }}>Precio</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {appointments.map((appt) => {
+                  const meta = getStatusMeta(appt.status)
+                  const analysis = appt.ai_analysis as Record<string, unknown> | null
+                  return (
+                    <tr key={appt.id}>
+                      <td>
+                        <div className="ds-t-body" style={{ fontWeight: 600 }}>
+                          {SERVICE_LABELS[appt.service_type] ?? appt.service_type}
+                        </div>
                         {typeof analysis?.summary === 'string' && (
-                          <p className="mt-1 max-w-xs truncate text-xs text-primary">
-                            🤖 {analysis.summary}
-                          </p>
+                          <div
+                            className="ds-t-xs"
+                            style={{ color: 'var(--accent)', marginTop: 2 }}
+                          >
+                            <Icon name="sparkle" size="sm" /> {analysis.summary as string}
+                          </div>
                         )}
-                      </div>
-                    </div>
-                    <div className="flex flex-shrink-0 items-center gap-3">
-                      {appt.price != null && (
-                        <span className="text-sm font-semibold text-primary">
-                          {formatCurrency(appt.price)}
-                        </span>
-                      )}
-                      <Badge
-                        className={`border-none text-xs ${statusColors[appt.status] ?? 'bg-muted text-muted-foreground'}`}
-                      >
-                        {statusLabels[appt.status] ?? appt.status}
-                      </Badge>
-                    </div>
-                  </div>
-                )
-              })}
+                      </td>
+                      <td className="ds-t-mono">
+                        {new Intl.DateTimeFormat('es-MX', {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        }).format(new Date(appt.scheduled_at))}
+                      </td>
+                      <td className="ds-num">
+                        {appt.price != null ? formatCurrency(appt.price) : <span className="ds-t-muted">—</span>}
+                      </td>
+                      <td>
+                        <span className={meta.dsClass}>{meta.label}</span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="ds-empty">
+            <div className="ds-empty__icon">
+              <Icon name="calendar" size="lg" />
             </div>
-          ) : (
-            <p className="py-6 text-center text-sm text-muted-foreground">Sin citas registradas</p>
-          )}
-        </CardContent>
-      </Card>
+            <div className="ds-empty__title">Sin citas registradas</div>
+          </div>
+        )}
+      </section>
     </div>
   )
 }

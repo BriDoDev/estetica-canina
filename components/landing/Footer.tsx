@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { PawPrint, MessageCircle, Share2, Phone, Mail, Clock } from 'lucide-react'
+import { Share2, MessageCircle, Phone } from 'lucide-react'
 
 interface ContactConfig {
   phone?: string
@@ -25,7 +25,7 @@ async function getContact(): Promise<ContactConfig> {
       return data.value as ContactConfig
     }
   } catch {
-    // use defaults
+    /* use defaults */
   }
   return {
     phone: '+52 55 1234 5678',
@@ -42,120 +42,181 @@ export async function Footer() {
   const contact = await getContact()
 
   return (
-    <footer className="bg-slate-900 text-slate-300">
-      <div className="container mx-auto px-4 py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Brand */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-                <PawPrint className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-extrabold text-white">Paws &amp; Glow</p>
-                <p className="text-xs text-slate-500">Estética Canina Premium</p>
-              </div>
-            </div>
-            <p className="text-sm leading-relaxed text-slate-400">
+    <footer className="bg-brand-deep text-paper-2 pt-14 pb-7">
+      <div className="mx-auto w-full max-w-[1120px] px-5">
+        <div className="mb-9 grid grid-cols-1 gap-8 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          <div>
+            <a href="#" className="flex items-center gap-2.5 no-underline">
+              <span
+                className="grid h-8 w-8 place-items-center rounded-full text-white font-display"
+                style={{ background: 'var(--color-accent)', fontWeight: 600, fontSize: 15 }}
+              >
+                P
+              </span>
+              <span className="font-display text-paper-2 text-[20px] leading-none" style={{ fontWeight: 500 }}>
+                Paws &amp; Glow
+                <span
+                  className="block font-sans text-[10px] uppercase tracking-[0.18em] leading-none mt-1 font-semibold"
+                  style={{ color: 'rgba(250,246,236,0.55)' }}
+                >
+                  Estética Canina
+                </span>
+              </span>
+            </a>
+            <p
+              className="mt-4 text-[13.5px] leading-[1.7]"
+              style={{ color: 'rgba(250,246,236,0.78)' }}
+            >
               Cuidamos a tu mejor amigo con amor, experiencia y la última tecnología en diagnóstico
               por IA.
             </p>
-            {/* Social */}
-            <div className="flex gap-3">
+            <div className="mt-4 flex gap-2">
               <a
                 href="#"
                 aria-label="Instagram"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-primary"
+                className="grid h-[34px] w-[34px] place-items-center rounded-full"
+                style={{ background: 'rgba(250,246,236,0.08)' }}
               >
                 <Share2 className="h-4 w-4" />
               </a>
               <a
                 href="#"
                 aria-label="Facebook"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-primary"
+                className="grid h-[34px] w-[34px] place-items-center rounded-full"
+                style={{ background: 'rgba(250,246,236,0.08)' }}
               >
                 <MessageCircle className="h-4 w-4" />
               </a>
               <a
                 href="#"
                 aria-label="WhatsApp"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition-colors hover:bg-green-600"
+                className="grid h-[34px] w-[34px] place-items-center rounded-full"
+                style={{ background: 'rgba(250,246,236,0.08)' }}
               >
                 <Phone className="h-4 w-4" />
               </a>
             </div>
           </div>
 
-          {/* Links */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold tracking-widest text-white uppercase">
-              Navegación
-            </h3>
-            <ul className="space-y-2 text-sm">
+          <div>
+            <h4
+              className="mb-3.5 font-sans text-[11.5px] font-bold uppercase tracking-[0.16em]"
+              style={{ color: 'rgba(250,246,236,0.55)' }}
+            >
+              Servicios
+            </h4>
+            <ul className="list-none p-0 m-0 space-y-1.5">
               {[
-                { href: '#services', label: 'Servicios' },
-                { href: '#booking', label: 'Agendar cita' },
-                { href: '#contact', label: 'Contacto' },
-              ].map((link) => (
-                <li key={link.href}>
+                { href: '#servicios', label: 'Baño Profundo' },
+                { href: '#servicios', label: 'Corte Profesional' },
+                { href: '#servicios', label: 'Grooming Completo' },
+                { href: '#servicios', label: 'Cuidado Especial' },
+                { href: '#servicios', label: 'Spa Canino' },
+              ].map((l, i) => (
+                <li key={i}>
                   <Link
-                    href={link.href}
-                    className="text-slate-400 transition-colors hover:text-white"
+                    href={l.href}
+                    className="no-underline text-[13.5px] leading-[1.7]"
+                    style={{ color: 'rgba(250,246,236,0.78)' }}
                   >
-                    {link.label}
+                    {l.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold tracking-widest text-white uppercase">Contacto</h3>
-            <ul className="space-y-3 text-sm">
-              {contact.phone && (
-                <li className="flex items-center gap-2 text-slate-400">
-                  <Phone className="h-3.5 w-3.5 flex-shrink-0 text-accent" />
-                  {contact.phone}
+          <div>
+            <h4
+              className="mb-3.5 font-sans text-[11.5px] font-bold uppercase tracking-[0.16em]"
+              style={{ color: 'rgba(250,246,236,0.55)' }}
+            >
+              Empresa
+            </h4>
+            <ul className="list-none p-0 m-0 space-y-1.5">
+              {[
+                { href: '#testimonios', label: 'Testimonios' },
+                { href: '#agenda', label: 'Reservar' },
+                { href: '#', label: 'Política de citas' },
+                { href: '#', label: 'Privacidad' },
+              ].map((l, i) => (
+                <li key={i}>
+                  <Link
+                    href={l.href}
+                    className="no-underline text-[13.5px] leading-[1.7]"
+                    style={{ color: 'rgba(250,246,236,0.78)' }}
+                  >
+                    {l.label}
+                  </Link>
                 </li>
-              )}
-              {contact.email && (
-                <li className="flex items-center gap-2 text-slate-400">
-                  <Mail className="h-3.5 w-3.5 flex-shrink-0 text-accent" />
-                  {contact.email}
-                </li>
-              )}
+              ))}
             </ul>
           </div>
 
-          {/* Hours */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold tracking-widest text-white uppercase">Horarios</h3>
-            <ul className="space-y-2 text-sm">
+          <div>
+            <h4
+              className="mb-3.5 font-sans text-[11.5px] font-bold uppercase tracking-[0.16em]"
+              style={{ color: 'rgba(250,246,236,0.55)' }}
+            >
+              Contacto
+            </h4>
+            <ul className="list-none p-0 m-0 space-y-1.5">
+              {contact.phone && (
+                <li>
+                  <a
+                    href={`tel:${contact.phone.replace(/\s/g, '')}`}
+                    className="no-underline text-[13.5px] leading-[1.7]"
+                    style={{ color: 'rgba(250,246,236,0.78)' }}
+                  >
+                    {contact.phone}
+                  </a>
+                </li>
+              )}
+              {contact.email && (
+                <li>
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="no-underline text-[13.5px] leading-[1.7]"
+                    style={{ color: 'rgba(250,246,236,0.78)' }}
+                  >
+                    {contact.email}
+                  </a>
+                </li>
+              )}
               {contact.hours?.weekdays && (
-                <li className="flex items-start gap-2 text-slate-400">
-                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-accent" />
+                <li
+                  className="text-[13.5px] leading-[1.7] mt-2.5"
+                  style={{ color: 'rgba(250,246,236,0.78)' }}
+                >
                   {contact.hours.weekdays}
-                </li>
-              )}
-              {contact.hours?.saturday && (
-                <li className="flex items-start gap-2 text-slate-400">
-                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-accent" />
-                  {contact.hours.saturday}
-                </li>
-              )}
-              {contact.hours?.sunday && (
-                <li className="flex items-start gap-2 text-slate-400">
-                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-accent" />
-                  {contact.hours.sunday}
+                  {contact.hours?.saturday && (
+                    <>
+                      <br />
+                      {contact.hours.saturday}
+                    </>
+                  )}
+                  {contact.hours?.sunday && (
+                    <>
+                      <br />
+                      {contact.hours.sunday}
+                    </>
+                  )}
                 </li>
               )}
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 border-t border-slate-800 pt-6 text-center text-xs text-slate-500">
-          © {new Date().getFullYear()} Paws &amp; Glow. Todos los derechos reservados.
+        <div
+          className="pt-5.5 flex flex-col gap-2.5 text-[12px] md:flex-row md:justify-between"
+          style={{
+            borderTop: '1px solid rgba(250,246,236,0.12)',
+            color: 'rgba(250,246,236,0.45)',
+            paddingTop: 22,
+          }}
+        >
+          <span>© {new Date().getFullYear()} Paws &amp; Glow. Todos los derechos reservados.</span>
+          <span>Hecho con cariño en CDMX.</span>
         </div>
       </div>
     </footer>

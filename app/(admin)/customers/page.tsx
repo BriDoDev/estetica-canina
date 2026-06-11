@@ -1,11 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
+import { Icon } from '@/components/admin/Icon'
+import { formatDate } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
-import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { formatDate } from '@/lib/utils'
-import { MessageCircle, ChevronRight } from 'lucide-react'
 
 interface CustomerRow {
   id: string
@@ -14,6 +12,15 @@ interface CustomerRow {
   phone: string
   whatsapp_opt_in: boolean
   created_at: string
+}
+
+function initialsFor(name: string): string {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((n) => n[0] ?? '')
+    .join('')
+    .toUpperCase()
 }
 
 export default async function CustomersPage() {
@@ -33,69 +40,92 @@ export default async function CustomersPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Clientes</h1>
-        <p className="text-muted-foreground">Base de clientes de Paws &amp; Glow</p>
-      </div>
+    <div className="ds-stack-6">
+      <header className="flex items-start justify-between gap-4">
+        <div className="ds-stack-2">
+          <h1 className="ds-t-d1">Clientes</h1>
+          <p className="ds-t-body ds-t-muted">Base de clientes de Paws &amp; Glow.</p>
+        </div>
+      </header>
 
       {fetchError && (
-        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
-          <span>⚠️</span> {fetchError}
+        <div className="ds-alert ds-alert--warning">
+          <Icon name="alert" className="ds-alert__icon" />
+          <div className="ds-alert__body">
+            <strong>No pudimos cargar los clientes</strong>
+            {fetchError}
+          </div>
         </div>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Todos los clientes ({customers?.length ?? 0})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {customers && customers.length > 0 ? (
-            <div className="space-y-1">
-              {(customers as unknown as CustomerRow[]).map((customer) => (
-                <Link
-                  key={customer.id}
-                  href={`/customers/${customer.id}`}
-                  className="group flex items-center justify-between rounded-lg border-b border-border px-2 py-3 transition-colors last:border-0 hover:bg-muted"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-primary text-xs font-bold text-white">
-                      {customer.full_name
-                        .split(' ')
-                        .slice(0, 2)
-                        .map((n: string) => n[0])
-                        .join('')
-                        .toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">{customer.full_name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {customer.email} · {customer.phone}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {customer.whatsapp_opt_in && (
-                      <Badge className="gap-1 border-none bg-green-100 text-xs text-green-700">
-                        <MessageCircle className="h-3 w-3" />
+      {customers && customers.length > 0 ? (
+        <div className="ds-table-wrap">
+          <table className="ds-table">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Contacto</th>
+                <th>Canales</th>
+                <th style={{ textAlign: 'right' }}>Alta</th>
+                <th aria-label="Acciones" />
+              </tr>
+            </thead>
+            <tbody>
+              {customers.map((customer) => (
+                <tr key={customer.id}>
+                  <td>
+                    <Link href={`/customers/${customer.id}`} className="ds-identity">
+                      <div className="ds-avatar ds-avatar--md ds-avatar-pet">
+                        {initialsFor(customer.full_name)}
+                      </div>
+                      <div className="ds-identity__body">
+                        <div className="ds-identity__name">{customer.full_name}</div>
+                        <div className="ds-identity__sub">{customer.email}</div>
+                      </div>
+                    </Link>
+                  </td>
+                  <td className="ds-t-mono">{customer.phone}</td>
+                  <td>
+                    {customer.whatsapp_opt_in ? (
+                      <span className="ds-badge ds-badge--success">
+                        <Icon name="msg" size="sm" />
                         WhatsApp
-                      </Badge>
+                      </span>
+                    ) : (
+                      <span className="ds-t-muted">—</span>
                     )}
-                    <span className="hidden text-xs text-muted-foreground sm:block">
-                      {formatDate(customer.created_at)}
-                    </span>
-                    <ChevronRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-muted-foreground" />
-                  </div>
-                </Link>
+                  </td>
+                  <td className="ds-num ds-t-mono">{formatDate(customer.created_at)}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <Link
+                      href={`/customers/${customer.id}`}
+                      className="ds-btn ds-btn--icon ds-btn--sm ds-btn--ghost"
+                      aria-label="Ver detalle"
+                    >
+                      <Icon name="chevron-r" size="sm" />
+                    </Link>
+                  </td>
+                </tr>
               ))}
-            </div>
-          ) : (
-            <p className="py-10 text-center text-sm text-muted-foreground">
-              No hay clientes registrados aún
-            </p>
-          )}
-        </CardContent>
-      </Card>
+            </tbody>
+          </table>
+          <footer className="ds-pagination">
+            <span>
+              {customers.length} {customers.length === 1 ? 'cliente' : 'clientes'}
+            </span>
+          </footer>
+        </div>
+      ) : (
+        <div className="ds-empty">
+          <div className="ds-empty__icon">
+            <Icon name="users" size="lg" />
+          </div>
+          <div className="ds-empty__title">Sin clientes aún</div>
+          <div className="ds-empty__desc">
+            Cuando se registren clientes desde la landing aparecerán aquí.
+          </div>
+        </div>
+      )}
     </div>
   )
 }
